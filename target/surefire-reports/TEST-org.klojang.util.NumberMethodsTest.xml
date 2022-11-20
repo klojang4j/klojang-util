@@ -1,35 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="org.klojang.util.NumberMethodsTest" time="0.029" tests="191" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="org.klojang.util.NumberMethodsTest" time="0.032" tests="191" errors="0" skipped="0" failures="0">
   <properties>
+    <property name="git.tags" value=""/>
     <property name="java.specification.version" value="19"/>
+    <property name="git.build.version" value="1.0.0"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
     <property name="java.class.path" value="/home/ayco/git-repos/klojang/klojang-util/target/test-classes:/home/ayco/git-repos/klojang/klojang-util/target/classes:/home/ayco/.m2/repository/org/klojang/klojang-check/2.0.0/klojang-check-2.0.0.jar:/home/ayco/.m2/repository/junit/junit/4.13.2/junit-4.13.2.jar:/home/ayco/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:"/>
+    <property name="git.branch" value="main"/>
+    <property name="git.build.host" value="ayco-Latitude-5430"/>
     <property name="java.vm.vendor" value="Oracle Corporation"/>
     <property name="sun.arch.data.model" value="64"/>
+    <property name="git.commit.id" value="08f293788547e6b7f27fd6991b9eec15d049e90e"/>
     <property name="java.vendor.url" value="https://java.oracle.com/"/>
     <property name="user.timezone" value="Europe/Amsterdam"/>
-    <property name="os.name" value="Linux"/>
     <property name="java.vm.specification.version" value="19"/>
+    <property name="os.name" value="Linux"/>
+    <property name="git.commit.author.time" value="2022-11-20 15:35:11"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
+    <property name="git.build.user.name" value="Ayco Holleman"/>
     <property name="sun.boot.library.path" value="/opt/jdk-19/lib"/>
-    <property name="sun.java.command" value="/home/ayco/git-repos/klojang/klojang-util/target/surefire/surefirebooter-20221120152717361_3.jar /home/ayco/git-repos/klojang/klojang-util/target/surefire 2022-11-20T15-27-17_247-jvmRun1 surefire-20221120152717361_1tmp surefire_0-20221120152717361_2tmp"/>
+    <property name="sun.java.command" value="/home/ayco/git-repos/klojang/klojang-util/target/surefire/surefirebooter-20221120153645112_3.jar /home/ayco/git-repos/klojang/klojang-util/target/surefire 2022-11-20T15-36-44_959-jvmRun1 surefire-20221120153645112_1tmp surefire_0-20221120153645112_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/home/ayco/git-repos/klojang/klojang-util/target/test-classes:/home/ayco/git-repos/klojang/klojang-util/target/classes:/home/ayco/.m2/repository/org/klojang/klojang-check/2.0.0/klojang-check-2.0.0.jar:/home/ayco/.m2/repository/junit/junit/4.13.2/junit-4.13.2.jar:/home/ayco/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:"/>
     <property name="sun.cpu.endian" value="little"/>
     <property name="user.home" value="/home/ayco"/>
     <property name="user.language" value="en"/>
+    <property name="git.closest.tag.commit.count" value=""/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="java.version.date" value="2022-10-18"/>
     <property name="java.home" value="/opt/jdk-19"/>
+    <property name="git.total.commit.count" value="1"/>
     <property name="file.separator" value="/"/>
     <property name="basedir" value="/home/ayco/git-repos/klojang/klojang-util"/>
     <property name="java.vm.compressedOopsMode" value="Zero based"/>
     <property name="line.separator" value="&#10;"/>
     <property name="checkstyle.skip" value="true"/>
-    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="git.commit.committer.time" value="2022-11-20 15:35:11"/>
+    <property name="git.build.user.email" value="ayco.holleman@naturalis.nl"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
-    <property name="surefire.real.class.path" value="/home/ayco/git-repos/klojang/klojang-util/target/surefire/surefirebooter-20221120152717361_3.jar"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="git.closest.tag.name" value=""/>
+    <property name="git.local.branch.ahead" value="NO_REMOTE"/>
+    <property name="git.build.time" value="2022-11-20 15:36:42"/>
+    <property name="surefire.real.class.path" value="/home/ayco/git-repos/klojang/klojang-util/target/surefire/surefirebooter-20221120153645112_3.jar"/>
+    <property name="git.commit.message.full" value="init"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="19.0.1+10-21"/>
     <property name="user.name" value="ayco"/>
@@ -38,82 +53,92 @@
     <property name="os.version" value="5.15.0-53-generic"/>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="file.encoding" value="UTF-8"/>
+    <property name="git.commit.user.email" value="ayco.holleman@naturalis.nl"/>
     <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="git.local.branch.behind" value="NO_REMOTE"/>
+    <property name="git.dirty" value="true"/>
     <property name="localRepository" value="/home/ayco/.m2/repository"/>
     <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
     <property name="java.io.tmpdir" value="/tmp"/>
     <property name="java.version" value="19.0.1"/>
     <property name="user.dir" value="/home/ayco/git-repos/klojang/klojang-util"/>
     <property name="os.arch" value="amd64"/>
+    <property name="git.commit.user.name" value="Ayco Holleman"/>
+    <property name="git.commit.id.abbrev" value="08f2937"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="git.commit.id.describe-short" value="08f2937-dirty"/>
+    <property name="git.commit.id.describe" value="08f2937-dirty"/>
     <property name="native.encoding" value="UTF-8"/>
     <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"/>
+    <property name="git.commit.message.short" value="init"/>
     <property name="java.vm.info" value="mixed mode, sharing"/>
     <property name="stderr.encoding" value="UTF-8"/>
     <property name="java.vendor" value="Oracle Corporation"/>
     <property name="java.vm.version" value="19.0.1+10-21"/>
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="63.0"/>
+    <property name="git.commit.time" value="2022-11-20 15:35:11"/>
+    <property name="git.remote.origin.url" value="https://github.com/klojang4j/klojang-util.git"/>
   </properties>
-  <testcase name="toLong01" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="toLong01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toLong02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toLong03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toLong04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toLong05" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="toLong06" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="toLong06" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="stringFitsInto00" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
-  <testcase name="stringFitsInto01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="toBigDecimal00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="stringFitsInto01" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="toBigDecimal00" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="toBigDecimal01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="toBigDecimal02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="toBigDecimal02" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="isBigDecimal00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="toBigInteger00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="toBigInteger01" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="toBigInteger00" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="toBigInteger01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isFloat01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isFloat02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isFloat03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isFloat04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isFloat05" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="isFloat06" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="isFloat06" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="isBigInteger00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isBigInteger01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toInt01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="toInt02" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="toInt02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toInt03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toInt04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toInt05" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toInt06" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseByte00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="parseByte00" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="parseByte01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseByte02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseByte03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseByte04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseByte05" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="parseByte05" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseByte06" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseAny00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseAny01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="parseAny01" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="parseInt00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseInt01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseInt02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseInt03" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="parseInt03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseInt04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseInt05" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseInt06" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseInt07" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseInt08" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseInt09" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="parseInt09" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="parseInt10" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseLong00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseLong01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseLong02" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="parseLong02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseLong03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseLong04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseLong05" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseLong06" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parse01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parse02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="parse02" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="parse04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parse05" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="parse05" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parse06" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parse07" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parse08" classname="org.klojang.util.NumberMethodsTest" time="0"/>
@@ -121,7 +146,7 @@
   <testcase name="parse10" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parse11" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parse12" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parse13" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="parse13" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="parse14" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parse15" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isByte01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
@@ -132,40 +157,40 @@
   <testcase name="isLong02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isLong03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isLong04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="convert00" classname="org.klojang.util.NumberMethodsTest" time="0.002"/>
+  <testcase name="convert00" classname="org.klojang.util.NumberMethodsTest" time="0.003"/>
   <testcase name="convert02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="convert03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="convert03" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="convert04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert05" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert06" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="convert07" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="convert07" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="convert08" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert09" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert10" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert11" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert12" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert13" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="convert14" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="convert14" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert15" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="convert16" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
-  <testcase name="convert17" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="convert16" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="convert17" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="convert18" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert19" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert20" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert21" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="convert22" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="convert22" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert23" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="convert24" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="convert24" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="convert25" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert26" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="convert27" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseShort00" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="parseShort00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseShort01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseShort02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseShort03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseShort04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseShort05" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseShort06" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="parseShort05" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="parseShort06" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isIntegral00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toShort01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toShort02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
@@ -174,18 +199,18 @@
   <testcase name="toShort05" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toShort06" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isDouble00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="isDouble01" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="isDouble01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isDouble02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="isDouble03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="isDouble03" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="parseDouble00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseDouble01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseDouble02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseDouble03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseDouble04" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
-  <testcase name="parseDouble05" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseDouble06" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="parseDouble04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="parseDouble05" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="parseDouble06" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseDouble07" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="isRound00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="isRound00" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="isRound01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isRound02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isRound03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
@@ -193,11 +218,11 @@
   <testcase name="isRound05" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isRound06" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isRound07" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="isRound08" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="isRound08" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isRound09" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseBigDecimal00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseBigDecimal01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseBigDecimal02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="parseBigDecimal02" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="parseBigInteger00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseBigInteger01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseBigInteger02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
@@ -213,8 +238,8 @@
   <testcase name="isShort02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isShort03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="isShort04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseFloat00" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="parseFloat01" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="parseFloat00" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
+  <testcase name="parseFloat01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseFloat02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseFloat03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="parseFloat04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
@@ -224,7 +249,7 @@
   <testcase name="toFloat01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toFloat02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toFloat03" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="toFloat04" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="toFloat04" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
   <testcase name="toFloat05" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toByte01" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="toByte02" classname="org.klojang.util.NumberMethodsTest" time="0"/>
@@ -245,5 +270,5 @@
   <testcase name="fitsInto08" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="fitsInto09" classname="org.klojang.util.NumberMethodsTest" time="0"/>
   <testcase name="fitsInto10" classname="org.klojang.util.NumberMethodsTest" time="0"/>
-  <testcase name="fitsInto11" classname="org.klojang.util.NumberMethodsTest" time="0"/>
+  <testcase name="fitsInto11" classname="org.klojang.util.NumberMethodsTest" time="0.001"/>
 </testsuite>
