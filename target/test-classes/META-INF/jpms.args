@@ -1,0 +1,4 @@
+--patch-module
+org.klojang.util=_
+--add-reads
+org.klojang.util=ALL-UNNAMED

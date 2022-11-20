@@ -1,0 +1,1466 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StringMethods.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Check</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util</a> &gt; <span class="el_source">StringMethods.java</span></div><h1>StringMethods.java</h1><pre class="source lang-java linenums">package org.klojang.util;
+
+import java.util.*;
+
+import org.klojang.check.Check;
+import org.klojang.util.ArrayMethods;
+import org.klojang.util.ClassMethods;
+import org.klojang.util.CollectionMethods;
+import org.klojang.util.ObjectMethods;
+import org.klojang.util.collection.IntList;
+import org.klojang.util.x.Param;
+
+import static java.lang.Character.toLowerCase;
+import static org.klojang.check.CommonChecks.*;
+import static org.klojang.check.CommonExceptions.indexOutOfBounds;
+import static org.klojang.util.ArrayMethods.*;
+import static org.klojang.util.MathMethods.divUp;
+import static org.klojang.util.ObjectMethods.ifNull;
+import static org.klojang.util.ObjectMethods.isEmpty;
+import static org.klojang.util.x.invoke.InvokeUtils.getArrayLength;
+
+/**
+ * Methods for working with strings. Quite a few methods in this class are geared
+ * towards printing. They take an argument of type {@code Object}, rather than
+ * {@code String}. If the argument is {@code null}, they will return an empty string,
+ * else they will call {@code toString()} on the argument and then manipulate the
+ * resulting {@code String}. They are null-safe and they will never return
+ * {@code null} themselves. The parameter name for the {@code Object} argument will
+ * be &quot;input&quot;. For ease of reading the {@code input} parameter will still be referred
+ * to as a {@code String}.
+ */
+public final class StringMethods {
+
+  /**
+   * The empty string.
+   */
+  public static final String EMPTY_STRING = &quot;&quot;;
+
+  private StringMethods() {}
+
+  /**
+   * Appends the specified value to the specified {@code StringBuilder} and returns
+   * the {@code StringBuilder}.
+   *
+   * @param sb the {@code StringBuilder} to append the value to
+   * @param val The value to append
+   * @return the {@code StringBuilder}
+   */
+  public static StringBuilder append(StringBuilder sb, Object val) {
+<span class="fc" id="L50">    return Check.notNull(sb, &quot;sb&quot;).ok().append(val);</span>
+  }
+
+  /**
+   * Appends the specified values to the specified {@code StringBuilder} and returns
+   * the {@code StringBuilder}.
+   *
+   * @param sb the {@code StringBuilder} to append the values to
+   * @param val0 a value
+   * @param val1 another value
+   * @return the {@code StringBuilder}
+   */
+  public static StringBuilder append(StringBuilder sb, Object val0, Object val1) {
+<span class="fc" id="L63">    return Check.notNull(sb, &quot;sb&quot;).ok().append(val0).append(val1);</span>
+  }
+
+  /**
+   * Appends the specified values to the specified {@code StringBuilder} and returns
+   * the {@code StringBuilder}.
+   *
+   * @param sb the {@code StringBuilder} to append the values to
+   * @param val0 a value
+   * @param val1 another value
+   * @param val2 another value
+   * @return the {@code StringBuilder}
+   */
+  public static StringBuilder append(StringBuilder sb,
+      Object val0,
+      Object val1,
+      Object val2) {
+<span class="fc" id="L80">    return Check.notNull(sb, &quot;sb&quot;).ok().append(val0).append(val1).append(val2);</span>
+  }
+
+  /**
+   * Appends the specified values to the specified {@code StringBuilder} and returns
+   * the {@code StringBuilder}.
+   *
+   * @param sb the {@code StringBuilder} to append the values to
+   * @param val0 a value
+   * @param val1 another value
+   * @param val2 another value
+   * @param val3 another value
+   * @return the {@code StringBuilder}
+   */
+  public static StringBuilder append(
+      StringBuilder sb, Object val0, Object val1, Object val2, Object val3) {
+<span class="fc" id="L96">    return Check.notNull(sb, &quot;sb&quot;)</span>
+<span class="fc" id="L97">        .ok()</span>
+<span class="fc" id="L98">        .append(val0)</span>
+<span class="fc" id="L99">        .append(val1)</span>
+<span class="fc" id="L100">        .append(val2)</span>
+<span class="fc" id="L101">        .append(val3);</span>
+  }
+
+  /**
+   * Appends the specified values to the specified {@code StringBuilder} and returns
+   * the {@code StringBuilder}.
+   *
+   * @param sb the {@code StringBuilder} to append the values to
+   * @param val0 a value
+   * @param val1 another value
+   * @param val2 another value
+   * @param val3 another value
+   * @param val4 another value
+   * @return the {@code StringBuilder}
+   */
+  public static StringBuilder append(
+      StringBuilder sb,
+      Object val0,
+      Object val1,
+      Object val2,
+      Object val3,
+      Object val4) {
+
+<span class="fc" id="L124">    return Check.notNull(sb, &quot;sb&quot;)</span>
+<span class="fc" id="L125">        .ok()</span>
+<span class="fc" id="L126">        .append(val0)</span>
+<span class="fc" id="L127">        .append(val1)</span>
+<span class="fc" id="L128">        .append(val2)</span>
+<span class="fc" id="L129">        .append(val3)</span>
+<span class="fc" id="L130">        .append(val4);</span>
+  }
+
+  /**
+   * Appends the specified values to the specified {@code StringBuilder} and returns
+   * the {@code StringBuilder}.
+   *
+   * @param sb the {@code StringBuilder} to append the values to
+   * @param val0 a value
+   * @param val1 another value
+   * @param val2 another value
+   * @param val3 another value
+   * @param val4 another value
+   * @param val5 another value
+   * @return the {@code StringBuilder}
+   */
+  public static StringBuilder append(
+      StringBuilder sb,
+      Object val0,
+      Object val1,
+      Object val2,
+      Object val3,
+      Object val4,
+      Object val5) {
+
+<span class="fc" id="L155">    return Check.notNull(sb, &quot;sb&quot;)</span>
+<span class="fc" id="L156">        .ok()</span>
+<span class="fc" id="L157">        .append(val0)</span>
+<span class="fc" id="L158">        .append(val1)</span>
+<span class="fc" id="L159">        .append(val2)</span>
+<span class="fc" id="L160">        .append(val3)</span>
+<span class="fc" id="L161">        .append(val4)</span>
+<span class="fc" id="L162">        .append(val5);</span>
+  }
+
+  /**
+   * Appends the specified values to the specified {@code StringBuilder} and returns
+   * the {@code StringBuilder}.
+   *
+   * @param sb the {@code StringBuilder} to append the values to
+   * @param val0 a value
+   * @param val1 another value
+   * @param val2 another value
+   * @param val3 another value
+   * @param val4 another value
+   * @param val5 another value
+   * @param val6 another value
+   * @return the {@code StringBuilder}
+   */
+  public static StringBuilder append(
+      StringBuilder sb,
+      Object val0,
+      Object val1,
+      Object val2,
+      Object val3,
+      Object val4,
+      Object val5,
+      Object val6) {
+
+<span class="fc" id="L189">    return Check.notNull(sb, &quot;sb&quot;)</span>
+<span class="fc" id="L190">        .ok()</span>
+<span class="fc" id="L191">        .append(val0)</span>
+<span class="fc" id="L192">        .append(val1)</span>
+<span class="fc" id="L193">        .append(val2)</span>
+<span class="fc" id="L194">        .append(val3)</span>
+<span class="fc" id="L195">        .append(val4)</span>
+<span class="fc" id="L196">        .append(val5)</span>
+<span class="fc" id="L197">        .append(val6);</span>
+  }
+
+  /**
+   * Appends the specified values to the specified {@code StringBuilder} and returns
+   * the {@code StringBuilder}.
+   *
+   * @param sb the {@code StringBuilder} to append the values to
+   * @param val0 a value
+   * @param val1 another value
+   * @param val2 another value
+   * @param val3 another value
+   * @param val4 another value
+   * @param val5 another value
+   * @param val6 another value
+   * @param val7 another value
+   * @return the {@code StringBuilder}
+   */
+  public static StringBuilder append(
+      StringBuilder sb,
+      Object val0,
+      Object val1,
+      Object val2,
+      Object val3,
+      Object val4,
+      Object val5,
+      Object val6,
+      Object val7) {
+
+<span class="fc" id="L226">    return Check.notNull(sb, &quot;sb&quot;)</span>
+<span class="fc" id="L227">        .ok()</span>
+<span class="fc" id="L228">        .append(val0)</span>
+<span class="fc" id="L229">        .append(val1)</span>
+<span class="fc" id="L230">        .append(val2)</span>
+<span class="fc" id="L231">        .append(val3)</span>
+<span class="fc" id="L232">        .append(val4)</span>
+<span class="fc" id="L233">        .append(val5)</span>
+<span class="fc" id="L234">        .append(val6)</span>
+<span class="fc" id="L235">        .append(val7);</span>
+  }
+
+  /**
+   * Appends the specified values to the specified {@code StringBuilder} and returns
+   * the {@code StringBuilder}.
+   *
+   * @param sb the {@code StringBuilder} to append the values to
+   * @param val0 a value
+   * @param val1 another value
+   * @param val2 another value
+   * @param val3 another value
+   * @param val4 another value
+   * @param val5 another value
+   * @param val6 another value
+   * @param val7 another value
+   * @param val8 another value
+   * @return the {@code StringBuilder}
+   */
+  public static StringBuilder append(
+      StringBuilder sb,
+      Object val0,
+      Object val1,
+      Object val2,
+      Object val3,
+      Object val4,
+      Object val5,
+      Object val6,
+      Object val7,
+      Object val8) {
+
+<span class="fc" id="L266">    return Check.notNull(sb, &quot;sb&quot;)</span>
+<span class="fc" id="L267">        .ok()</span>
+<span class="fc" id="L268">        .append(val0)</span>
+<span class="fc" id="L269">        .append(val1)</span>
+<span class="fc" id="L270">        .append(val2)</span>
+<span class="fc" id="L271">        .append(val3)</span>
+<span class="fc" id="L272">        .append(val4)</span>
+<span class="fc" id="L273">        .append(val5)</span>
+<span class="fc" id="L274">        .append(val6)</span>
+<span class="fc" id="L275">        .append(val7)</span>
+<span class="fc" id="L276">        .append(val8);</span>
+  }
+
+  /**
+   * Appends the specified values to the specified {@code StringBuilder} and returns
+   * the {@code StringBuilder}.
+   *
+   * @param sb the {@code StringBuilder} to append the values to
+   * @param val0 a value
+   * @param val1 another value
+   * @param val2 another value
+   * @param val3 another value
+   * @param val4 another value
+   * @param val5 another value
+   * @param val6 another value
+   * @param val7 another value
+   * @param val8 another value
+   * @param val9 another value
+   * @param moreData more values
+   * @return the {@code StringBuilder}
+   */
+  public static StringBuilder append(
+      StringBuilder sb,
+      Object val0,
+      Object val1,
+      Object val2,
+      Object val3,
+      Object val4,
+      Object val5,
+      Object val6,
+      Object val7,
+      Object val8,
+      Object val9,
+      Object... moreData) {
+
+<span class="fc" id="L311">    Check.notNull(sb, &quot;sb&quot;)</span>
+<span class="fc" id="L312">        .ok()</span>
+<span class="fc" id="L313">        .append(val0)</span>
+<span class="fc" id="L314">        .append(val1)</span>
+<span class="fc" id="L315">        .append(val2)</span>
+<span class="fc" id="L316">        .append(val3)</span>
+<span class="fc" id="L317">        .append(val4)</span>
+<span class="fc" id="L318">        .append(val5)</span>
+<span class="fc" id="L319">        .append(val6)</span>
+<span class="fc" id="L320">        .append(val7)</span>
+<span class="fc" id="L321">        .append(val8)</span>
+<span class="fc" id="L322">        .append(val9);</span>
+<span class="fc" id="L323">    Check.notNull(moreData, &quot;val&quot;).ok(Arrays::stream).forEach(sb::append);</span>
+<span class="fc" id="L324">    return sb;</span>
+  }
+
+  /**
+   * Concatenates the specified data.
+   *
+   * @param data the data to append (must not be null)
+   * @return the concatenation of the data
+   */
+  public static String concat(Object... data) {
+<span class="fc" id="L334">    Check.notNull(data);</span>
+<span class="fc" id="L335">    StringBuilder sb = new StringBuilder(10 * data.length);</span>
+<span class="fc" id="L336">    Arrays.stream(data).forEach(sb::append);</span>
+<span class="fc" id="L337">    return sb.toString();</span>
+  }
+
+  /**
+   * Counts the number of occurrences of {@code substr} within {@code input}. Returns
+   * 0 (zero) if {@code input} is {@code null}.
+   *
+   * @param input the string to search
+   * @param substr the substring to search for (must not be {@code null} or
+   *     empty)
+   * @return the number of occurrences of {@code substr} within {@code input}
+   */
+  public static int count(Object input, String substr) {
+<span class="fc" id="L350">    return count(input, substr, false);</span>
+  }
+
+  /**
+   * Counts the number of occurrences of {@code substr} within {@code input}. Returns
+   * 0 (zero) if {@code input} is {@code null}.
+   *
+   * @param input the string to search
+   * @param substr the substring to search for (must not be {@code null} or
+   *     empty)
+   * @param ignoreCase whether to ignore case while comparing substrings
+   * @return the number of occurrences of {@code substr} within {@code input}
+   */
+  public static int count(Object input, String substr, boolean ignoreCase) {
+<span class="fc" id="L364">    return count(input, substr, ignoreCase, 0);</span>
+  }
+
+  /**
+   * Counts the number of occurrences of {@code substr} within {@code input}. Returns
+   * 0 (zero) if {@code input} is {@code null}.
+   *
+   * @param input the string to search
+   * @param substr the substring to search for (must not be {@code null} or
+   *     empty)
+   * @param ignoreCase whether to ignore case while comparing substrings
+   * @param limit the maximum number of occurrences the count. You may specify 0
+   *     (zero) for &quot;no maximum&quot;.
+   * @return the number of occurrences of {@code substr} within {@code input} (will
+   *     not exceed {@code limit})
+   */
+  public static int count(Object input,
+      String substr,
+      boolean ignoreCase,
+      int limit) {
+<span class="fc" id="L384">    Check.that(substr, &quot;substr&quot;).isNot(empty());</span>
+<span class="fc" id="L385">    Check.that(limit, &quot;limit&quot;).is(gte(), 0);</span>
+    String str;
+<span class="fc bfc" id="L387" title="All 4 branches covered.">    if (input == null || (str = input.toString()).length() &lt; substr.length()) {</span>
+<span class="fc" id="L388">      return 0;</span>
+    }
+<span class="fc bfc" id="L390" title="All 2 branches covered.">    if (substr.length() == 1) {</span>
+<span class="fc" id="L391">      return count(str, substr.charAt(0), ignoreCase, limit);</span>
+    }
+<span class="fc" id="L393">    int count = 0;</span>
+<span class="fc bfc" id="L394" title="All 2 branches covered.">    for (int i = 0; i &lt;= str.length() - substr.length(); ++i) {</span>
+<span class="fc bfc" id="L395" title="All 2 branches covered.">      if (str.regionMatches(ignoreCase, i, substr, 0, substr.length())) {</span>
+<span class="fc bfc" id="L396" title="All 2 branches covered.">        if (++count == limit) {</span>
+<span class="fc" id="L397">          break;</span>
+        }
+      }
+    }
+<span class="fc" id="L401">    return count;</span>
+  }
+
+  /**
+   * Counts the number of non-overlapping occurrences of {@code substr} within
+   * {@code input}. The string to search for must not be null or empty and is not
+   * treated as a regular expression. Returns 0 (zero) if {@code input} is
+   * {@code null}.
+   *
+   * @param input the string to search
+   * @param substr the substring to search for
+   * @return the number of non-overlapping occurrences of {@code substr} within
+   *     {@code input}
+   */
+  public static int countDiscrete(Object input, String substr) {
+<span class="fc" id="L416">    return countDiscrete(input, substr, false, 0);</span>
+  }
+
+  /**
+   * Counts the number of non-overlapping occurrences of {@code substr} within
+   * {@code input}. The string to search for must not be null or empty and is not
+   * treated as a regular expression. Returns 0 (zero) if {@code input} is
+   * {@code null}.
+   *
+   * @param input the string to search
+   * @param substr the substring to search for
+   * @param ignoreCase whether to ignore case while comparing substrings
+   * @return the number of non-overlapping occurrences of {@code substr} within
+   *     {@code input}
+   */
+  public static int countDiscrete(Object input,
+      String substr,
+      boolean ignoreCase) {
+<span class="fc" id="L434">    return countDiscrete(input, substr, ignoreCase, 0);</span>
+  }
+
+  /**
+   * Counts the number of non-overlapping occurrences of {@code substr} within
+   * {@code input}. Returns 0 (zero) if {@code input} is {@code null}.
+   *
+   * @param input the string to search
+   * @param substr the substring to search for
+   * @param ignoreCase whether to ignore case while comparing substrings
+   * @param limit the maximum number of occurrences the count. You may specify 0
+   *     (zero) for &quot;no maximum&quot;.
+   * @return the number of non-overlapping occurrences of {@code substr} within
+   *     {@code input} (will not exceed {@code limit})
+   */
+  public static int countDiscrete(Object input,
+      String substr,
+      boolean ignoreCase,
+      int limit) {
+<span class="fc" id="L453">    Check.that(substr, &quot;substr&quot;).isNot(empty());</span>
+<span class="fc" id="L454">    Check.that(limit, &quot;limit&quot;).is(gte(), 0);</span>
+    String str;
+<span class="fc bfc" id="L456" title="All 4 branches covered.">    if (input == null || (str = input.toString()).length() &lt; substr.length()) {</span>
+<span class="fc" id="L457">      return 0;</span>
+    }
+<span class="fc bfc" id="L459" title="All 2 branches covered.">    if (substr.length() == 1) {</span>
+<span class="fc" id="L460">      return count(str, substr.charAt(0), ignoreCase, limit);</span>
+    }
+<span class="fc" id="L462">    int count = 0;</span>
+<span class="fc" id="L463">    int i = 0;</span>
+    do {
+<span class="fc bfc" id="L465" title="All 2 branches covered.">      if (str.regionMatches(ignoreCase, i, substr, 0, substr.length())) {</span>
+<span class="fc bfc" id="L466" title="All 2 branches covered.">        if (++count == limit) {</span>
+<span class="fc" id="L467">          break;</span>
+        }
+<span class="fc" id="L469">        i += substr.length();</span>
+      } else {
+<span class="fc" id="L471">        i += 1;</span>
+      }
+<span class="fc bfc" id="L473" title="All 2 branches covered.">    } while (i &lt;= str.length() - substr.length());</span>
+<span class="fc" id="L474">    return count;</span>
+  }
+
+  private static int count(String str, char c, boolean ignoreCase, int limit) {
+<span class="fc" id="L478">    int count = 0;</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">    if (ignoreCase) {</span>
+<span class="fc" id="L480">      char c0 = toLowerCase(c);</span>
+<span class="fc bfc" id="L481" title="All 2 branches covered.">      for (int i = 0; i &lt; str.length(); ++i) {</span>
+<span class="pc bpc" id="L482" title="1 of 4 branches missed.">        if (toLowerCase(str.charAt(i)) == c0 &amp;&amp; ++count == limit) {</span>
+<span class="fc" id="L483">          break;</span>
+        }
+      }
+<span class="fc" id="L486">    } else {</span>
+<span class="fc bfc" id="L487" title="All 2 branches covered.">      for (int i = 0; i &lt; str.length(); ++i) {</span>
+<span class="fc bfc" id="L488" title="All 4 branches covered.">        if (str.charAt(i) == c &amp;&amp; ++count == limit) {</span>
+<span class="fc" id="L489">          break;</span>
+        }
+      }
+    }
+<span class="fc" id="L493">    return count;</span>
+  }
+
+  /**
+   * Returns {@code input.toString()} if its length does not exceed {@code maxWidth},
+   * else truncates the string and appends &quot;...&quot;, such that the new string's length
+   * does not exceed {@code maxWidth}. The lower bound for {@code maxWidth} will
+   * tacitly be clamped to 4, so that at least one letter of the string is
+   * displayed.
+   *
+   * &lt;h4&gt;Examples:&lt;/h4&gt;
+   *
+   * &lt;p&gt;
+   *
+   * &lt;pre&gt;
+   * String hello = &quot;Hello World, how are you?&quot;;
+   * assertEquals(&quot;Hello W...&quot;, ellipsis(hello, 10));
+   * assertEquals(&quot;H...&quot;, ellipsis(hello, 4));
+   * assertEquals(hello, ellipsis(hello, 100));
+   * &lt;/pre&gt;
+   *
+   * @param input the string to abbreviate, if necessary
+   * @param maxWidth the maximum width of the string (must be greater than 3)
+   * @return the string itself or an abbreviated version, suffixed with &quot;...&quot;
+   */
+  public static String ellipsis(Object input, int maxWidth) {
+<span class="fc bfc" id="L519" title="All 2 branches covered.">    if (input != null) {</span>
+<span class="fc" id="L520">      return ellipsis0(input.toString(), maxWidth);</span>
+    }
+<span class="fc" id="L522">    return EMPTY_STRING;</span>
+  }
+
+  /**
+   * Returns a short string representation of an object. Equivalent to
+   * {@link #toShortString(Object, int) toShortString(obj, 50)}.
+   *
+   * @param obj the object to stringify
+   * @return a string consisting of no more than 50 characters
+   */
+  public static String toShortString(Object obj) {
+<span class="fc" id="L533">    return toShortString(obj, 50);</span>
+  }
+
+  /**
+   * Returns a short string representation of an object. Roughly equivalent to
+   * {@link #toShortString(Object, int, int, int) toShortString(obj, maxWidth,
+   * maxWidth/8, maxWidth/16)}.
+   *
+   * @param obj the object to stringify
+   * @param maxWidth the maximum width of the returned string
+   * @return a string whose length will not exceed {@code maxWidth}
+   */
+  public static String toShortString(Object obj, int maxWidth) {
+<span class="fc" id="L546">    int maxElements = divUp(maxWidth, 8);</span>
+<span class="fc" id="L547">    int maxEntries = divUp(maxWidth, 16);</span>
+<span class="fc" id="L548">    return toShortString(obj, maxWidth, maxElements, maxEntries);</span>
+  }
+
+  /**
+   * Returns a short string representation of an object. Broadly speaking, this
+   * method behaves as follows:
+   * &lt;ul&gt;
+   *   &lt;li&gt;if {@code obj} is {@code null}, it is stringified to &quot;null&quot;.
+   *   &lt;li&gt;if {@code obj} is a {@code Class} object, it is stringified using
+   *   {@link ClassMethods#simpleClassName(Class) ClassMethods.simpleClassName}.
+   *   &lt;li&gt;if {@code obj} is a {@code Collection}, it is stringified as though by
+   *   calling {@code toString()} on the collection after all but the first
+   *   &lt;b&gt;{@code maxElements}&lt;/b&gt; elements have been removed from it. (This prevents
+   *   collections from blowing up into huge strings, only for them to be truncated
+   *   to {@code maxWidth} again. So there is both a performance aspect and a
+   *   security aspect to making the maximum number of elements user-definable.)
+   *   &lt;li&gt;if {@code obj} is an array, it is stringified as though by calling
+   *   {@link Arrays#deepToString(Object[]) Arrays.deepToString} on it after all but
+   *   the first &lt;b&gt;{@code maxElements}&lt;/b&gt; elements have been removed from it.
+   *   &lt;li&gt;if {@code obj} is a {@code Map}, it is stringified as though by calling
+   *   {@code toString()} on the collection after all but the first
+   *   &lt;b&gt;{@code maxEntries}&lt;/b&gt; entries have been removed from it.
+   *   &lt;li&gt;Otherwise {@code obj} is stringified simply by calling {@code toString}
+   *   on it.
+   * &lt;/ul&gt;
+   * &lt;p&gt;
+   * The resulting string is then truncated to &lt;b&gt;{@code maxWidth}&lt;/b&gt; as though by
+   * calling {@link #ellipsis(Object, int) ellipsis} on it.
+   * &lt;p&gt;
+   * &lt;i&gt;You &lt;b&gt;should not&lt;/b&gt; rely on the exact appearance of the returned
+   * string.&lt;/i&gt; Future implementations may produce slightly different strings for
+   * the same object. (For example, they might give special treatment to certain
+   * other types of objects.) The only stated aim of this method is to provide a
+   * &lt;i&gt;length-constrained&lt;/i&gt; string representation of an object. The exact contents
+   * of the returned string is unspecified.
+   *
+   * @param obj the object to stringify
+   * @param maxWidth the maximum width of the returned string
+   * @param maxElements the maximum number of elements to process if the argument
+   *     is an array or {@code Collection}.
+   * @param maxEntries the maximum number of entries to process if the argument
+   *     is a {@code Map}.
+   * @return a string whose length will not exceed {@code maxWidth}
+   */
+  public static String toShortString(Object obj,
+      int maxWidth,
+      int maxElements,
+      int maxEntries) {
+    // Don't use nl.naturalis.check here, as that package heavily relies on this
+    // method again.
+<span class="pc bpc" id="L598" title="3 of 6 branches missed.">    if (maxWidth &lt; 0 || maxElements &lt; 0 || maxEntries &lt; 0) {</span>
+<span class="nc" id="L599">      throw new IllegalArgumentException(</span>
+          &quot;maxWidth, maxElements and maxEntries must all be positive&quot;);
+    }
+<span class="pc bpc" id="L602" title="1 of 2 branches missed.">    if (obj == null) {</span>
+<span class="nc" id="L603">      return &quot;null&quot;;</span>
+<span class="fc bfc" id="L604" title="All 4 branches covered.">    } else if (obj.getClass() == String.class || obj instanceof Number) {</span>
+      // identify strings and numbers as quickly as possible, even though we will
+      // end up calling obj.toString() again
+<span class="fc" id="L607">      return ellipsis0(obj.toString(), maxWidth);</span>
+    }
+    String s;
+<span class="pc bpc" id="L610" title="1 of 2 branches missed.">    if (obj instanceof Class&lt;?&gt; c) {</span>
+<span class="nc" id="L611">      s = ClassMethods.simpleClassName(c);</span>
+<span class="fc bfc" id="L612" title="All 2 branches covered.">    } else if (obj instanceof Collection&lt;?&gt; c) {</span>
+<span class="fc bfc" id="L613" title="All 2 branches covered.">      String x = c.size() &gt; maxElements ? &quot;, ...]&quot; : &quot;]&quot;;</span>
+      //@formatter:off
+<span class="fc" id="L615">      s = '[' + CollectionMethods.implode(c, o -&gt; toShortString(o, maxWidth, maxElements, maxEntries), &quot;, &quot;, 0, maxElements) + x;</span>
+      //@formatter:ons
+<span class="fc bfc" id="L617" title="All 2 branches covered.">    } else if (obj instanceof Map&lt;?, ?&gt; m) {</span>
+<span class="pc bpc" id="L618" title="1 of 2 branches missed.">      String x = m.size() &gt; maxElements ? &quot;, ...}&quot; : &quot;}&quot;;</span>
+      //@formatter:off
+<span class="fc" id="L620">      s = '{' + CollectionMethods.implode(m.entrySet(), o -&gt; toShortString(o, maxWidth, maxElements, maxEntries), &quot;, &quot;, 0, maxEntries) + x;</span>
+      //@formatter:ons
+<span class="fc bfc" id="L622" title="All 2 branches covered.">    } else if (obj instanceof Map.Entry&lt;?, ?&gt; e) {</span>
+      //@formatter:off
+<span class="fc" id="L624">      s = toShortString(e.getKey(), maxWidth, maxElements, maxEntries) + '=' + toShortString(e.getValue(), maxWidth, maxElements, maxEntries);</span>
+      //@formatter:ons
+<span class="fc bfc" id="L626" title="All 2 branches covered.">    } else if (obj instanceof int[] ints) {</span>
+<span class="fc bfc" id="L627" title="All 2 branches covered.">      String x = ints.length &gt; maxElements ? &quot;, ...]&quot; : &quot;]&quot;;</span>
+      //@formatter:off
+<span class="fc" id="L629">      s = '['+ ArrayMethods.implodeInts((int[])obj, String::valueOf, &quot;, &quot;, 0, maxElements) + x;</span>
+      //@formatter:on
+<span class="pc bpc" id="L631" title="1 of 2 branches missed.">    } else if (obj instanceof Object[] objs) {</span>
+<span class="nc bnc" id="L632" title="All 2 branches missed.">      String x = objs.length &gt; maxElements ? &quot;, ...]&quot; : &quot;]&quot;;</span>
+      //@formatter:off
+<span class="nc" id="L634">      s = '[' + ArrayMethods.implode(objs, o -&gt; toShortString(o, maxWidth, maxElements, maxEntries), &quot;, &quot;, 0, maxElements) + x;</span>
+      //@formatter:on
+<span class="pc bpc" id="L636" title="1 of 2 branches missed.">    } else if (obj.getClass().isArray()) {</span>
+<span class="nc bnc" id="L637" title="All 2 branches missed.">      String x = getArrayLength(obj) &gt; maxElements ? &quot;, ...]&quot; : &quot;]&quot;;</span>
+      //@formatter:off
+<span class="nc" id="L639">      s = '[' + ArrayMethods.implodeAny(obj, String::valueOf, &quot;, &quot;, 0, maxElements) + x;</span>
+      //@formatter:on
+<span class="pc bpc" id="L641" title="1 of 2 branches missed.">    } else if (obj instanceof IntList il) {</span>
+<span class="fc" id="L642">      int y = Math.min(il.size(), maxElements + 1);</span>
+      //@formatter:off
+<span class="fc" id="L644">      return toShortString(il.toArray(0, y), maxWidth, maxElements, maxEntries);</span>
+      //@formatter:on
+    } else {
+<span class="nc" id="L647">      s = obj.toString();</span>
+    }
+<span class="fc" id="L649">    return ellipsis0(s, maxWidth);</span>
+  }
+
+  private static String ellipsis0(String str, int maxWidth) {
+<span class="fc" id="L653">    maxWidth = Math.max(4, maxWidth);</span>
+<span class="fc bfc" id="L654" title="All 2 branches covered.">    if (str.length() &gt; maxWidth) {</span>
+<span class="fc" id="L655">      return str.substring(0, maxWidth - 3) + &quot;...&quot;;</span>
+    }
+<span class="fc" id="L657">    return str;</span>
+  }
+
+  /**
+   * Determines whether {@code input} starts with any of the specified prefixes.
+   * Returns an {@code Optional} containing the first prefix found to be equal to the
+   * end of the string, or an empty {@code Optional} if the string does not end with
+   * any of the specified prefixes.
+   *
+   * @param input the string to test
+   * @param ignoreCase whether to ignore case
+   * @param prefixes the prefixes to test
+   * @return Returns an {@code Optional} containing the first prefix found to be
+   *     equal to the end of the string, or an empty {@code Optional} if the string
+   *     does not end with any of the specified prefixes.
+   */
+  public static Optional&lt;String&gt; startsWith(Object input,
+      boolean ignoreCase,
+      Collection&lt;String&gt; prefixes) {
+<span class="fc" id="L676">    Check.notNull(prefixes, &quot;prefixes&quot;);</span>
+<span class="fc" id="L677">    return startsWith(input, ignoreCase, prefixes.toArray(String[]::new));</span>
+  }
+
+  /**
+   * Determines whether {@code input} starts with any of the specified prefixes.
+   * Returns an {@code Optional} containing the first prefix found to be equal to the
+   * end of the string, or an empty {@code Optional} if the string does not end with
+   * any of the specified prefixes.
+   *
+   * @param input the string to test
+   * @param ignoreCase whether to ignore case
+   * @param prefixes the prefixes to test
+   * @return Returns an {@code Optional} containing the first prefix found to be
+   *     equal to the end of the string, or an empty {@code Optional} if the string
+   *     does not end with any of the specified prefixes.
+   */
+  public static Optional&lt;String&gt; startsWith(Object input,
+      boolean ignoreCase,
+      String... prefixes) {
+<span class="fc" id="L696">    Check.that(prefixes, &quot;prefixes&quot;).is(deepNotEmpty());</span>
+<span class="fc bfc" id="L697" title="All 2 branches covered.">    if (input == null) {</span>
+<span class="fc" id="L698">      return Optional.empty();</span>
+    }
+<span class="fc" id="L700">    return Optional.ofNullable(startsWith0(input.toString(), ignoreCase, prefixes));</span>
+  }
+
+  private static String startsWith0(String str,
+      boolean ignoreCase,
+      String[] prefixes) {
+<span class="fc bfc" id="L706" title="All 2 branches covered.">    if (!isEmpty(str)) {</span>
+<span class="fc bfc" id="L707" title="All 2 branches covered.">      for (String prefix : prefixes) {</span>
+<span class="fc bfc" id="L708" title="All 2 branches covered.">        if (str.regionMatches(ignoreCase, 0, prefix, 0, prefix.length())) {</span>
+<span class="fc" id="L709">          return prefix;</span>
+        }
+      }
+    }
+<span class="fc" id="L713">    return null;</span>
+  }
+
+  /**
+   * Determines whether {@code input} ends with any of the specified suffixes.
+   * Returns an {@code Optional} containing the first suffix found to be equal to the
+   * end of the string, or an empty {@code Optional} if the string does not end with
+   * any of the specified suffixes.
+   *
+   * @param input the string to test
+   * @param ignoreCase whether to ignore case
+   * @param suffixes the suffixes to test
+   * @return Returns an {@code Optional} containing the first suffix found to be
+   *     equal to the end of the string, or an empty {@code Optional} if the string
+   *     does not end with any of the specified suffixes.
+   */
+  public static Optional&lt;String&gt; endsWith(Object input,
+      boolean ignoreCase,
+      Collection&lt;String&gt; suffixes) {
+<span class="fc" id="L732">    Check.notNull(suffixes, &quot;suffixes&quot;);</span>
+<span class="fc" id="L733">    return endsWith(input, ignoreCase, suffixes.toArray(String[]::new));</span>
+  }
+
+  /**
+   * Determines whether {@code input} ends with any of the specified suffixes.
+   * Returns an {@code Optional} containing the first suffix found to be equal to the
+   * end of the string, or an empty {@code Optional} if the string does not end with
+   * any of the specified suffixes.
+   *
+   * @param input the string to test
+   * @param ignoreCase whether to ignore case
+   * @param suffixes the suffixes to test
+   * @return Returns an {@code Optional} containing the first suffix found to be
+   *     equal to the end of the string, or an empty {@code Optional} if the string
+   *     does not end with any of the specified suffixes.
+   */
+  public static Optional&lt;String&gt; endsWith(Object input,
+      boolean ignoreCase,
+      String... suffixes) {
+<span class="fc" id="L752">    Check.that(suffixes, &quot;suffixes&quot;).is(deepNotEmpty());</span>
+<span class="fc bfc" id="L753" title="All 2 branches covered.">    if (input == null) {</span>
+<span class="fc" id="L754">      return Optional.empty();</span>
+    }
+<span class="fc" id="L756">    return Optional.ofNullable(endsWith0(input.toString(), ignoreCase, suffixes));</span>
+  }
+
+  private static String endsWith0(String str,
+      boolean ignoreCase,
+      String[] suffixes) {
+<span class="fc bfc" id="L762" title="All 2 branches covered.">    if (!isEmpty(str)) {</span>
+<span class="fc bfc" id="L763" title="All 2 branches covered.">      for (String suffix : suffixes) {</span>
+<span class="fc" id="L764">        int len = suffix.length();</span>
+<span class="fc" id="L765">        int off = str.length() - len;</span>
+<span class="fc bfc" id="L766" title="All 2 branches covered.">        if (str.regionMatches(ignoreCase, off, suffix, 0, len)) {</span>
+<span class="fc" id="L767">          return suffix;</span>
+        }
+      }
+    }
+<span class="fc" id="L771">    return null;</span>
+  }
+
+  /**
+   * Prefixes to specified prefix to {@code input} if it did not already start with
+   * that prefix. Returns {@code prefix} if {@code input} is null,
+   *
+   * @param input the {@code String} to which to append the prefix
+   * @param prefix the prefix (must not be {@code null})
+   * @return a string that is guaranteed to start with {@code prefix}
+   */
+  public static String ensurePrefix(Object input, String prefix) {
+<span class="fc" id="L783">    Check.notNull(prefix, &quot;prefix&quot;);</span>
+<span class="fc bfc" id="L784" title="All 2 branches covered.">    if (input == null) {</span>
+<span class="fc" id="L785">      return prefix;</span>
+    }
+<span class="fc" id="L787">    String str = input.toString();</span>
+<span class="fc bfc" id="L788" title="All 2 branches covered.">    return str.startsWith(prefix) ? str : prefix + str;</span>
+  }
+
+  /**
+   * Appends to specified suffix to {@code input} if it did not already have that
+   * suffix. If {@code input} is null, {@code suffix} is returned.
+   *
+   * @param input the {@code String} to which to append the suffix
+   * @param suffix the suffix (must not be {@code null})
+   * @return a string that is guaranteed to end with {@code suffix}
+   */
+  public static String ensureSuffix(Object input, String suffix) {
+<span class="fc" id="L800">    Check.notNull(suffix, &quot;suffix&quot;);</span>
+<span class="fc bfc" id="L801" title="All 2 branches covered.">    if (input == null) {</span>
+<span class="fc" id="L802">      return suffix;</span>
+    }
+<span class="fc" id="L804">    String str = input.toString();</span>
+<span class="fc bfc" id="L805" title="All 2 branches covered.">    return str.endsWith(suffix) ? str : str + suffix;</span>
+  }
+
+  /**
+   * Whether the specified string is null or blank.
+   *
+   * @param input the string
+   * @return whether it is null or blank
+   */
+  public static boolean isBlank(Object input) {
+<span class="fc bfc" id="L815" title="All 4 branches covered.">    return input == null || input.toString().isBlank();</span>
+  }
+
+  /**
+   * Returns the 1st argument if it is not a whitespace-only string, else the 2nd
+   * argument.
+   *
+   * @param input the string to return if not null
+   * @param dfault the replacement string
+   * @see ObjectMethods#ifNull(Object, Object)
+   */
+  public static String ifBlank(Object input, String dfault) {
+<span class="fc bfc" id="L827" title="All 2 branches covered.">    return isBlank(input) ? dfault : input.toString();</span>
+  }
+
+  /**
+   * Removes all occurrences of the specified prefixes from the start of a string.
+   * The returned string will no longer start with any of the specified prefixes.
+   *
+   * @param input the string to remove the prefixes from
+   * @param prefixes the prefixes to remove
+   */
+  public static String lchop(Object input, String... prefixes) {
+<span class="fc" id="L838">    return lchop(input, false, prefixes);</span>
+  }
+
+  /**
+   * Removes all occurrences of the specified prefixes from the start of a string.
+   * The returned string will no longer start with any of the specified prefixes.
+   *
+   * @param input the string to remove the prefixes from
+   * @param ignoreCase whether to ignore case
+   * @param prefixes the prefixes to remove
+   */
+  public static String lchop(Object input,
+      boolean ignoreCase,
+      String... prefixes) {
+<span class="fc" id="L852">    Check.that(prefixes, &quot;prefixes&quot;).is(deepNotEmpty());</span>
+    String str;
+<span class="fc bfc" id="L854" title="All 4 branches covered.">    if (input == null || (str = input.toString()).isEmpty()) {</span>
+<span class="fc" id="L855">      return EMPTY_STRING;</span>
+    }
+    boolean found;
+<span class="fc" id="L858">    int offset = 0;</span>
+    do {
+<span class="fc" id="L860">      found = false;</span>
+<span class="fc bfc" id="L861" title="All 2 branches covered.">      for (String prefix : prefixes) {</span>
+<span class="fc bfc" id="L862" title="All 2 branches covered.">        if (str.regionMatches(ignoreCase, offset, prefix, 0, prefix.length())) {</span>
+<span class="fc" id="L863">          offset += prefix.length();</span>
+<span class="fc" id="L864">          found = true;</span>
+        }
+      }
+<span class="fc bfc" id="L867" title="All 2 branches covered.">    } while (found);</span>
+<span class="fc" id="L868">    return str.substring(offset);</span>
+  }
+
+  /**
+   * Removes all occurrences of the specified suffixes from the end of a string. The
+   * returned string will no longer end with any of the specified suffixes.
+   *
+   * @param input the string to manipulate
+   * @param suffixes the suffixes to chop off the right of the string
+   * @return a String that does not end with any of the specified suffixes
+   */
+  public static String rchop(Object input, String... suffixes) {
+<span class="fc" id="L880">    return rchop(input, false, suffixes);</span>
+  }
+
+  /**
+   * Removes all occurrences of the specified suffixes from the end of a string. The
+   * returned string will no longer end with any of the specified suffixes.
+   *
+   * @param input the string to manipulate
+   * @param ignoreCase whether to ignore case while chopping off suffixes
+   * @param suffixes a String that does not end with any of the specified
+   *     suffixes
+   */
+  public static String rchop(Object input,
+      boolean ignoreCase,
+      String... suffixes) {
+<span class="fc" id="L895">    Check.that(suffixes, &quot;suffixes&quot;).is(deepNotEmpty());</span>
+    String str;
+<span class="fc bfc" id="L897" title="All 4 branches covered.">    if (input == null || (str = input.toString()).isEmpty()) {</span>
+<span class="fc" id="L898">      return EMPTY_STRING;</span>
+    }
+    boolean found;
+<span class="fc" id="L901">    int offset = str.length();</span>
+    do {
+<span class="fc" id="L903">      found = false;</span>
+<span class="fc bfc" id="L904" title="All 2 branches covered.">      for (String suffix : suffixes) {</span>
+<span class="fc" id="L905">        int sl = suffix.length();</span>
+<span class="fc bfc" id="L906" title="All 2 branches covered.">        if (str.regionMatches(ignoreCase, offset - sl, suffix, 0, sl)) {</span>
+<span class="fc" id="L907">          offset -= sl;</span>
+<span class="fc" id="L908">          found = true;</span>
+        }
+      }
+<span class="fc bfc" id="L911" title="All 2 branches covered.">    } while (found);</span>
+<span class="fc" id="L912">    return str.substring(0, offset);</span>
+  }
+
+  /**
+   * Ensures that the first character of the specified string is not a lowercase
+   * character.
+   *
+   * @param input the string
+   * @return the same string except that the first character is not a lowercase
+   *     character
+   */
+  public static String firstToUpper(Object input) {
+    String s;
+<span class="fc bfc" id="L925" title="All 4 branches covered.">    if (input == null || (s = input.toString()).isEmpty()) {</span>
+<span class="fc" id="L926">      return EMPTY_STRING;</span>
+    }
+<span class="fc bfc" id="L928" title="All 2 branches covered.">    if (Character.isLowerCase(s.charAt(0))) {</span>
+<span class="fc" id="L929">      return Character.toUpperCase(s.charAt(0)) + s.substring(1);</span>
+    }
+<span class="fc" id="L931">    return s;</span>
+  }
+
+  /**
+   * Ensures that the first character of the specified string is not an uppercase
+   * character.
+   *
+   * @param input the string
+   * @return the same string except that the first character is not an uppercase
+   *     character
+   */
+  public static String firstToLower(Object input) {
+    String s;
+<span class="fc bfc" id="L944" title="All 4 branches covered.">    if (input == null || (s = input.toString()).isEmpty()) {</span>
+<span class="fc" id="L945">      return EMPTY_STRING;</span>
+    }
+<span class="fc bfc" id="L947" title="All 2 branches covered.">    if (Character.isUpperCase(s.charAt(0))) {</span>
+<span class="fc" id="L948">      return Character.toLowerCase(s.charAt(0)) + s.substring(1);</span>
+    }
+<span class="fc" id="L950">    return s;</span>
+  }
+
+  /**
+   * Left-pads a string to the specified width using the space character (' ').
+   *
+   * @param input an object whose {@code toString()} method produces the string
+   *     to be padded. Null is treated as the empty string.
+   * @param width the total length of the padded string. If the string itself is
+   *     wider than the specified width, the string is returned without padding.
+   * @return the left-padded string
+   */
+  public static String lpad(Object input, int width) {
+<span class="fc" id="L963">    return lpad(input, width, ' ', EMPTY_STRING);</span>
+  }
+
+  /**
+   * Left-pads a string to the specified width using the specified padding
+   * character.
+   *
+   * @param input an object whose {@code toString()} method produces the string
+   *     to be padded. Null is treated as the empty string.
+   * @param width the total length of the padded string. If the string itself is
+   *     wider than the specified width, the string is returned without padding.
+   * @param padChar the character used to left-pad the string
+   * @return the left-padded string
+   */
+  public static String lpad(Object input, int width, char padChar) {
+<span class="fc" id="L978">    return lpad(input, width, padChar, EMPTY_STRING);</span>
+  }
+
+  /**
+   * Left-pads a string to the specified width using the specified padding character
+   * and then appends the specified terminator.
+   *
+   * @param input an object whose {@code toString()} method produces the string
+   *     to be padded. Null is treated as the empty string.
+   * @param width the total length of the padded string. If the string itself is
+   *     wider than the specified width, the string is returned without padding.
+   * @param padChar the character used to left-pad the string
+   * @param delimiter a delimiter to append to the padded string. Specify null or
+   *     an empty string to indicate that no delimiter should be appended.
+   * @return the left-padded string
+   * @throws IllegalArgumentException If {@code terminator} is null
+   */
+  public static String lpad(Object input,
+      int width,
+      char padChar,
+      String delimiter) {
+<span class="fc" id="L999">    Check.that(width, &quot;width&quot;).is(gte(), 0);</span>
+<span class="fc bfc" id="L1000" title="All 2 branches covered.">    String s = input == null ? EMPTY_STRING : input.toString();</span>
+<span class="fc" id="L1001">    String d = ifNull(delimiter, EMPTY_STRING);</span>
+<span class="fc bfc" id="L1002" title="All 2 branches covered.">    if (s.length() &gt;= width) {</span>
+<span class="fc" id="L1003">      return s + d;</span>
+    }
+<span class="fc" id="L1005">    return new StringBuilder(width + d.length())</span>
+<span class="fc" id="L1006">        .append(String.valueOf(padChar).repeat(width - s.length()))</span>
+<span class="fc" id="L1007">        .append(s)</span>
+<span class="fc" id="L1008">        .append(d)</span>
+<span class="fc" id="L1009">        .toString();</span>
+  }
+
+  /**
+   * Centers (left- and right-pads) a string within the specified width using the
+   * space character.
+   *
+   * @param input an object whose {@code toString()} method produces the string
+   *     to be padded. Null is treated as the empty string.
+   * @param width the total length of the padded string. If the string itself is
+   *     wider than the specified width, the string is printed without padding.
+   * @return the left- and right-padded string plus the terminator
+   */
+  public static String pad(Object input, int width) {
+<span class="fc" id="L1023">    return pad(input, width, ' ', null);</span>
+  }
+
+  /**
+   * Centers (left- and right-pads) a string within the specified width using the
+   * specified padding character.
+   *
+   * @param input an object whose {@code toString()} method produces the string
+   *     to be padded. Null is treated as the empty string.
+   * @param width the total length of the padded string. If the string itself is
+   *     wider than the specified width, the string is printed without padding.
+   * @param padChar the character used to left- and right-pad the string.
+   * @return the left- and right-padded string plus the terminator
+   */
+  public static String pad(Object input, int width, char padChar) {
+<span class="fc" id="L1038">    return pad(input, width, padChar, null);</span>
+  }
+
+  /**
+   * Centers (left- and right-pads) a string within the specified width using the
+   * specified padding character and then appends the specified delimiter.
+   *
+   * @param input an object whose {@code toString()} method produces the string
+   *     to be padded. Null is treated as the empty string.
+   * @param width the total length of the padded string. If the string itself is
+   *     wider than the specified width, the string is printed without padding.
+   * @param padChar the character used to left- and right-pad the string.
+   * @param delimiter a delimiter to append to the padded string. Specify null or
+   *     an empty string to indicate that no delimiter should be appended.
+   * @return the left- and right-padded string plus the terminator
+   */
+  public static String pad(Object input,
+      int width,
+      char padChar,
+      String delimiter) {
+<span class="fc" id="L1058">    Check.that(width, &quot;width&quot;).is(gte(), 0);</span>
+<span class="fc bfc" id="L1059" title="All 2 branches covered.">    String s = input == null ? EMPTY_STRING : input.toString();</span>
+<span class="fc" id="L1060">    String d = ifNull(delimiter, EMPTY_STRING);</span>
+<span class="fc bfc" id="L1061" title="All 2 branches covered.">    if (s.length() &gt;= width) {</span>
+<span class="fc" id="L1062">      return s + d;</span>
+    }
+<span class="fc" id="L1064">    StringBuilder sb = new StringBuilder(width + d.length());</span>
+<span class="fc" id="L1065">    int left = (width - s.length()) / 2;</span>
+<span class="fc" id="L1066">    int right = width - left - s.length();</span>
+<span class="fc" id="L1067">    sb.append(String.valueOf(padChar).repeat(left));</span>
+<span class="fc" id="L1068">    sb.append(s);</span>
+<span class="fc" id="L1069">    sb.append(String.valueOf(padChar).repeat(Math.max(0, right)));</span>
+<span class="fc" id="L1070">    sb.append(d);</span>
+<span class="fc" id="L1071">    return sb.toString();</span>
+  }
+
+  /**
+   * Right-pads a string to the specified width using the space character (' ').
+   *
+   * @param input an object whose {@code toString()} method produces the string
+   *     to be padded. Null is treated as the empty string.
+   * @param width the total length of the padded string. If the string itself is
+   *     wider than the specified width, the string is returned without padding.
+   * @return the right-padded string
+   */
+  public static String rpad(Object input, int width) {
+<span class="fc" id="L1084">    return rpad(input, width, ' ', EMPTY_STRING);</span>
+  }
+
+  /**
+   * Right-pads a string to the specified width using the specified padding
+   * character.
+   *
+   * @param input an object whose {@code toString()} method produces the string
+   *     to be padded. Null is treated as the empty string.
+   * @param width the total length of the padded string. If the string itself is
+   *     wider than the specified width, the string is returned without padding.
+   * @param padChar the character used to left-pad the string.
+   * @return the right-padded string
+   */
+  public static String rpad(Object input, int width, char padChar) {
+<span class="fc" id="L1099">    return rpad(input, width, padChar, EMPTY_STRING);</span>
+  }
+
+  /**
+   * Right-pads a string to the specified width using the specified padding character
+   * and appends the specified suffix.
+   *
+   * @param input an object whose {@code toString()} method produces the string
+   *     to be padded. Null is treated as the empty string.
+   * @param width the total length of the padded string. If the string itself is
+   *     wider than the specified width, the string is printed without padding.
+   * @param padChar the character used to right-pad the string.
+   * @param suffix A suffix to append to the padded string.
+   * @return the right-padded string
+   */
+  public static String rpad(Object input, int width, char padChar, String suffix) {
+<span class="fc" id="L1115">    Check.that(width, &quot;width&quot;).is(gte(), 0);</span>
+<span class="fc" id="L1116">    Check.notNull(suffix, &quot;delimiter&quot;);</span>
+<span class="fc bfc" id="L1117" title="All 2 branches covered.">    String str = input == null ? EMPTY_STRING : input.toString();</span>
+<span class="fc bfc" id="L1118" title="All 2 branches covered.">    if (str.length() &gt;= width) {</span>
+<span class="fc" id="L1119">      return str + suffix;</span>
+    }
+<span class="fc" id="L1121">    StringBuilder sb = new StringBuilder(width + suffix.length());</span>
+<span class="fc" id="L1122">    String padding = String.valueOf(padChar);</span>
+<span class="fc" id="L1123">    return append(sb, str, padding.repeat(width - str.length()), suffix).toString();</span>
+  }
+
+  /**
+   * Left-trims all characters contained in {@code chars} from the specified string.
+   * The resulting string will not start with any of the characters contained in
+   * {@code chars}.
+   *
+   * @param input the {@code String} to trim
+   * @param chars the character to trim off the {@code String}
+   * @return the left-trimmed {@code String} or the input string if it did not start
+   *     with any of the specified characters
+   */
+  public static String ltrim(Object input, String chars) {
+<span class="fc" id="L1137">    Check.that(chars, &quot;chars&quot;).isNot(empty());</span>
+<span class="fc bfc" id="L1138" title="All 2 branches covered.">    if (input == null) {</span>
+<span class="fc" id="L1139">      return EMPTY_STRING;</span>
+    }
+<span class="fc" id="L1141">    String str = input.toString();</span>
+<span class="fc" id="L1142">    int i = 0;</span>
+    LOOP:
+<span class="fc bfc" id="L1144" title="All 2 branches covered.">    for (; i &lt; str.length(); ++i) {</span>
+<span class="fc bfc" id="L1145" title="All 2 branches covered.">      for (int j = 0; j &lt; chars.length(); ++j) {</span>
+<span class="fc bfc" id="L1146" title="All 2 branches covered.">        if (str.charAt(i) == chars.charAt(j)) {</span>
+<span class="fc" id="L1147">          continue LOOP;</span>
+        }
+      }
+<span class="fc" id="L1150">      break;</span>
+    }
+<span class="fc bfc" id="L1152" title="All 2 branches covered.">    return i == 0 ? str : str.substring(i);</span>
+  }
+
+  /**
+   * Right-trims all characters contained in {@code chars} from the specified string.
+   * The resulting string will not end with any of the characters contained in
+   * {@code chars}.
+   *
+   * @param input the {@code String} to trim
+   * @param chars the character to trim off the {@code String} (must not be
+   *     {@code null} or empty)
+   * @return the right-trimmed {@code String} or the input string if it did not end
+   *     with any of the specified characters
+   */
+  public static String rtrim(Object input, String chars) {
+<span class="fc" id="L1167">    Check.that(chars, &quot;chars&quot;).isNot(empty());</span>
+<span class="fc bfc" id="L1168" title="All 2 branches covered.">    if (input == null) {</span>
+<span class="fc" id="L1169">      return EMPTY_STRING;</span>
+    }
+<span class="fc" id="L1171">    String str = input.toString();</span>
+<span class="fc" id="L1172">    int i = str.length() - 1;</span>
+    LOOP:
+<span class="fc bfc" id="L1174" title="All 2 branches covered.">    for (; i &gt;= 0; --i) {</span>
+<span class="fc bfc" id="L1175" title="All 2 branches covered.">      for (int j = 0; j &lt; chars.length(); ++j) {</span>
+<span class="fc bfc" id="L1176" title="All 2 branches covered.">        if (str.charAt(i) == chars.charAt(j)) {</span>
+<span class="fc" id="L1177">          continue LOOP;</span>
+        }
+      }
+<span class="fc" id="L1180">      break;</span>
+    }
+<span class="fc bfc" id="L1182" title="All 2 branches covered.">    return i == str.length() - 1 ? str : str.substring(0, i + 1);</span>
+  }
+
+  /**
+   * Left and right-trims the specified string. The resulting string will neither
+   * start nor end with any of the specified characters.
+   *
+   * @param input the {@code String} to trim
+   * @param chars the character to trim off the {@code String} (must not be
+   *     {@code null} or empty)
+   * @return the trimmed {@code String}.
+   */
+  public static String trim(Object input, String chars) {
+<span class="fc" id="L1195">    return rtrim(ltrim(input, chars), chars);</span>
+  }
+
+  /**
+   * Substring method that facilitates substring retrieval relative to the end of a
+   * string. If {@code from} is negative, it is taken relative to the end of the
+   * string ({@code -1} being equivalent to {@code str.length()-1}).
+   *
+   * @param str the {@code String} to extract a substring from
+   * @param from the start index within {@code string} (may be negative)
+   * @return the substring
+   */
+  public static String substr(String str, int from) {
+<span class="fc" id="L1208">    Check.notNull(str, Param.STR);</span>
+<span class="fc" id="L1209">    int sz = str.length();</span>
+<span class="fc bfc" id="L1210" title="All 2 branches covered.">    if (from &lt; 0) {</span>
+<span class="fc" id="L1211">      from = sz + from;</span>
+    }
+<span class="fc" id="L1213">    Check.that(from, Param.FROM_INDEX).is(gte(), 0).is(lte(), sz);</span>
+<span class="fc" id="L1214">    return str.substring(from);</span>
+  }
+
+  /**
+   * Substring method that facilitates substring retrieval relative to the end of a
+   * string as well as substring retrieval in the opposite direction. If {@code from}
+   * is negative, it is taken relative to the end of the string ({@code -1} being
+   * equivalent to {@code str.length()-1}). If {@code length} is negative, the
+   * substring is taken in the opposite direction. The character at {@code from} will
+   * then be the &lt;i&gt;last&lt;/i&gt; character of the substring.
+   *
+   * @param str the {@code String} to extract a substring from. &lt;i&gt;Must not be
+   *     null.&lt;/i&gt;
+   * @param from the start index within {@code string} (may be negative)
+   * @param length the desired length of the substring
+   * @return the substring
+   * @see CollectionMethods#sublist(List, int, int)
+   */
+  public static String substr(String str, int from, int length) {
+<span class="fc" id="L1233">    Check.notNull(str, Param.STR);</span>
+<span class="fc" id="L1234">    int sz = str.length();</span>
+    int start;
+<span class="fc bfc" id="L1236" title="All 2 branches covered.">    if (from &lt; 0) {</span>
+<span class="fc" id="L1237">      start = from + sz;</span>
+<span class="fc" id="L1238">      Check.that(start, Param.FROM_INDEX).is(gte(), 0);</span>
+    } else {
+<span class="fc" id="L1240">      start = from;</span>
+<span class="fc" id="L1241">      Check.that(start, Param.FROM_INDEX).is(lte(), sz);</span>
+    }
+    int end;
+<span class="fc bfc" id="L1244" title="All 2 branches covered.">    if (length &gt;= 0) {</span>
+<span class="fc" id="L1245">      end = start + length;</span>
+    } else {
+<span class="fc" id="L1247">      end = start + 1;</span>
+<span class="fc" id="L1248">      start = end + length;</span>
+<span class="fc" id="L1249">      Check.that(start, Param.FROM_INDEX).is(gte(), 0);</span>
+    }
+<span class="fc" id="L1251">    Check.that(end, Param.TO_INDEX).is(lte(), sz);</span>
+<span class="fc" id="L1252">    return str.substring(start, end);</span>
+  }
+
+  /**
+   * Returns the index of the nth occurrence of the specified substring within
+   * {@code input}. To find the first occurrence of the specified substring, specify
+   * 1 for {@code occurrence}; to find the second occurrence, specify 2, etc. If
+   * {@code input} is {@code null}, or if there is no nth occurrence of the specified
+   * substring, the return value will be -1. You can specify a negative occurrence to
+   * search backwards from the end of the string. Specify -1 for the last occurrence
+   * of the specified substring; -2 for the last-but-one occurrence, etc.
+   *
+   * @param input the string to search
+   * @param substr the substring to search for (must not be null or empty)
+   * @param occurrence the occurrence number of the substring (1 means: get index
+   *     of 1st occurrence; -1 means: get index of last occurrence)
+   * @return the index of the nth occurrence of the specified substring
+   */
+  public static int indexOf(Object input, String substr, int occurrence) {
+<span class="fc" id="L1271">    Check.that(substr, &quot;substr&quot;).isNot(empty());</span>
+<span class="fc" id="L1272">    Check.that(occurrence, &quot;occurrence&quot;).is(ne(), 0);</span>
+    String str;
+<span class="fc bfc" id="L1274" title="All 4 branches covered.">    if (input == null || (str = input.toString()).length() &lt; substr.length()) {</span>
+<span class="fc" id="L1275">      return -1;</span>
+    }
+<span class="fc bfc" id="L1277" title="All 2 branches covered.">    if (substr.length() == 1) {</span>
+<span class="fc bfc" id="L1278" title="All 2 branches covered.">      return occurrence &gt; 0</span>
+<span class="fc" id="L1279">          ? charPosIndexOf(str, substr.charAt(0), occurrence)</span>
+<span class="fc" id="L1280">          : charNegIndexOf(str, substr.charAt(0), occurrence);</span>
+    }
+<span class="fc bfc" id="L1282" title="All 2 branches covered.">    return occurrence &gt; 0</span>
+<span class="fc" id="L1283">        ? strPosIndexOf(str, substr, occurrence)</span>
+<span class="fc" id="L1284">        : strNegIndexOf(str, substr, occurrence);</span>
+  }
+
+  private static int charPosIndexOf(String str, char c, int occurrence) {
+<span class="fc bfc" id="L1288" title="All 2 branches covered.">    for (int i = 0; i &lt; str.length(); ++i) {</span>
+<span class="fc bfc" id="L1289" title="All 4 branches covered.">      if (str.charAt(i) == c &amp;&amp; --occurrence == 0) {</span>
+<span class="fc" id="L1290">        return i;</span>
+      }
+    }
+<span class="fc" id="L1293">    return -1;</span>
+  }
+
+  private static int charNegIndexOf(String str, char c, int occurrence) {
+<span class="fc bfc" id="L1297" title="All 2 branches covered.">    for (int i = str.length() - 1; i &gt;= 0; --i) {</span>
+<span class="fc bfc" id="L1298" title="All 4 branches covered.">      if (str.charAt(i) == c &amp;&amp; ++occurrence == 0) {</span>
+<span class="fc" id="L1299">        return i;</span>
+      }
+    }
+<span class="fc" id="L1302">    return -1;</span>
+  }
+
+  private static int strPosIndexOf(String str, String substr, int occurrence) {
+<span class="fc bfc" id="L1306" title="All 2 branches covered.">    for (int i = 0; i &lt;= str.length() - substr.length(); ++i) {</span>
+<span class="fc bfc" id="L1307" title="All 4 branches covered.">      if (str.regionMatches(i, substr, 0, substr.length()) &amp;&amp; --occurrence == 0) {</span>
+<span class="fc" id="L1308">        return i;</span>
+      }
+    }
+<span class="fc" id="L1311">    return -1;</span>
+  }
+
+  private static int strNegIndexOf(String str, String substr, int occurrence) {
+<span class="fc bfc" id="L1315" title="All 2 branches covered.">    for (int i = str.length() - substr.length(); i &gt;= 0; --i) {</span>
+<span class="fc bfc" id="L1316" title="All 4 branches covered.">      if (str.regionMatches(i, substr, 0, substr.length()) &amp;&amp; ++occurrence == 0) {</span>
+<span class="fc" id="L1317">        return i;</span>
+      }
+    }
+<span class="fc" id="L1320">    return -1;</span>
+  }
+
+  /**
+   * Returns the substring up to, but not including the nth occurrence of the
+   * specified substring, or the entire string if there is no nth occurrence of the
+   * substring. Returns an empty string if {@code input} is {@code null}. Specify 1
+   * to find the first occurrence of the substring; 2 to find the second occurrence,
+   * etc.  Specify -1 to find the first occurrence; -2 to find the last-but-one
+   * occurrence, etc.
+   *
+   * @param input the string to search
+   * @param substr the substring to search for
+   * @param occurrence the occurrence number of the substring. Specify 1 for
+   *     first occurrence; 2 for second occurrence, etc. Specify -1 for last
+   *     occurrence, -2 for last-but-one occurrence, etc.
+   * @return a substring up to (not including) the nth occurrence of the specified
+   *     substring
+   */
+  public static String substringBefore(Object input, String substr, int occurrence) {
+<span class="fc" id="L1340">    int idx = indexOf(input, substr, occurrence);</span>
+<span class="fc bfc" id="L1341" title="All 2 branches covered.">    if (idx == -1) {</span>
+<span class="fc bfc" id="L1342" title="All 2 branches covered.">      return input == null ? EMPTY_STRING : input.toString();</span>
+    }
+<span class="fc" id="L1344">    return input.toString().substring(0, idx);</span>
+  }
+
+  /**
+   * Returns the substring up to, and including the nth occurrence of the specified
+   * substring, or the entire string if there is no nth occurrence of the substring.
+   * Returns an empty string if {@code input} is {@code null}. Specify 1 to find the
+   * first occurrence of the substring; 2 to find the second occurrence, etc. Specify
+   * -1 to find the first occurrence; -2 to find the last-but-one occurrence, etc.
+   *
+   * @param input the string to search
+   * @param substr the substring to search for
+   * @param occurrence the occurrence number of the substring. Specify 1 for
+   *     first occurrence; 2 for second occurrence, etc. Specify -1 for last
+   *     occurrence, -2 for last-but-one occurrence, etc.
+   * @return a substring up to, and including the nth occurrence of the specified
+   *     substring
+   */
+  public static String substringOnTo(Object input, String substr, int occurrence) {
+<span class="fc" id="L1363">    int idx = indexOf(input, substr, occurrence);</span>
+<span class="fc bfc" id="L1364" title="All 2 branches covered.">    if (idx == -1) {</span>
+<span class="fc bfc" id="L1365" title="All 2 branches covered.">      return input == null ? EMPTY_STRING : input.toString();</span>
+    }
+<span class="fc bfc" id="L1367" title="All 2 branches covered.">    if (input.getClass() == String.class) {</span>
+<span class="fc" id="L1368">      String s = input.toString();</span>
+<span class="fc bfc" id="L1369" title="All 2 branches covered.">      return idx + substr.length() == s.length()</span>
+<span class="fc" id="L1370">          ? new String(s)</span>
+<span class="fc" id="L1371">          : s.substring(0, idx + substr.length());</span>
+    }
+<span class="fc" id="L1373">    return input.toString().substring(0, idx + substr.length());</span>
+  }
+
+  /**
+   * Returns the substring from (and including) the nth occurrence of the specified
+   * substring, or the entire string if there is no nth occurrence of the substring.
+   * Returns an empty string if {@code input} is {@code null}. Specify 1 to find the
+   * first occurrence of the substring; 2 to find the second occurrence, etc. Specify
+   * -1 to find the first occurrence; -2 to find the last-but-one occurrence, etc.
+   *
+   * @param input the string to search
+   * @param substr the substring to search for
+   * @param occurrence the occurrence number of the substring. Specify 1 for
+   *     first occurrence; 2 for second occurrence, etc. Specify -1 for last
+   *     occurrence, -2 for last-but-one occurrence, etc.
+   * @return a substring from (inclusive) the nth occurrence of the specified
+   *     substring
+   */
+  public static String substrFrom(Object input, String substr, int occurrence) {
+<span class="fc" id="L1392">    int idx = indexOf(input, substr, occurrence);</span>
+<span class="fc bfc" id="L1393" title="All 2 branches covered.">    if (idx == -1) {</span>
+<span class="fc bfc" id="L1394" title="All 2 branches covered.">      return input == null ? EMPTY_STRING : input.toString();</span>
+    }
+<span class="fc bfc" id="L1396" title="All 2 branches covered.">    if (input.getClass() == String.class) {</span>
+<span class="fc" id="L1397">      String s = input.toString();</span>
+<span class="fc bfc" id="L1398" title="All 2 branches covered.">      return idx == 0 ? new String(s) : s.substring(idx);</span>
+    }
+<span class="fc" id="L1400">    return input.toString().substring(idx);</span>
+  }
+
+  /**
+   * Returns the substring after the nth occurrence of the specified substring, or
+   * the entire string if there is no nth occurrence of the substring. Returns an
+   * empty string if {@code input} is {@code null}. Specify 1 to find the first
+   * occurrence of the substring; 2 to find the second occurrence, etc. Specify -1 to
+   * find the first occurrence; -2 to find the last-but-one occurrence, etc.
+   *
+   * @param input the string to search
+   * @param substr the substring to search for
+   * @param occurrence the occurrence number of the substring. Specify 1 for
+   *     first occurrence; 2 for second occurrence, etc. Specify -1 for last
+   *     occurrence, -2 for last-but-one occurrence, etc.
+   * @return a substring after (not including) the nth occurrence of the specified
+   *     substring
+   */
+  public static String substrAfter(Object input, String substr, int occurrence) {
+<span class="fc" id="L1419">    int idx = indexOf(input, substr, occurrence);</span>
+<span class="fc bfc" id="L1420" title="All 2 branches covered.">    if (idx == -1) {</span>
+<span class="fc bfc" id="L1421" title="All 2 branches covered.">      return input == null ? EMPTY_STRING : input.toString();</span>
+    }
+<span class="fc" id="L1423">    return input.toString().substring(idx + substr.length());</span>
+  }
+
+  /**
+   * Returns the line number and column number of the character at the specified
+   * index, given the system-defined line separator.
+   *
+   * @param str the string to search
+   * @param index the string index to determine the line and column number of
+   * @return a two-element array containing the line number and column number of the
+   *     character at the specified index
+   */
+  public static int[] getLineAndColumn(String str, int index) {
+<span class="nc" id="L1436">    return getLineAndColumn(str, index, System.lineSeparator());</span>
+  }
+
+  /**
+   * Returns the line number and column number of the character at the specified
+   * index, given the specified line separator.
+   *
+   * @param str the string to search
+   * @param index the string index to determine the line and column number of
+   * @param lineSep the line separator
+   * @return a two-element array containing the line number and column number of the
+   *     character at the specified index
+   */
+  public static int[] getLineAndColumn(String str, int index, String lineSep) {
+<span class="fc" id="L1450">    Check.that(str, Param.STR).is(notNull())</span>
+<span class="fc" id="L1451">        .and(index).is(indexInclusiveOf(), str, indexOutOfBounds(index))</span>
+<span class="fc" id="L1452">        .and(lineSep, &quot;lineSep&quot;).isNot(empty());</span>
+<span class="fc bfc" id="L1453" title="All 2 branches covered.">    if (index == 0) {</span>
+<span class="fc" id="L1454">      return new int[] {0, 0};</span>
+    }
+<span class="fc" id="L1456">    int line = 0, pos = 0, i = str.indexOf(lineSep);</span>
+<span class="fc bfc" id="L1457" title="All 4 branches covered.">    while (i != -1 &amp;&amp; i &lt; index) {</span>
+<span class="fc" id="L1458">      ++line;</span>
+<span class="fc" id="L1459">      pos = i + lineSep.length();</span>
+<span class="fc" id="L1460">      i = str.indexOf(lineSep, i + lineSep.length());</span>
+    }
+<span class="fc" id="L1462">    return new int[] {line, index - pos};</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

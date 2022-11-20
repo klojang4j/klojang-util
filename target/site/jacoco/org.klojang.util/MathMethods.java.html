@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MathMethods.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Check</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util</a> &gt; <span class="el_source">MathMethods.java</span></div><h1>MathMethods.java</h1><pre class="source lang-java linenums">package org.klojang.util;
+
+import java.lang.reflect.Array;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.UnaryOperator;
+
+import org.klojang.check.Check;
+
+import static org.klojang.check.CommonChecks.*;
+import static org.klojang.util.x.Param.ARRAY;
+
+/**
+ * Math-related methods. Quite a few methods in this class are about laying out a
+ * one-dimensional array of values across one or more stack with a certain number of
+ * rows and columns. However, for &quot;grid&quot; one might just as well read &quot;matrix&quot;, or
+ * &quot;table&quot;, or &quot;grid&quot;, or &quot;HTML table&quot;, or &quot;HTML grid&quot; - whatever makes sense given
+ * the context in which you use the methods.
+ *
+ * @author Ayco Holleman
+ */
+public final class MathMethods {
+
+  private static final String ITEM_INDEX = &quot;item index&quot;;
+  private static final String ITEM_COUNT = &quot;item count&quot;;
+  private static final String ROW_COUNT = &quot;row count&quot;;
+  private static final String ROWS = &quot;rows&quot;;
+  private static final String COLS = &quot;cols&quot;;
+
+  //@formatter:off
+<span class="fc" id="L34">  private static final Map&lt;Class&lt;?&gt;, UnaryOperator&lt;? extends Number&gt;&gt; absFunctions = Map.of(</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">      Integer.class,        n -&gt; n.intValue() &gt;= 0 ? n : Integer.valueOf(-n.intValue()),</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">      AtomicInteger.class,  n -&gt; n.intValue() &gt;= 0 ? n : new AtomicInteger(-n.intValue()),</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">      Double.class,         n -&gt; n.doubleValue() &gt;= 0 ? n : Double.valueOf(-n.doubleValue()),</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">      Long.class,           n -&gt; n.longValue() &gt;= 0 ? n : Long.valueOf(-n.longValue()),</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">      AtomicLong.class,     n -&gt; n.longValue() &gt;= 0 ? n : new AtomicLong(-n.longValue()),</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">      Float.class,          n -&gt; n.floatValue() &gt;= 0 ? n : Float.valueOf(-n.floatValue()),</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">      Short.class,          n -&gt; n.shortValue() &gt;= 0 ? n : Short.valueOf((short) -n.shortValue()),</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">      Byte.class,           n -&gt; n.byteValue() &gt;= 0 ? n : Byte.valueOf((byte) -n.byteValue()),</span>
+<span class="fc" id="L43">      BigInteger.class,     n -&gt; ((BigInteger) n).abs(),</span>
+<span class="fc" id="L44">      BigDecimal.class,     n -&gt; ((BigDecimal) n).abs());</span>
+  //@formatter:on
+
+<span class="nc" id="L47">  private MathMethods() {</span>
+<span class="nc" id="L48">    throw new UnsupportedOperationException();</span>
+  }
+
+  /**
+   * Returns the absolute value of an arbitrary type of {@linkplain Number}. Besides
+   * the primitive number wrappers, this method supports {@link BigInteger},
+   * {@link BigDecimal}, {@link AtomicInteger} and {@link AtomicLong}. An
+   * {@link IllegalArgumentException} is thrown if the argument is any other type of
+   * {@code Number}.
+   *
+   * @param &lt;T&gt; the type of the {@code Number}
+   * @param number the number
+   * @return the argument if it is a non-negative {@code Number}, else a
+   *     {@code Number} representing the absolute value of the argument.
+   */
+  @SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
+  public static &lt;T extends Number&gt; T abs(T number) {
+<span class="fc" id="L65">    Check.notNull(number);</span>
+<span class="fc" id="L66">    UnaryOperator op = absFunctions.get(number.getClass());</span>
+<span class="fc" id="L67">    Check.that(op).is(notNull(), &quot;Unsupported number type: ${type}&quot;);</span>
+<span class="fc" id="L68">    return (T) op.apply(number);</span>
+  }
+
+  /**
+   * Converts to arguments to {@code double}, then divides the first argument by the
+   * second, and then applies {@link Math#ceil(double) Math.ceil}. Since this is a
+   * very low-level operation, no argument-checking is performed.
+   *
+   * @param value The integer to divide
+   * @param divideBy The integer to divide it by
+   * @return the result of the division, rounded to the next integer
+   */
+  public static int divUp(int value, int divideBy) {
+<span class="fc" id="L81">    return (int) Math.ceil((double) value / (double) divideBy);</span>
+  }
+
+  /**
+   * Equivalent to {@code value / dividedBy}. Usable a method reference. Since this
+   * is a very low-level operation, no argument-checking is performed.
+   *
+   * @param value The integer to divide
+   * @param divideBy The integer to divide it by
+   * @return the result of the division, rounded to the preceding integer
+   */
+  public static int divDown(int value, int divideBy) {
+<span class="fc" id="L93">    return value / divideBy;</span>
+  }
+
+  /**
+   * Divides the specified value by the specified denominator, rounding up if the
+   * remainder is exactly {@code 0.5} (given double-precision calculation). Since
+   * this is a very low-level operation, no argument-checking is performed.
+   *
+   * @param value The integer to divide
+   * @param divideBy The integer to divide it by
+   * @return the result of the division, rounded up if the remainder is exactly
+   *     {@code 0.5}
+   */
+  public static int divHalfUp(int value, int divideBy) {
+<span class="fc" id="L107">    return (int) Math.floor(0.5D + (double) value / (double) divideBy);</span>
+  }
+
+  /**
+   * Divides the specified value by the specified denominator, rounding down if the
+   * remainder is exactly {@code 0.5} (given double-precision calculation). Since
+   * this is a very low-level operation, no argument-checking is performed.
+   *
+   * @param value The integer to divide
+   * @param divideBy The integer to divide it by
+   * @return the result of the division, rounded down if the remainder is exactly
+   *     {@code 0.5}
+   */
+  public static int divHalfDown(int value, int divideBy) {
+<span class="fc" id="L121">    return (int) Math.ceil(-0.5D + (double) value / (double) divideBy);</span>
+  }
+
+  /**
+   * Returns the number of {@code rows x cols} stack needed to contain the specified
+   * number of items.
+   *
+   * @param itemCount The total number of items
+   * @param rows the number of rows per grid (or table, or matrix, or grid)
+   * @param cols the number of columns per grid (or table, or matrix, or grid)
+   * @return the number of stack needed to contain the specified number of items
+   */
+  public static int getGridCount(int itemCount, int rows, int cols) {
+<span class="fc" id="L134">    Check.that(itemCount, ITEM_COUNT).isNot(negative())</span>
+<span class="fc" id="L135">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L136">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L137">    return divUp(itemCount, rows * cols);</span>
+  }
+
+  /**
+   * Returns the number of grids needed to contain the specified number of rows.
+   *
+   * @param rowCount the total number of rows
+   * @param rows The number of rows per grid
+   * @return the number of stack needed to contain the specified number of rows
+   */
+  public static int getGridCount(int rowCount, int rows) {
+<span class="fc" id="L148">    Check.that(rowCount, ROW_COUNT).isNot(negative()).and(rows, ROWS).is(positive());</span>
+<span class="fc" id="L149">    return divUp(rowCount, rows);</span>
+  }
+
+  /**
+   * Returns the array index of the last grid within an array of stack containing the
+   * specified number rows. So basically {@link #getGridCount(int, int) getGridCount}
+   * minus one.
+   *
+   * @param rowCount the total number of rows
+   * @param rows The number of rows per grid
+   * @return the index of the last grid within an array of stack
+   */
+  public static int indexOfLastGrid(int rowCount, int rows) {
+<span class="fc" id="L162">    Check.that(rowCount, ROW_COUNT).isNot(negative()).and(rows, ROWS).is(positive());</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">    return rowCount == 0 ? 0 : (rowCount - 1) / rows;</span>
+  }
+
+  /**
+   * Returns the number of &lt;i&gt;populated&lt;/i&gt; rows in the last grid (with the very last
+   * row possibly only partly populated).
+   *
+   * @param rowCount the total number of rows
+   * @param rows the number of rows per grid
+   * @return the number of (partly) populated rows on the last grid
+   */
+  public static int countRowsOnLastGrid(int rowCount, int rows) {
+<span class="fc" id="L175">    Check.that(rowCount, ROW_COUNT).isNot(negative()).and(rows, ROWS).is(positive());</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">    if (rowCount != 0) {</span>
+      int x;
+<span class="fc bfc" id="L178" title="All 2 branches covered.">      return (x = rowCount % rows) == 0 ? rows : x;</span>
+    }
+<span class="fc" id="L180">    return 0;</span>
+  }
+
+  /**
+   * Returns the number of trailing, empty rows in the last grid.
+   *
+   * @param rowCount the total number of rows
+   * @param rows the number of rows per grid
+   * @return the number of trailing, empty rows in the last grid
+   */
+  public static int countEmptyRowsOnLastGrid(int rowCount, int rows) {
+<span class="fc" id="L191">    Check.that(rowCount, ROW_COUNT).isNot(negative()).and(rows, ROWS).is(positive());</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">    if (rowCount != 0) {</span>
+      int x;
+<span class="fc bfc" id="L194" title="All 2 branches covered.">      return (x = rowCount % rows) == 0 ? 0 : rows - x;</span>
+    }
+<span class="fc" id="L196">    return 0;</span>
+  }
+
+  /**
+   * Returns the array index of the grid within an array of stack that will contain
+   * the item with the specified index in a one-dimensional array. In other words,
+   * this method maps an index in a one-dimensional array ({@code T[x]}) to an index
+   * in the first component of a three-dimensional array ({@code T[y][][]}.
+   *
+   * @param itemIndex the array index of the item
+   * @param rows the number of rows per grid (or table, or matrix, or grid)
+   * @param cols the number of columns per grid (or table, or matrix, or grid)
+   * @return the index of the
+   */
+  public static int getGrid(int itemIndex, int rows, int cols) {
+<span class="fc" id="L211">    Check.that(itemIndex, ITEM_INDEX).isNot(negative())</span>
+<span class="fc" id="L212">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L213">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L214">    return itemIndex / (rows * cols);</span>
+  }
+
+  /**
+   * Returns the row index of an item, relative to the grid that it finds itself on.
+   * In other words, this method maps an index in a one-dimensional array
+   * ({@code T[x]}) to an index in the second component of a three-dimensional array
+   * ({@code T[][y][]}.
+   *
+   * @param itemIndex the array index of the item
+   * @param rows the number of rows per grid
+   * @param cols the number of columns per grid
+   * @return the row index of an item
+   */
+  public static int getRow(int itemIndex, int rows, int cols) {
+<span class="fc" id="L229">    Check.that(itemIndex, ITEM_INDEX).isNot(negative())</span>
+<span class="fc" id="L230">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L231">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L232">    return (itemIndex / cols) % rows;</span>
+  }
+
+  /**
+   * Returns the column index of an item with the specified array index, given the
+   * specified number of columns per grid. In other words, this method maps an index
+   * in a one-dimensional array ({@code T[x]}) to an index in the third component of
+   * a three-dimensional array ({@code T[][][y]}.
+   *
+   * @param itemIndex the array index of the item
+   * @param cols the number of columns per grid
+   * @return the column index of an item with the specified array index
+   */
+  public static int getColumn(int itemIndex, int cols) {
+<span class="fc" id="L246">    Check.that(itemIndex, ITEM_INDEX).isNot(negative())</span>
+<span class="fc" id="L247">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L248">    return itemIndex % cols;</span>
+  }
+
+  /**
+   * Returns the row index of an item in a column-major layout. That is: the items
+   * are laid out in columns (top-to-bottom first, left-to-right second).
+   *
+   * @param itemIndex the array index of the item
+   * @param rows the number of rows per grid
+   * @return the row index of an item in a column-major layout
+   */
+  public static int getRowCM(int itemIndex, int rows) {
+<span class="fc" id="L260">    Check.that(itemIndex, ITEM_INDEX).isNot(negative())</span>
+<span class="fc" id="L261">        .and(rows, ROWS).is(positive());</span>
+<span class="fc" id="L262">    return itemIndex % rows;</span>
+  }
+
+  /**
+   * Returns the column index of an item in a column-major layout.
+   *
+   * @param itemIndex the array index of the item
+   * @param rows the number of rows per grid
+   * @param cols the number of columns per grid
+   * @return the column number of an item in a column-major layout
+   */
+  public static int getColumnCM(int itemIndex, int rows, int cols) {
+<span class="fc" id="L274">    Check.that(itemIndex, ITEM_INDEX).isNot(negative())</span>
+<span class="fc" id="L275">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L276">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L277">    return (itemIndex / rows) % cols;</span>
+  }
+
+  /**
+   * Returns grid, row, and column index of an item with the specified array index.
+   *
+   * @param itemIndex the array index of the item
+   * @param rows the number of rows per grid
+   * @param cols the number of columns per grid
+   * @return the grid, row, and column index of an item with the specified array
+   *     index
+   */
+  public static int[] getGridRowColumn(int itemIndex, int rows, int cols) {
+<span class="fc" id="L290">    Check.that(itemIndex, ITEM_INDEX).isNot(negative())</span>
+<span class="fc" id="L291">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L292">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L293">    return new int[] {itemIndex / (rows * cols),</span>
+        (itemIndex / cols) % rows,
+        itemIndex % cols};
+  }
+
+  /**
+   * Returns the grid, row, and column index of an item in a column-major layout.
+   *
+   * @param itemIndex the array index of the item
+   * @param rows the number of rows per grid
+   * @param cols the number of columns per grid
+   * @return the grid, row, and column number of an item in a column-major layout
+   */
+  public static int[] getGridRowColumnCM(int itemIndex, int rows, int cols) {
+<span class="fc" id="L307">    Check.that(itemIndex, ITEM_INDEX).isNot(negative())</span>
+<span class="fc" id="L308">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L309">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L310">    return new int[] {itemIndex / (rows * cols),</span>
+        itemIndex % rows,
+        (itemIndex / rows) % cols};
+  }
+
+  /**
+   * Converts a one-dimensional array of values into zero or more grids of
+   * {@code rows x cols} cells. Empty cells in the last grid will be padded with
+   * zeros.
+   *
+   * @param values The values to rasterize
+   * @param rows the number of rows per grid
+   * @param cols the number of columns per grid
+   * @return Zero or more grids containing the values in the array, laid out in rows
+   *     containing {@code cols} cells
+   */
+  public static int[][][] toGrid(int[] values, int rows, int cols) {
+<span class="fc" id="L327">    Check.that(values, ARRAY).is(notNull())</span>
+<span class="fc" id="L328">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L329">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L330">    int cellsPerGrid = rows * cols;</span>
+<span class="fc" id="L331">    int grids = getGridCount(values.length, rows, cols);</span>
+<span class="fc" id="L332">    int[][][] stack = new int[grids][rows][cols];</span>
+    MAIN_LOOP:
+<span class="fc bfc" id="L334" title="All 2 branches covered.">    for (int grid = 0; grid &lt; grids; ++grid) {</span>
+<span class="fc" id="L335">      int gridOffset = grid * cellsPerGrid;</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">      for (int row = 0; row &lt; rows; ++row) {</span>
+<span class="fc" id="L337">        int rowOffset = gridOffset + row * cols;</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">        for (int col = 0; col &lt; cols; ++col) {</span>
+<span class="fc" id="L339">          int idx = rowOffset + col;</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">          if (idx &gt;= values.length) {</span>
+<span class="fc" id="L341">            break MAIN_LOOP;</span>
+          }
+<span class="fc" id="L343">          stack[grid][row][col] = values[idx];</span>
+        }
+      }
+    }
+<span class="fc" id="L347">    return stack;</span>
+  }
+
+  /**
+   * Converts a one-dimensional array of values into zero or more grids of
+   * {@code rows x cols} cells.
+   *
+   * @param values The values to rasterize
+   * @param rows the number of rows per grid
+   * @param cols the number of columns per grid
+   * @param padValue The value to pad the empty cells in the last grid with
+   * @return Zero or more grids containing the values in the array, laid out in rows
+   *     containing {@code cols} cells
+   */
+  public static int[][][] toGrid(int[] values, int rows, int cols, int padValue) {
+<span class="fc" id="L362">    Check.that(values, ARRAY).is(notNull())</span>
+<span class="fc" id="L363">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L364">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L365">    int cellsPerGrid = rows * cols;</span>
+<span class="fc" id="L366">    int grids = getGridCount(values.length, rows, cols);</span>
+<span class="fc" id="L367">    int[][][] stack = new int[grids][rows][cols];</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">    for (int grid = 0; grid &lt; grids; ++grid) {</span>
+<span class="fc" id="L369">      int gridOffset = grid * cellsPerGrid;</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">      for (int row = 0; row &lt; rows; ++row) {</span>
+<span class="fc" id="L371">        int rowOffset = gridOffset + row * cols;</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">        for (int col = 0; col &lt; cols; ++col) {</span>
+<span class="fc" id="L373">          int idx = rowOffset + col;</span>
+<span class="fc bfc" id="L374" title="All 2 branches covered.">          if (idx &lt; values.length) {</span>
+<span class="fc" id="L375">            stack[grid][row][col] = values[idx];</span>
+          } else {
+<span class="fc" id="L377">            stack[grid][row][col] = padValue;</span>
+          }
+        }
+      }
+    }
+<span class="fc" id="L382">    return stack;</span>
+  }
+
+  /**
+   * Converts a one-dimensional array of values into zero or more grids of
+   * {@code rows x cols} cells. Empty cells in the last grid will be padded with
+   * {@code null} values.
+   *
+   * @param values The values to rasterize
+   * @param rows the number of rows per grid
+   * @param cols the number of columns per grid
+   * @param &lt;T&gt; The type of the values to be rasterized
+   * @return Zero or more grids containing the values in the array, laid out in rows
+   *     containing {@code cols} cells
+   */
+  public static &lt;T&gt; T[][][] toGrid(T[] values, int rows, int cols) {
+<span class="fc" id="L398">    Check.that(values, ARRAY).is(notNull())</span>
+<span class="fc" id="L399">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L400">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L401">    int cellsPerGrid = rows * cols;</span>
+<span class="fc" id="L402">    int grids = getGridCount(values.length, rows, cols);</span>
+<span class="fc" id="L403">    T[][][] stack = createEmptyGrids(values, grids, rows, cols);</span>
+    MAIN_LOOP:
+<span class="fc bfc" id="L405" title="All 2 branches covered.">    for (int grid = 0; grid &lt; grids; ++grid) {</span>
+<span class="fc" id="L406">      int gridOffset = grid * cellsPerGrid;</span>
+<span class="fc bfc" id="L407" title="All 2 branches covered.">      for (int row = 0; row &lt; rows; ++row) {</span>
+<span class="fc" id="L408">        int rowOffset = gridOffset + row * cols;</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">        for (int col = 0; col &lt; cols; ++col) {</span>
+<span class="fc" id="L410">          int idx = rowOffset + col;</span>
+<span class="fc bfc" id="L411" title="All 2 branches covered.">          if (idx &gt;= values.length) {</span>
+<span class="fc" id="L412">            break MAIN_LOOP;</span>
+          }
+<span class="fc" id="L414">          stack[grid][row][col] = values[idx];</span>
+        }
+      }
+    }
+<span class="fc" id="L418">    return stack;</span>
+  }
+
+  /**
+   * Converts a one-dimensional array of values into zero or more grids of
+   * {@code rows x cols} cells.
+   *
+   * @param values The values to rasterize
+   * @param rows the number of rows per grid
+   * @param cols the number of columns per grid
+   * @param padValue The value to pad the empty cells in the last grid with
+   * @param &lt;T&gt; The type of the values to be rasterized
+   * @return Zero or more grids containing the values in the array, laid out in rows
+   *     containing {@code cols} cells
+   */
+  public static &lt;T&gt; T[][][] toGrid(T[] values, int rows, int cols, T padValue) {
+<span class="fc" id="L434">    Check.that(values, ARRAY).is(notNull())</span>
+<span class="fc" id="L435">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L436">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L437">    int cellsPerGrid = rows * cols;</span>
+<span class="fc" id="L438">    int grids = getGridCount(values.length, rows, cols);</span>
+<span class="fc" id="L439">    T[][][] stack = createEmptyGrids(values, grids, rows, cols);</span>
+<span class="fc bfc" id="L440" title="All 2 branches covered.">    for (int grid = 0; grid &lt; grids; ++grid) {</span>
+<span class="fc" id="L441">      int gridOffset = grid * cellsPerGrid;</span>
+<span class="fc bfc" id="L442" title="All 2 branches covered.">      for (int row = 0; row &lt; rows; ++row) {</span>
+<span class="fc" id="L443">        int rowOffset = gridOffset + row * cols;</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">        for (int col = 0; col &lt; cols; ++col) {</span>
+<span class="fc" id="L445">          int idx = rowOffset + col;</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">          if (idx &lt; values.length) {</span>
+<span class="fc" id="L447">            stack[grid][row][col] = values[idx];</span>
+          } else {
+<span class="fc" id="L449">            stack[grid][row][col] = padValue;</span>
+          }
+        }
+      }
+    }
+<span class="fc" id="L454">    return stack;</span>
+  }
+
+  /**
+   * Converts a one-dimensional array of values into zero or more grids of
+   * {@code rows x cols} cells. Empty cells in the last grid will be padded with
+   * zeros. The values are laid out in column-major fashion.
+   *
+   * @param values The values to rasterize
+   * @param rows the number of rows per grid
+   * @param cols the number of columns per grid
+   * @return Zero or more grids containing the values in the array, laid out in
+   *     columns containing {@code cols} cells
+   */
+  public static int[][][] toGridCM(int[] values, int rows, int cols) {
+<span class="fc" id="L469">    Check.that(values, ARRAY).is(notNull())</span>
+<span class="fc" id="L470">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L471">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L472">    int cellsPerGrid = rows * cols;</span>
+<span class="fc" id="L473">    int grids = getGridCount(values.length, rows, cols);</span>
+<span class="fc" id="L474">    int[][][] stack = new int[grids][rows][cols];</span>
+    MAIN_LOOP:
+<span class="fc bfc" id="L476" title="All 2 branches covered.">    for (int grid = 0; grid &lt; grids; ++grid) {</span>
+<span class="fc" id="L477">      int gridOffset = grid * cellsPerGrid;</span>
+<span class="fc bfc" id="L478" title="All 2 branches covered.">      for (int col = 0; col &lt; cols; ++col) {</span>
+<span class="fc" id="L479">        int columnOffset = gridOffset + col * rows;</span>
+<span class="fc bfc" id="L480" title="All 2 branches covered.">        for (int row = 0; row &lt; rows; ++row) {</span>
+<span class="fc" id="L481">          int idx = columnOffset + row;</span>
+<span class="fc bfc" id="L482" title="All 2 branches covered.">          if (idx &gt;= values.length) {</span>
+<span class="fc" id="L483">            break MAIN_LOOP;</span>
+          }
+<span class="fc" id="L485">          stack[grid][row][col] = values[idx];</span>
+        }
+      }
+    }
+<span class="fc" id="L489">    return stack;</span>
+  }
+
+  /**
+   * Converts a one-dimensional array of values into zero or more grids of
+   * {@code rows x cols} cells. The values are laid out in column-major fashion.
+   *
+   * @param values The values to rasterize
+   * @param rows the number of rows per grid
+   * @param cols the number of columns per grid
+   * @param padValue The value to pad the empty cells in the last grid with
+   * @return Zero or more grids containing the values in the array, laid out in
+   *     columns containing {@code cols} cells
+   */
+  public static int[][][] toGridCM(int[] values, int rows, int cols, int padValue) {
+<span class="fc" id="L504">    Check.that(values, ARRAY).is(notNull())</span>
+<span class="fc" id="L505">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L506">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L507">    int cellsPerGrid = rows * cols;</span>
+<span class="fc" id="L508">    int grids = getGridCount(values.length, rows, cols);</span>
+<span class="fc" id="L509">    int[][][] stack = new int[grids][rows][cols];</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">    for (int grid = 0; grid &lt; grids; ++grid) {</span>
+<span class="fc" id="L511">      int gridOffset = grid * cellsPerGrid;</span>
+<span class="fc bfc" id="L512" title="All 2 branches covered.">      for (int col = 0; col &lt; cols; ++col) {</span>
+<span class="fc" id="L513">        int columnOffset = gridOffset + col * rows;</span>
+<span class="fc bfc" id="L514" title="All 2 branches covered.">        for (int row = 0; row &lt; rows; ++row) {</span>
+<span class="fc" id="L515">          int idx = columnOffset + row;</span>
+<span class="fc bfc" id="L516" title="All 2 branches covered.">          if (idx &lt; values.length) {</span>
+<span class="fc" id="L517">            stack[grid][row][col] = values[idx];</span>
+          } else {
+<span class="fc" id="L519">            stack[grid][row][col] = padValue;</span>
+          }
+        }
+      }
+    }
+<span class="fc" id="L524">    return stack;</span>
+  }
+
+  /**
+   * Converts a one-dimensional array of values into zero or more grids of
+   * {@code rows x cols} cells. Empty cells in the last grid will be padded with
+   * {@code null} values. The values are laid out in column-major fashion.
+   *
+   * @param values The values to rasterize
+   * @param rows the number of rows per raster (or table, or matrix)
+   * @param cols the number of columns per raster (or table, or matrix)
+   * @param &lt;T&gt; The type of the values to be rasterized
+   * @return Zero or more grids containing the values in the array, laid out in
+   *     columns containing {@code cols} cells
+   */
+  public static &lt;T&gt; T[][][] toGridCM(T[] values, int rows, int cols) {
+<span class="fc" id="L540">    Check.that(values, ARRAY).is(notNull())</span>
+<span class="fc" id="L541">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L542">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L543">    int cellsPerGrid = rows * cols;</span>
+<span class="fc" id="L544">    int grids = getGridCount(values.length, rows, cols);</span>
+<span class="fc" id="L545">    T[][][] stack = createEmptyGrids(values, grids, rows, cols);</span>
+    MAIN_LOOP:
+<span class="fc bfc" id="L547" title="All 2 branches covered.">    for (int grid = 0; grid &lt; grids; ++grid) {</span>
+<span class="fc" id="L548">      int gridOffset = grid * cellsPerGrid;</span>
+<span class="fc bfc" id="L549" title="All 2 branches covered.">      for (int col = 0; col &lt; cols; ++col) {</span>
+<span class="fc" id="L550">        int columnOffset = gridOffset + col * rows;</span>
+<span class="fc bfc" id="L551" title="All 2 branches covered.">        for (int row = 0; row &lt; rows; ++row) {</span>
+<span class="fc" id="L552">          int idx = columnOffset + row;</span>
+<span class="fc bfc" id="L553" title="All 2 branches covered.">          if (idx &gt;= values.length) {</span>
+<span class="fc" id="L554">            break MAIN_LOOP;</span>
+          }
+<span class="fc" id="L556">          stack[grid][row][col] = values[idx];</span>
+        }
+      }
+    }
+<span class="fc" id="L560">    return stack;</span>
+  }
+
+  /**
+   * Converts a one-dimensional array of values into zero or more grids of
+   * {@code rows x cols} cells. The values are laid out in column-major fashion.
+   *
+   * @param values The values to rasterize
+   * @param rows the number of rows per grid
+   * @param cols the number of columns per grid
+   * @param padValue The value to pad the empty cells in the last grid with
+   * @param &lt;T&gt; The type of the values to be rasterized
+   * @return Zero or more grids containing the values in the array, laid out in
+   *     columns containing {@code cols} cells
+   */
+  public static &lt;T&gt; T[][][] toGridCM(T[] values, int rows, int cols, T padValue) {
+<span class="fc" id="L576">    Check.that(values, ARRAY).is(notNull())</span>
+<span class="fc" id="L577">        .and(rows, ROWS).is(positive())</span>
+<span class="fc" id="L578">        .and(cols, COLS).is(positive());</span>
+<span class="fc" id="L579">    int cellsPerGrid = rows * cols;</span>
+<span class="fc" id="L580">    int grids = getGridCount(values.length, rows, cols);</span>
+<span class="fc" id="L581">    T[][][] stack = createEmptyGrids(values, grids, rows, cols);</span>
+<span class="fc bfc" id="L582" title="All 2 branches covered.">    for (int grid = 0; grid &lt; grids; ++grid) {</span>
+<span class="fc" id="L583">      int gridOffset = grid * cellsPerGrid;</span>
+<span class="fc bfc" id="L584" title="All 2 branches covered.">      for (int col = 0; col &lt; cols; ++col) {</span>
+<span class="fc" id="L585">        int columnOffset = gridOffset + col * rows;</span>
+<span class="fc bfc" id="L586" title="All 2 branches covered.">        for (int row = 0; row &lt; rows; ++row) {</span>
+<span class="fc" id="L587">          int idx = columnOffset + row;</span>
+<span class="fc bfc" id="L588" title="All 2 branches covered.">          if (idx &lt; values.length) {</span>
+<span class="fc" id="L589">            stack[grid][row][col] = values[idx];</span>
+          } else {
+<span class="fc" id="L591">            stack[grid][row][col] = padValue;</span>
+          }
+        }
+      }
+    }
+<span class="fc" id="L596">    return stack;</span>
+  }
+
+  @SuppressWarnings({&quot;unchecked&quot;})
+  private static &lt;T&gt; T[][][] createEmptyGrids(T[] values,
+      int grids,
+      int rows,
+      int cols) {
+<span class="fc" id="L604">    return (T[][][]) Array.newInstance(values.getClass()</span>
+<span class="fc" id="L605">        .getComponentType(), grids, rows, cols);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

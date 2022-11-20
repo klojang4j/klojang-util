@@ -1,0 +1,870 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NumberMethods.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Check</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util</a> &gt; <span class="el_source">NumberMethods.java</span></div><h1>NumberMethods.java</h1><pre class="source lang-java linenums">package org.klojang.util;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
+
+import org.klojang.check.Check;
+import org.klojang.util.ClassMethods;
+import org.klojang.util.MathMethods;
+import org.klojang.util.NumberMethods;
+import org.klojang.util.ToBigDecimalConversion;
+import org.klojang.util.ToBigIntegerConversion;
+import org.klojang.util.ToByteConversion;
+import org.klojang.util.ToDoubleConversion;
+import org.klojang.util.ToFloatConversion;
+import org.klojang.util.ToIntConversion;
+import org.klojang.util.ToLongConversion;
+import org.klojang.util.ToShortConversion;
+import org.klojang.util.TypeConversionException;
+import org.klojang.util.x.Param;
+
+import static java.math.BigDecimal.ONE;
+import static org.klojang.util.ClassMethods.*;
+import static org.klojang.util.ObjectMethods.isEmpty;
+import static org.klojang.util.ToFloatConversion.BIG_MAX_FLOAT;
+import static org.klojang.util.ToFloatConversion.BIG_MIN_FLOAT;
+import static org.klojang.util.TypeConversionException.inputTypeNotSupported;
+
+/**
+ * Methods for parsing, inspecting and converting {@code Number} instances.
+ *
+ * &lt;p&gt;NB For mathematical operations, see {@link MathMethods}.
+ *
+ * @author Ayco Holleman
+ */
+public final class NumberMethods {
+
+  /**
+   * {@code Double.MIN_VALUE} converted to a {@code BigDecimal}.
+   */
+<span class="fc" id="L46">  public static final BigDecimal MIN_DOUBLE_BD =</span>
+<span class="fc" id="L47">      new BigDecimal(Double.toString(Double.MIN_VALUE));</span>
+
+  /**
+   * {@code Double.MAX_VALUE} converted to a {@code BigDecimal}.
+   */
+<span class="fc" id="L52">  public static final BigDecimal MAX_DOUBLE_BD =</span>
+<span class="fc" id="L53">      new BigDecimal(Double.toString(Double.MAX_VALUE));</span>
+
+  /**
+   * {@code Long.MIN_VALUE} converted to a {@code BigDecimal}.
+   */
+<span class="fc" id="L58">  public static final BigDecimal MIN_LONG_BD =</span>
+      new BigDecimal(Long.MIN_VALUE);
+
+  /**
+   * {@code Long.MAX_VALUE} converted to a {@code BigDecimal}.
+   */
+<span class="fc" id="L64">  public static final BigDecimal MAX_LONG_BD =</span>
+      new BigDecimal(Long.MAX_VALUE);
+
+  /**
+   * {@code Long.MIN_VALUE} converted to a {@code BigInteger}.
+   */
+<span class="fc" id="L70">  public static final BigInteger MIN_LONG_BI =</span>
+<span class="fc" id="L71">      BigInteger.valueOf(Long.MIN_VALUE);</span>
+
+  /**
+   * {@code Long.MAX_VALUE} converted to a {@code BigInteger}.
+   */
+<span class="fc" id="L76">  public static final BigInteger MAX_LONG_BI =</span>
+<span class="fc" id="L77">      BigInteger.valueOf(Long.MAX_VALUE);</span>
+
+<span class="fc" id="L79">  static Predicate&lt;Number&gt; yes() {return n -&gt; true;}</span>
+
+  private static final Map&lt;Class&lt;? extends Number&gt;, Function&lt;Number, BigDecimal&gt;&gt;
+<span class="fc" id="L82">      toBigDecimal =</span>
+<span class="fc" id="L83">      Map.of(</span>
+<span class="fc" id="L84">          BigDecimal.class, BigDecimal.class::cast,</span>
+<span class="fc" id="L85">          BigInteger.class, x -&gt; new BigDecimal((BigInteger) x),</span>
+<span class="fc" id="L86">          Double.class, x -&gt; new BigDecimal(Double.toString((double) x)),</span>
+<span class="fc" id="L87">          Float.class, x -&gt; new BigDecimal(Float.toString((float) x)),</span>
+<span class="fc" id="L88">          Long.class, x -&gt; new BigDecimal((Long) x),</span>
+<span class="fc" id="L89">          AtomicLong.class, x -&gt; new BigDecimal(((AtomicLong) x).get()),</span>
+<span class="fc" id="L90">          Integer.class, x -&gt; new BigDecimal((Integer) x),</span>
+<span class="fc" id="L91">          AtomicInteger.class, x -&gt; new BigDecimal(((AtomicInteger) x).get()),</span>
+<span class="fc" id="L92">          Short.class, x -&gt; new BigDecimal((Short) x),</span>
+<span class="fc" id="L93">          Byte.class, x -&gt; new BigDecimal((Byte) x)</span>
+      );
+
+<span class="fc" id="L96">  private static final Map&lt;Class&lt;?&gt;, Function&lt;String, Number&gt;&gt; parsers = Map.of(</span>
+      BigDecimal.class, NumberMethods::parseBigDecimal,
+      BigInteger.class, NumberMethods::parseBigInteger,
+      Double.class, NumberMethods::parseDouble,
+      Float.class, NumberMethods::parseFloat,
+      Long.class, NumberMethods::parseLong,
+<span class="fc" id="L102">      AtomicLong.class, s -&gt; new AtomicLong(parseLong(s)),</span>
+      Integer.class, NumberMethods::parseInt,
+<span class="fc" id="L104">      AtomicInteger.class, s -&gt; new AtomicInteger(parseInt(s)),</span>
+      Short.class, NumberMethods::parseShort,
+      Byte.class, NumberMethods::parseByte);
+
+<span class="fc" id="L108">  private static final Map&lt;Class&lt;?&gt;, Predicate&lt;String&gt;&gt; stringFitsInto = Map.of(</span>
+      BigDecimal.class, NumberMethods::isBigDecimal,
+      BigInteger.class, NumberMethods::isBigInteger,
+      Double.class, NumberMethods::isDouble,
+      Float.class, NumberMethods::isFloat,
+      Long.class, NumberMethods::isLong,
+      AtomicLong.class, NumberMethods::isLong,
+      Integer.class, NumberMethods::isInt,
+      AtomicInteger.class, NumberMethods::isInt,
+      Short.class, NumberMethods::isShort,
+      Byte.class, NumberMethods::isByte);
+
+<span class="fc" id="L120">  private static final Map&lt;Class&lt;?&gt;, Predicate&lt;Number&gt;&gt; numberFitsInto = Map.of(</span>
+      BigDecimal.class, ToBigDecimalConversion::isLossless,
+      BigInteger.class, ToBigIntegerConversion::isLossless,
+      Double.class, ToDoubleConversion::isLossless,
+      Float.class, ToFloatConversion::isLossless,
+      Long.class, ToLongConversion::isLossless,
+      AtomicLong.class, ToLongConversion::isLossless,
+      Integer.class, ToIntConversion::isLossless,
+      AtomicInteger.class, ToIntConversion::isLossless,
+      Short.class, ToShortConversion::isLossless,
+      Byte.class, ToByteConversion::isLossless);
+
+<span class="fc" id="L132">  private static final Map&lt;Class&lt;?&gt;, UnaryOperator&lt;Number&gt;&gt; converters = Map.of(</span>
+      BigDecimal.class, ToBigDecimalConversion::exec,
+      BigInteger.class, ToBigIntegerConversion::exec,
+      Double.class, ToDoubleConversion::exec,
+      Float.class, ToFloatConversion::exec,
+      Long.class, ToLongConversion::exec,
+      AtomicLong.class, ToLongConversion::exec,
+      Integer.class, ToIntConversion::exec,
+      AtomicInteger.class, ToIntConversion::exec,
+      Short.class, ToShortConversion::exec,
+      Byte.class, ToByteConversion::exec);
+
+<span class="fc" id="L144">  private static final Set&lt;Class&lt;? extends Number&gt;&gt; wrappers = Set.of(Byte.class,</span>
+      Short.class,
+      Integer.class,
+      Long.class,
+      Float.class,
+      Double.class);
+
+<span class="fc" id="L151">  private static final Set&lt;Class&lt;? extends Number&gt;&gt; integrals = Set.of(Byte.class,</span>
+      Short.class,
+      Integer.class,
+      AtomicInteger.class,
+      Long.class,
+      AtomicLong.class,
+      BigInteger.class);
+
+<span class="fc" id="L159">  private static final Set&lt;Class&lt;? extends Number&gt;&gt; supported = Set.of(Byte.class,</span>
+      Short.class,
+      Integer.class,
+      AtomicInteger.class,
+      Long.class,
+      AtomicLong.class,
+      Float.class,
+      Double.class,
+      BigInteger.class,
+      BigDecimal.class);
+
+<span class="nc" id="L170">  private NumberMethods() {</span>
+<span class="nc" id="L171">    throw new UnsupportedOperationException();</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified class is one of the standard primitive
+   * number wrappers: {@code Byte}, {@code Short}, {@code Integer}, {@code Long},
+   * {@code Float}, {@code Double}.
+   *
+   * @param numberType the class to test
+   * @return whether the class is a primitive number wrapper
+   * @see ClassMethods#isPrimitiveNumber(Class)
+   */
+  public static boolean isWrapper(Class&lt;?&gt; numberType) {
+<span class="fc" id="L184">    Check.notNull(numberType);</span>
+<span class="fc" id="L185">    return wrappers.contains(numberType);</span>
+  }
+
+  /**
+   * Returns {@code true} if  the specified number belongs to one of the primitive
+   * number wrappers.
+   *
+   * @param number the number to test
+   * @return whether the specified number belongs to one of the primitive number
+   *     wrappers
+   * @see #isWrapper(Class)
+   */
+  public static boolean isWrapper(Number number) {
+<span class="fc" id="L198">    Check.notNull(number);</span>
+<span class="fc" id="L199">    return wrappers.contains(number.getClass());</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified class is one of {@code Byte},
+   * {@code Short}, {@code Integer}, {@code Long}, {@code BigInteger}.
+   *
+   * @param type the class to test
+   * @return whether the class is an integral number type
+   */
+  public static boolean isIntegral(Class&lt;?&gt; type) {
+<span class="fc" id="L210">    return Check.notNull(type).ok(integrals::contains);</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified number is an integral number.
+   *
+   * @param number the number to test
+   * @return whether the specified number is an integral number
+   * @see #isIntegral(Class)
+   */
+  public static boolean isIntegral(Number number) {
+<span class="fc" id="L221">    Check.notNull(number);</span>
+<span class="fc" id="L222">    return integrals.contains(number.getClass());</span>
+  }
+
+  /**
+   * Parses the specified string into a {@code int}. If the string does not represent
+   * a number, or if it cannot be parsed into an {@code int} without loss of
+   * information, a {@link TypeConversionException} is thrown.
+   *
+   * @param s the string to be parsed
+   * @return the {@code int} value represented by the string
+   */
+  public static int parseInt(String s) throws TypeConversionException {
+<span class="fc" id="L234">    return (int) parseIntegral(s, int.class, Integer.MIN_VALUE, Integer.MAX_VALUE);</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified string can be parsed into an {@code int}
+   * without loss of information. The argument is allowed to be {@code null}, in
+   * which case the return value will be {@code false}.
+   *
+   * @param s the string to be parsed
+   * @return whether the specified string can be parsed into an {@code int} without
+   *     causing integer overflow
+   */
+  public static boolean isInt(String s) {
+<span class="fc" id="L247">    return isIntegral(s, Integer.MIN_VALUE, Integer.MAX_VALUE);</span>
+  }
+
+  /**
+   * Returns an empty {@code OptionalInt} if the specified string cannot be parsed
+   * into a 32-bit integer, else an {@code OptionalInt} containing the {@code int}
+   * value parsed out of the string.
+   *
+   * @param s the string to be parsed
+   * @return an {@code OptionalInt} containing the {@code int} value parsed out of
+   *     the string
+   */
+  public static OptionalInt toInt(String s) {
+<span class="fc" id="L260">    return toIntegral(s, Integer.MIN_VALUE, Integer.MAX_VALUE);</span>
+  }
+
+  /**
+   * Parses the specified string into a {@code long}. If the string does not
+   * represent a number, or if it cannot be parsed into a {@code long} without loss
+   * of information, a {@link TypeConversionException} is thrown.
+   *
+   * @param s the string to be parsed
+   * @return the {@code long} value represented by the string
+   */
+  public static long parseLong(String s) throws TypeConversionException {
+<span class="fc bfc" id="L272" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      BigDecimal bd;
+      try {
+<span class="fc" id="L275">        bd = new BigDecimal(s);</span>
+<span class="fc" id="L276">      } catch (NumberFormatException e) {</span>
+<span class="fc" id="L277">        throw new TypeConversionException(s, long.class, e.toString());</span>
+<span class="fc" id="L278">      }</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">      if (fitsIntoLong(bd)) {</span>
+<span class="fc" id="L280">        return bd.longValue();</span>
+      }
+<span class="fc" id="L282">      throw TypeConversionException.targetTypeTooNarrow(s, long.class);</span>
+    }
+<span class="fc" id="L284">    throw new TypeConversionException(s, long.class);</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified string can be parsed into a {@code long}
+   * without loss of information. The argument is allowed to be {@code null}, in
+   * which case the return value will be {@code false}.
+   *
+   * @param s the string to be parsed
+   * @return whether the specified string can be parsed into a {@code long} without
+   *     causing integer overflow
+   */
+  public static boolean isLong(String s) {
+<span class="fc bfc" id="L297" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L299">        return fitsIntoLong(new BigDecimal(s));</span>
+<span class="nc" id="L300">      } catch (NumberFormatException ignored) {</span>
+      }
+    }
+<span class="fc" id="L303">    return false;</span>
+  }
+
+  /**
+   * Returns an empty {@code OptionalLong} if the specified string cannot be parsed
+   * into a 64-bit integer, else an {@code OptionalLong} containing the {@code long}
+   * value parsed out of the string.
+   *
+   * @param s the string to be parsed
+   * @return an {@code OptionalLong} containing the {@code long} value parsed out of
+   *     the string
+   */
+  public static OptionalLong toLong(String s) {
+<span class="fc bfc" id="L316" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L318">        BigDecimal bd = new BigDecimal(s);</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">        if (fitsIntoLong(bd)) {</span>
+<span class="fc" id="L320">          return OptionalLong.of(bd.longValue());</span>
+        }
+<span class="fc" id="L322">      } catch (NumberFormatException ignored) {</span>
+<span class="fc" id="L323">      }</span>
+    }
+<span class="fc" id="L325">    return OptionalLong.empty();</span>
+  }
+
+  /**
+   * Parses the specified string into a {@code double}. If the string does not
+   * represent a number, or if it cannot be parsed into a {@code double} without loss
+   * of information, a {@link TypeConversionException} is thrown.
+   *
+   * @param s the string to be parsed
+   * @return the {@code double} value represented by the string
+   */
+  public static double parseDouble(String s) throws TypeConversionException {
+<span class="fc bfc" id="L337" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      BigDecimal bd;
+      try {
+<span class="fc" id="L340">        bd = new BigDecimal(s);</span>
+<span class="fc" id="L341">      } catch (NumberFormatException e) {</span>
+<span class="fc" id="L342">        throw new TypeConversionException(s, double.class, e.toString());</span>
+<span class="fc" id="L343">      }</span>
+<span class="fc" id="L344">      BigDecimal x = bd.abs();</span>
+<span class="fc bfc" id="L345" title="All 4 branches covered.">      if (x.compareTo(MIN_DOUBLE_BD) &gt;= 0 &amp;&amp; x.compareTo(</span>
+          MAX_DOUBLE_BD) &lt;= 0) {
+<span class="fc" id="L347">        return bd.doubleValue();</span>
+      }
+    }
+<span class="fc" id="L350">    throw TypeConversionException.targetTypeTooNarrow(s, float.class);</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified string can be parsed into a {@code double}
+   * without loss of information. The argument is allowed to be {@code null}, in
+   * which case the return value will be {@code false}.
+   *
+   * @param s the string to be parsed
+   * @return whether he specified string can be parsed into a regular, finite
+   *     {@code double}
+   */
+  public static boolean isDouble(String s) {
+<span class="fc bfc" id="L363" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L365">        parseDouble(s);</span>
+<span class="fc" id="L366">        return true;</span>
+<span class="fc" id="L367">      } catch (TypeConversionException ignored) {</span>
+      }
+    }
+<span class="fc" id="L370">    return false;</span>
+  }
+
+  /**
+   * Returns an empty {@code OptionalDouble} if the specified string cannot be parsed
+   * into a {@code double} value, else an {@code OptionalDouble} containing the
+   * {@code double} value parsed out of the string.
+   *
+   * @param s the string to be parsed
+   * @return an {@code OptionalDouble} containing the {@code double} value parsed out
+   *     of the string
+   */
+  public static OptionalDouble toDouble(String s) {
+<span class="fc bfc" id="L383" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L385">        return OptionalDouble.of(parseDouble(s));</span>
+<span class="fc" id="L386">      } catch (TypeConversionException ignored) {</span>
+      }
+    }
+<span class="fc" id="L389">    return OptionalDouble.empty();</span>
+  }
+
+  /**
+   * Parses the specified string into a {@code float}. If the string does not
+   * represent a number, or if it cannot be parsed into a {@code float} without loss
+   * of information, a {@link TypeConversionException} is thrown.
+   *
+   * @param s the string to be parsed
+   * @return the {@code float} value represented by the string
+   */
+  public static float parseFloat(String s) throws TypeConversionException {
+<span class="fc bfc" id="L401" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      BigDecimal bd;
+      try {
+<span class="fc" id="L404">        bd = new BigDecimal(s);</span>
+<span class="fc" id="L405">      } catch (NumberFormatException e) {</span>
+<span class="fc" id="L406">        throw new TypeConversionException(s, double.class, e.toString());</span>
+<span class="fc" id="L407">      }</span>
+<span class="fc" id="L408">      BigDecimal x = bd.abs();</span>
+<span class="fc bfc" id="L409" title="All 4 branches covered.">      if (x.compareTo(BIG_MIN_FLOAT) &gt;= 0 &amp;&amp; x.compareTo(BIG_MAX_FLOAT) &lt;= 0) {</span>
+<span class="fc" id="L410">        return bd.floatValue();</span>
+      }
+    }
+<span class="fc" id="L413">    throw TypeConversionException.targetTypeTooNarrow(s, float.class);</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified string can be parsed into a {@code float}
+   * without loss of information. The argument is allowed to be {@code null}, in
+   * which case the return value will be {@code false}.
+   *
+   * @param s the string to be parsed
+   * @return whether he specified string can be parsed into a regular, finite
+   *     {@code float}
+   */
+  public static boolean isFloat(String s) {
+<span class="fc bfc" id="L426" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L428">        parseFloat(s);</span>
+<span class="fc" id="L429">        return true;</span>
+<span class="fc" id="L430">      } catch (TypeConversionException ignored) {</span>
+      }
+    }
+<span class="fc" id="L433">    return false;</span>
+  }
+
+  /**
+   * Returns an empty {@code OptionalDouble} if the specified string cannot be parsed
+   * into a regular, finite {@code float} value, else an {@code OptionalDouble}
+   * containing the {@code float} value parsed out of the string.
+   *
+   * @param s the string to be parsed
+   * @return an {@code OptionalDouble} containing the {@code float} value parsed out
+   *     of the string
+   */
+  public static OptionalDouble toFloat(String s) {
+<span class="fc bfc" id="L446" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L448">        return OptionalDouble.of(parseFloat(s));</span>
+<span class="fc" id="L449">      } catch (TypeConversionException ignored) {</span>
+      }
+    }
+<span class="fc" id="L452">    return OptionalDouble.empty();</span>
+  }
+
+  /**
+   * Parses the specified string into a {@code short}. If the string does not
+   * represent a number, or if it cannot be parsed into a {@code short} without loss
+   * of information, a {@link TypeConversionException} is thrown.
+   *
+   * @param s the string to be parsed
+   * @return the {@code short} value represented by the string
+   */
+  public static short parseShort(String s) throws TypeConversionException {
+<span class="fc" id="L464">    return (short) parseIntegral(s, short.class, Short.MIN_VALUE, Short.MAX_VALUE);</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified string can be parsed into a {@code short}
+   * without loss of information. The argument is allowed to be {@code null}, in
+   * which case the return value will be {@code false}.
+   *
+   * @param s the string to be parsed
+   * @return whether he specified string can be parsed into a {@code short} without
+   *     causing integer overflow
+   */
+  public static boolean isShort(String s) {
+<span class="fc" id="L477">    return isIntegral(s, Short.MIN_VALUE, Short.MAX_VALUE);</span>
+  }
+
+  /**
+   * Returns an empty {@code OptionalInt} if the specified string cannot be parsed
+   * into a 16-bit integer, else an {@code OptionalInt} containing the {@code short}
+   * value parsed out of the string.
+   *
+   * @param s the string to be parsed
+   * @return an {@code OptionalInt} containing the {@code short} value parsed out of
+   *     the string
+   */
+  public static OptionalInt toShort(String s) {
+<span class="fc" id="L490">    return toIntegral(s, Short.MIN_VALUE, Short.MAX_VALUE);</span>
+  }
+
+  /**
+   * Parses the specified string into a {@code byte}. If the string does not
+   * represent a number, or if it cannot be parsed into a {@code byte} without loss
+   * of information, a {@link TypeConversionException} is thrown.
+   *
+   * @param s the string to be parsed
+   * @return the {@code byte} value represented by the string
+   */
+  public static byte parseByte(String s) throws TypeConversionException {
+<span class="fc" id="L502">    return (byte) parseIntegral(s, byte.class, Byte.MIN_VALUE, Byte.MAX_VALUE);</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified string can be parsed into a {@code byte}
+   * without loss of information. The argument is allowed to be {@code null}, in
+   * which case the return value will be {@code false}.
+   *
+   * @param s the string to be parsed
+   * @return whether he specified string can be parsed into a {@code byte} without
+   *     causing an integer overflow
+   */
+  public static boolean isByte(String s) {
+<span class="fc" id="L515">    return isIntegral(s, Byte.MIN_VALUE, Byte.MAX_VALUE);</span>
+  }
+
+  /**
+   * Returns an empty {@code OptionalInt} if the specified string cannot be parsed
+   * into an 8-bit integer, else an {@code OptionalInt} containing the {@code byte}
+   * value parsed out of the string.
+   *
+   * @param s the string to be parsed
+   * @return an {@code OptionalInt} containing the {@code byte} value parsed out of
+   *     the string
+   */
+  public static OptionalInt toByte(String s) {
+<span class="fc" id="L528">    return toIntegral(s, Byte.MIN_VALUE, Byte.MAX_VALUE);</span>
+  }
+
+  /**
+   * Parses the specified string into a {@code BigInteger}. If the string does not
+   * represent a number, or if it cannot be parsed into a {@code BigInteger} without
+   * loss of information, a {@link TypeConversionException} is thrown.
+   *
+   * @param s the string to be parsed
+   * @return the {@code BigInteger} value represented by the string
+   */
+  public static BigInteger parseBigInteger(String s) {
+<span class="pc bpc" id="L540" title="1 of 2 branches missed.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L542">        BigDecimal bd = new BigDecimal(s);</span>
+<span class="fc bfc" id="L543" title="All 2 branches covered.">        if (isRound(bd)) {</span>
+<span class="fc" id="L544">          return bd.toBigInteger();</span>
+        }
+<span class="fc" id="L546">        throw TypeConversionException.targetTypeTooNarrow(s, BigInteger.class);</span>
+<span class="fc" id="L547">      } catch (NumberFormatException e) {</span>
+<span class="fc" id="L548">        throw new TypeConversionException(s, BigInteger.class, e.toString());</span>
+      }
+    }
+<span class="nc" id="L551">    throw new TypeConversionException(s, BigInteger.class);</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified string can be parsed into a
+   * {@code BigInteger} without loss of information. The argument is allowed to be
+   * {@code null}, in which case the return value will be {@code false}.
+   *
+   * @param s the string to be parsed
+   * @return whether he specified string can be parsed into a {@code BigInteger}
+   */
+  public static boolean isBigInteger(String s) {
+<span class="fc bfc" id="L563" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L565">        BigDecimal bd = new BigDecimal(s);</span>
+<span class="fc bfc" id="L566" title="All 2 branches covered.">        if (isRound(bd)) {</span>
+<span class="fc" id="L567">          return true;</span>
+        }
+<span class="nc" id="L569">      } catch (NumberFormatException ignored) {</span>
+<span class="fc" id="L570">      }</span>
+    }
+<span class="fc" id="L572">    return false;</span>
+  }
+
+  /**
+   * Returns an empty {@code Optional} if the specified string cannot be parsed into
+   * BigInteger, else an {@code Optional} containing the {@code BigInteger} value
+   * parsed out of the string.
+   *
+   * @param s the string to be parsed
+   * @return an {@code Optional} containing the {@code BigInteger} value parsed out
+   *     of the string
+   */
+  public static Optional&lt;BigInteger&gt; toBigInteger(String s) {
+<span class="fc bfc" id="L585" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L587">        BigDecimal bd = new BigDecimal(s);</span>
+<span class="fc bfc" id="L588" title="All 2 branches covered.">        if (isRound(bd)) {</span>
+<span class="fc" id="L589">          return Optional.of(bd.toBigInteger());</span>
+        }
+<span class="nc" id="L591">      } catch (NumberFormatException ignored) {</span>
+<span class="fc" id="L592">      }</span>
+    }
+<span class="fc" id="L594">    return Optional.empty();</span>
+  }
+
+  /**
+   * Parses the specified string into a {@code BigInteger}. If the string does not
+   * represent a number, a {@link TypeConversionException} is thrown.
+   *
+   * @param s the string to be parsed
+   * @return the {@code BigDecimal} value represented by the string
+   */
+  public static BigDecimal parseBigDecimal(String s) {
+    try {
+<span class="fc" id="L606">      return new BigDecimal(s);</span>
+<span class="fc" id="L607">    } catch (NumberFormatException e) {</span>
+<span class="fc" id="L608">      throw new TypeConversionException(s, BigDecimal.class, e.toString());</span>
+    }
+  }
+
+  /**
+   * Returns {@code true} if the specified string can be parsed into a
+   * {@code BigDecimal}. The argument is allowed to be {@code null}, in which case
+   * the return value will be {@code false}.
+   *
+   * @param s the string to be parsed
+   * @return whether he specified string can be parsed into a {@code BigDecimal}
+   */
+  public static boolean isBigDecimal(String s) {
+<span class="fc bfc" id="L621" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L623">        parseBigDecimal(s);</span>
+<span class="fc" id="L624">        return true;</span>
+<span class="fc" id="L625">      } catch (TypeConversionException ignored) {</span>
+      }
+    }
+<span class="fc" id="L628">    return false;</span>
+  }
+
+  /**
+   * Returns an empty {@code Optional} if the specified string cannot be parsed into
+   * BigDecimal, else an {@code Optional} containing the {@code BigDecimal} value
+   * parsed out of the string.
+   *
+   * @param s the string to be parsed
+   * @return an {@code Optional} containing the {@code BigDecimal} value parsed out
+   *     of the string
+   */
+  public static Optional&lt;BigDecimal&gt; toBigDecimal(String s) {
+<span class="fc bfc" id="L641" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L643">        return Optional.of(parseBigDecimal(s));</span>
+<span class="fc" id="L644">      } catch (TypeConversionException ignored) {</span>
+      }
+    }
+<span class="fc" id="L647">    return Optional.empty();</span>
+  }
+
+  /**
+   * Parses the specified string into a number of the specified type. Throws an
+   * {@link TypeConversionException} if the string is not a number, or if the number
+   * is too big to fit into the target type.
+   *
+   * @param &lt;T&gt; the type of {@code Number} to convert the string to
+   * @param s the string to be parsed
+   * @param targetType the class of the {@code Number} type
+   * @return a {@code Number} of the specified type
+   */
+  @SuppressWarnings(&quot;unchecked&quot;)
+  public static &lt;T extends Number&gt; T parse(String s, Class&lt;T&gt; targetType)
+      throws TypeConversionException {
+<span class="fc" id="L663">    Check.notNull(targetType, Param.TARGET_TYPE);</span>
+<span class="fc" id="L664">    Function&lt;String, Number&gt; parser = parsers.get(targetType);</span>
+<span class="fc bfc" id="L665" title="All 2 branches covered.">    if (parser != null) {</span>
+<span class="fc" id="L666">      return (T) parser.apply(s);</span>
+    }
+<span class="fc" id="L668">    throw notSupported(s, targetType);</span>
+  }
+
+  /**
+   * Tests whether the specified string can be parsed into a {@code Number} of the
+   * specified type.
+   *
+   * @param &lt;T&gt; the type of {@code Number} to convert the string to
+   * @param s the string to be parsed
+   * @param targetType the class of the {@code Number} type
+   * @return whether the specified string can be parsed into a {@code Number} of the
+   *     specified type
+   */
+  public static &lt;T extends Number&gt; boolean fitsInto(String s, Class&lt;T&gt; targetType) {
+<span class="fc" id="L682">    Check.notNull(targetType, Param.TARGET_TYPE);</span>
+<span class="fc bfc" id="L683" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+<span class="fc" id="L684">      Predicate&lt;String&gt; tester = stringFitsInto.get(targetType);</span>
+<span class="fc bfc" id="L685" title="All 2 branches covered.">      if (tester != null) {</span>
+<span class="fc" id="L686">        return tester.test(s);</span>
+      }
+<span class="fc" id="L688">      throw notSupported(s, targetType);</span>
+    }
+<span class="fc" id="L690">    return false;</span>
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////
+  //                           END OF PARSE METHODS                             //
+  ////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Converts a {@code Number} of an unspecified type to a {@code BigDecimal}.
+   *
+   * @param n the number
+   * @return the {@code BigDecimal} representing the number
+   */
+  public static BigDecimal toBigDecimal(Number n) {
+<span class="fc" id="L704">    Check.notNull(n);</span>
+<span class="fc" id="L705">    Function&lt;Number, BigDecimal&gt; fnc = toBigDecimal.get(n.getClass());</span>
+<span class="fc bfc" id="L706" title="All 2 branches covered.">    if (fnc != null) {</span>
+<span class="fc" id="L707">      return fnc.apply(n);</span>
+    }
+<span class="fc" id="L709">    throw inputTypeNotSupported(n, BigDecimal.class);</span>
+  }
+
+  /**
+   * Safely converts a number of an unspecified type to a number of a definite type.
+   * Throws a {@link TypeConversionException} if the number cannot be converted to
+   * the target type without loss of information. The number is allowed to be
+   * {@code null}, in which case {@code null} will be returned.
+   *
+   * @param &lt;T&gt; the input type
+   * @param &lt;R&gt; the output type
+   * @param number the number to be converted
+   * @param targetType the class of the target type
+   * @return an instance of the target type
+   */
+  @SuppressWarnings({&quot;unchecked&quot;})
+  public static &lt;T extends Number, R extends Number&gt; R convert(T number,
+      Class&lt;R&gt; targetType) throws TypeConversionException {
+<span class="fc" id="L727">    Check.notNull(targetType, Param.TARGET_TYPE);</span>
+<span class="fc bfc" id="L728" title="All 4 branches covered.">    if (number == null || number.getClass() == targetType) {</span>
+<span class="fc" id="L729">      return (R) number;</span>
+    }
+<span class="fc" id="L731">    UnaryOperator&lt;Number&gt; fnc = converters.get(targetType);</span>
+<span class="fc bfc" id="L732" title="All 2 branches covered.">    if (fnc != null) {</span>
+<span class="fc" id="L733">      return (R) fnc.apply(number);</span>
+    }
+<span class="fc" id="L735">    throw notSupported(number, targetType);</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified number can be converted to the specified
+   * target type without loss of information. The number is allowed to be
+   * {@code null}, in which case {@code true} will be returned.
+   *
+   * @param &lt;T&gt; the type of {@code Number} to convert to
+   * @param number the {@code Number} to convert
+   * @param targetType the type of {@code Number} to convert to
+   * @return whether conversion will be lossless
+   */
+  public static &lt;T extends Number&gt; boolean fitsInto(Number number,
+      Class&lt;T&gt; targetType) {
+<span class="fc" id="L750">    Check.notNull(targetType, Param.TARGET_TYPE);</span>
+<span class="fc bfc" id="L751" title="All 2 branches covered.">    if (number == null) {</span>
+<span class="fc" id="L752">      return true;</span>
+    }
+<span class="fc" id="L754">    Predicate&lt;Number&gt; tester = numberFitsInto.get(targetType);</span>
+<span class="fc bfc" id="L755" title="All 2 branches covered.">    if (tester != null) {</span>
+<span class="fc" id="L756">      return tester.test(number);</span>
+    }
+<span class="fc" id="L758">    throw inputTypeNotSupported(number, targetType);</span>
+  }
+
+  /**
+   * Determines whether the specified float's fractional part is zero or absent.
+   *
+   * @param f the {@code float} to inspect
+   * @return whether the specified float's fractional part is zero or absent
+   */
+  public static boolean isRound(float f) {
+<span class="fc" id="L768">    return isRound(new BigDecimal(Float.toString(f)));</span>
+  }
+
+  /**
+   * Determines whether the specified double's fractional part is zero or absent.
+   *
+   * @param d the {@code double} to inspect
+   * @return whether the specified double's fractional part is zero or absent
+   */
+  public static boolean isRound(double d) {
+<span class="fc" id="L778">    return isRound(new BigDecimal(Double.toString(d)));</span>
+  }
+
+  /**
+   * Determines whether the specified BigDecimal's fractional part is zero or
+   * absent.
+   *
+   * @param bd the {@code BigDecimal} to inspect
+   * @return whether the specified BigDecimal's fractional part is zero or absent
+   */
+  public static boolean isRound(BigDecimal bd) {
+    // NB The 1st check is cheap and catches a lot of the cases.
+    // The 2nd second is superfluous in the presence of the 3rd.
+    // However, it still catches quite a few cases and seems
+    // sufficiently cheap compared to the 3rd check that it seems
+    // worth paying the price of wasted CPU cycles if we do fall
+    // through to the 3rd check. The 3rd and 4th check are
+    // equivalent, but the 3rd check seems more efficient. Needs
+    // to be measured though.
+<span class="fc bfc" id="L797" title="All 2 branches covered.">    return bd.scale() &lt;= 0</span>
+<span class="fc bfc" id="L798" title="All 2 branches covered.">        || bd.stripTrailingZeros().scale() == 0</span>
+<span class="fc bfc" id="L799" title="All 2 branches covered.">        || bd.divideToIntegralValue(ONE).compareTo(bd) == 0</span>
+        /*|| bd.remainder(ONE).signum() == 0 */;
+  }
+
+  private static long parseIntegral(String s,
+      Class&lt;?&gt; type,
+      long minVal,
+      long maxVal) {
+<span class="fc bfc" id="L807" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L809">        BigDecimal bd = new BigDecimal(s);</span>
+        long l;
+<span class="fc bfc" id="L811" title="All 6 branches covered.">        if (isRound(bd) &amp;&amp; (l = bd.longValue()) &gt;= minVal &amp;&amp; l &lt;= maxVal) {</span>
+<span class="fc" id="L812">          return l;</span>
+        }
+<span class="fc" id="L814">        throw TypeConversionException.targetTypeTooNarrow(s, type);</span>
+<span class="fc" id="L815">      } catch (NumberFormatException e) {</span>
+<span class="fc" id="L816">        throw new TypeConversionException(s, int.class, e.toString());</span>
+      }
+    }
+<span class="fc" id="L819">    throw new TypeConversionException(s, type);</span>
+  }
+
+  private static boolean isIntegral(String s, long minVal, long maxVal) {
+<span class="fc bfc" id="L823" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L825">        BigDecimal bd = new BigDecimal(s);</span>
+        long l;
+<span class="pc bpc" id="L827" title="2 of 6 branches missed.">        return isRound(bd) &amp;&amp; (l = bd.longValue()) &gt;= minVal &amp;&amp; l &lt;= maxVal;</span>
+<span class="fc" id="L828">      } catch (NumberFormatException ignored) {</span>
+      }
+    }
+<span class="fc" id="L831">    return false;</span>
+  }
+
+  private static OptionalInt toIntegral(String s, long minVal, long maxVal) {
+<span class="fc bfc" id="L835" title="All 2 branches covered.">    if (!isEmpty(s)) {</span>
+      try {
+<span class="fc" id="L837">        BigDecimal bd = new BigDecimal(s);</span>
+        long l;
+<span class="pc bpc" id="L839" title="1 of 6 branches missed.">        if (isRound(bd) &amp;&amp; (l = bd.longValue()) &gt;= minVal &amp;&amp; l &lt;= maxVal) {</span>
+<span class="fc" id="L840">          return OptionalInt.of((int) l);</span>
+        }
+<span class="fc" id="L842">      } catch (NumberFormatException ignored) {</span>
+<span class="fc" id="L843">      }</span>
+    }
+<span class="fc" id="L845">    return OptionalInt.empty();</span>
+  }
+
+  private static boolean fitsIntoLong(BigDecimal bd) {
+<span class="fc bfc" id="L849" title="All 2 branches covered.">    return isRound(bd)</span>
+<span class="fc bfc" id="L850" title="All 2 branches covered.">        &amp;&amp; bd.compareTo(MIN_LONG_BD) &gt;= 0</span>
+<span class="fc bfc" id="L851" title="All 2 branches covered.">        &amp;&amp; bd.compareTo(MAX_LONG_BD) &lt;= 0;</span>
+  }
+
+  private static TypeConversionException notSupported(Object obj,
+      Class&lt;?&gt; type) {
+<span class="pc bpc" id="L856" title="1 of 2 branches missed.">    if (isPrimitiveNumber(type)) {</span>
+<span class="nc" id="L857">      String fmt = &quot;primitive types not supported *** call ClassMethods.box to convert %s to %s&quot;;</span>
+<span class="nc" id="L858">      String c0 = type.getName();</span>
+<span class="nc" id="L859">      String c1 = box(type).getSimpleName();</span>
+<span class="nc" id="L860">      return new TypeConversionException(obj, type, fmt, c0, c1);</span>
+<span class="fc bfc" id="L861" title="All 2 branches covered.">    } else if (isSubtype(type, Number.class)) {</span>
+<span class="fc" id="L862">      String c0 = type.getSimpleName();</span>
+<span class="fc" id="L863">      return new TypeConversionException(obj, type, &quot;%s not supported&quot;, c0);</span>
+    }
+<span class="fc" id="L865">    String msg = &quot;target type must be subclass of Number&quot;;</span>
+<span class="fc" id="L866">    return new TypeConversionException(obj, type, msg);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

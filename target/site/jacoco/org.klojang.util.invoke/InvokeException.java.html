@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InvokeException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Check</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util.invoke</a> &gt; <span class="el_source">InvokeException.java</span></div><h1>InvokeException.java</h1><pre class="source lang-java linenums">package org.klojang.util.invoke;
+
+import static org.klojang.util.ArrayMethods.implode;
+import static org.klojang.util.ClassMethods.simpleClassName;
+import static org.klojang.util.ExceptionMethods.getRootCause;
+
+import org.klojang.util.ClassMethods;
+import org.klojang.util.invoke.Getter;
+import org.klojang.util.invoke.IllegalAssignmentException;
+import org.klojang.util.invoke.InvokeException;
+import org.klojang.util.invoke.NoPublicGettersException;
+import org.klojang.util.invoke.NoPublicSettersException;
+import org.klojang.util.invoke.NoSuchPropertyException;
+
+/**
+ * A {@code RuntimeException} thrown in response to various dynamic invocation
+ * errors.
+ */
+public sealed class InvokeException extends RuntimeException permits
+    IllegalAssignmentException,
+    NoPublicGettersException, NoPublicSettersException, NoSuchPropertyException {
+
+  /**
+   * Returns an {@code InvokeException} informing the client that a class could not
+   * be instantiated because it has a no-arg constructor.
+   *
+   * @param clazz the class to be instantiated
+   * @return an {@code InvokeException} informing the client that a class could not
+   *     be instantiated because it has a no-arg constructor
+   */
+  public static InvokeException missingNoArgConstructor(Class&lt;?&gt; clazz) {
+<span class="fc" id="L32">    return new InvokeException(&quot;missing no-arg constructor for &quot; + clazz);</span>
+  }
+
+  /**
+   * Returns an {@code InvokeException} informing the client that a class could not
+   * be instantiated because it has constructor with the provided parameter list.
+   *
+   * @param clazz the class to be instantiated
+   * @param params the provided (and illegal) parameter list
+   * @return an {@code InvokeException} informing the client that a class could not
+   *     be instantiated because it has constructor with the provided parameter list
+   */
+  public static InvokeException noSuchConstructor(Class&lt;?&gt; clazz,
+      Class&lt;?&gt;... params) {
+<span class="fc" id="L46">    String msg = String.format(&quot;no such constructor: %s(%s)&quot;,</span>
+<span class="fc" id="L47">        simpleClassName(clazz),</span>
+<span class="fc" id="L48">        implode(params, ClassMethods::simpleClassName, &quot;, &quot;, 0, -1));</span>
+<span class="fc" id="L49">    return new InvokeException(msg);</span>
+  }
+
+  /**
+   * Returns an {@code InvokeException} informing the client that an operation failed
+   * because of some {@code Throwable} thrown from the {@code java.lang.invoke}
+   * package.
+   *
+   * @param array the array to be operated upon
+   * @param throwable the throwable thrown from {@code java.lang.invoke}
+   * @return an {@code InvokeException} informing the client that an operation failed
+   *     because of some {@code Throwable} thrown from the {@code java.lang.invoke}
+   */
+  public static InvokeException arrayOperationFailed(Object array,
+      Throwable throwable) {
+<span class="nc" id="L64">    String msg = String.format(&quot;array operation failed for %s: %s&quot;,</span>
+<span class="nc" id="L65">        simpleClassName(array),</span>
+        throwable);
+<span class="nc" id="L67">    return new InvokeException(msg);</span>
+  }
+
+  static InvokeException wrap(Throwable t, Object bean, Getter getter) {
+<span class="fc" id="L71">    String msg = String.format(&quot;Error while reading %s.%s: %s&quot;,</span>
+<span class="fc" id="L72">        simpleClassName(bean),</span>
+<span class="fc" id="L73">        getter.getProperty(),</span>
+<span class="fc" id="L74">        getRootCause(t));</span>
+<span class="fc" id="L75">    return new InvokeException(msg);</span>
+  }
+
+  InvokeException(String message) {
+<span class="fc" id="L79">    super(message);</span>
+<span class="fc" id="L80">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

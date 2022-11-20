@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.klojang.util.path.ObjectWriterTest
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s - in org.klojang.util.path.ObjectWriterTest

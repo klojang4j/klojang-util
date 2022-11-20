@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClassMethods.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Check</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util</a> &gt; <span class="el_source">ClassMethods.java</span></div><h1>ClassMethods.java</h1><pre class="source lang-java linenums">package org.klojang.util;
+
+import java.util.*;
+import java.util.stream.IntStream;
+
+import org.klojang.check.Check;
+import org.klojang.check.CommonChecks;
+import org.klojang.util.ArrayType;
+import org.klojang.util.NumberMethods;
+
+import static org.klojang.check.CommonChecks.*;
+import static org.klojang.check.CommonProperties.type;
+import static org.klojang.util.CollectionMethods.swapAndFreeze;
+import static org.klojang.util.x.Param.TYPE;
+
+/**
+ * Methods for inspecting types.
+ *
+ * @author Ayco Holleman
+ */
+public final class ClassMethods {
+
+  // primitive-to-wrapper
+<span class="fc" id="L24">  private static final Map&lt;Class&lt;?&gt;, Class&lt;?&gt;&gt; P2W = Map.of(</span>
+      double.class,
+      Double.class,
+      float.class,
+      Float.class,
+      long.class,
+      Long.class,
+      int.class,
+      Integer.class,
+      char.class,
+      Character.class,
+      short.class,
+      Short.class,
+      byte.class,
+      Byte.class,
+      boolean.class,
+      Boolean.class,
+      void.class,
+      Void.class);
+
+  // wrapper-to-primitive
+<span class="fc" id="L45">  private static final Map&lt;Class&lt;?&gt;, Class&lt;?&gt;&gt; W2P = swapAndFreeze(P2W);</span>
+
+<span class="fc" id="L47">  private static final Map&lt;Class&lt;?&gt;, Object&gt; PRIMITIVE_DEFAULTS = Map.of(int.class,</span>
+<span class="fc" id="L48">      0,</span>
+      boolean.class,
+      Boolean.FALSE,
+      double.class,
+<span class="fc" id="L52">      0D,</span>
+      long.class,
+<span class="fc" id="L54">      0L,</span>
+      float.class,
+<span class="fc" id="L56">      0F,</span>
+      short.class,
+<span class="fc" id="L58">      (short) 0,</span>
+      byte.class,
+<span class="fc" id="L60">      (byte) 0,</span>
+      char.class,
+<span class="fc" id="L62">      '\0');</span>
+
+<span class="fc" id="L64">  private static final Set&lt;Class&lt;?&gt;&gt; PRIMITIVE_NUMBER_TYPES = Set.of(int.class,</span>
+      double.class,
+      float.class,
+      long.class,
+      short.class,
+      byte.class);
+
+<span class="nc" id="L71">  private ClassMethods() {</span>
+<span class="nc" id="L72">    throw new UnsupportedOperationException();</span>
+  }
+
+  /**
+   * Performs a brute-force cast to {@code &lt;R&gt;} of the specified object. Handle with
+   * care as it lets you completely bypass the Java type system. The argument is
+   * allowed to be {@code null}.
+   *
+   * @param obj The object whose type to cast
+   * @param &lt;T&gt; The type of the object
+   * @param &lt;R&gt; The type to case it to
+   * @return An instance of type {@code &lt;R&gt;}
+   */
+  @SuppressWarnings({&quot;unchecked&quot;})
+  public static &lt;T, R&gt; R cast(T obj) {
+<span class="fc" id="L87">    return (R) obj;</span>
+  }
+
+  /**
+   * Alias for {@link Class#isInstance(Object)}.
+   *
+   * @param instance The object to test
+   * @param type The class or interface to test the object against
+   * @return whether the 1st argument is an instance of the 2nd argument
+   */
+  public static boolean isA(Object instance, Class&lt;?&gt; type) {
+<span class="nc" id="L98">    Check.that(instance, &quot;instance&quot;).is(notNull()).and(type, TYPE).is(notNull());</span>
+<span class="nc" id="L99">    return type.isInstance(instance);</span>
+  }
+
+  /**
+   * Tests whether the first class is the same as, or a subtype of the second class.
+   * In other words, whether it extends or implements the second class. In case you
+   * keep forgetting what &quot;assignable from&quot; even means. Equivalent to
+   * &lt;code&gt;class1.isAssignableFrom(class0)&lt;/code&gt;.
+   *
+   * @param class0 The class or interface you are interested in
+   * @param class1 The class or interface to compare it against
+   * @return {@code true} if the first class is a subtype of the second class;
+   *     {@code false} otherwise
+   * @see CommonChecks#subtypeOf()
+   */
+  public static boolean isSubtype(Class&lt;?&gt; class0, Class&lt;?&gt; class1) {
+<span class="fc" id="L115">    Check.notNull(class0, &quot;class0&quot;);</span>
+<span class="fc" id="L116">    Check.notNull(class1, &quot;class1&quot;);</span>
+<span class="fc" id="L117">    return class1.isAssignableFrom(class0);</span>
+  }
+
+  /**
+   * Tests whether the first class is the same as, or a supertype of the second
+   * class. In other words, whether it is extended or implemented by the second
+   * class. Equivalent to &lt;code&gt;class0.isAssignableFrom(class1)&lt;/code&gt;.
+   *
+   * @param class0 The class or interface you are interested in
+   * @param class1 The class or interface to compare it against
+   * @return {@code true} if the first class is a supertype of the second class;
+   *     {@code false} otherwise
+   * @see CommonChecks#supertypeOf()
+   */
+  public static boolean isSupertype(Class&lt;?&gt; class0, Class&lt;?&gt; class1) {
+<span class="nc" id="L132">    Check.notNull(class0, &quot;class0&quot;);</span>
+<span class="nc" id="L133">    Check.notNull(class1, &quot;class1&quot;);</span>
+<span class="nc" id="L134">    return class0.isAssignableFrom(class1);</span>
+  }
+
+  /**
+   * Returns whether the specified class is one of the primitive number classes. Note
+   * that this does not include {@code char.class}, just like {@link Character} does
+   * not extend {@link Number}.
+   *
+   * @param clazz the class to test
+   * @return whether the specified class is one of the primitive number classes
+   * @see NumberMethods#isWrapper(Class)
+   */
+  public static boolean isPrimitiveNumber(Class&lt;?&gt; clazz) {
+<span class="fc" id="L147">    return Check.notNull(clazz).ok(PRIMITIVE_NUMBER_TYPES::contains);</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified object is an array of a primitive type, or
+   * a {@code Class} object representing an array of a primitive type.
+   *
+   * @param obj The object to test
+   * @return {@code true} if the specified object is an array of a primitive type, or
+   *     a {@code Class} object representing an array of a primitive type
+   */
+  public static boolean isPrimitiveArray(Object obj) {
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">    if (obj instanceof Class c) {</span>
+<span class="nc" id="L160">      return isPrimitiveArray(c);</span>
+    }
+<span class="pc bpc" id="L162" title="1 of 4 branches missed.">    return obj != null &amp;&amp; isPrimitiveArray(obj.getClass());</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified type represents an array of a primitive
+   * type.
+   *
+   * @param clazz the class to test
+   * @return {@code true} if the specified type represents an array of a primitive
+   *     type
+   */
+  public static boolean isPrimitiveArray(Class&lt;?&gt; clazz) {
+<span class="fc" id="L174">    Check.notNull(clazz);</span>
+<span class="fc bfc" id="L175" title="All 4 branches covered.">    return clazz.isArray() &amp;&amp; clazz.getComponentType().isPrimitive();</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified type represents an array with a primitive
+   * type as its deepest-level component type. So this method will return
+   * {@code true} not just for {@code int[]}, but also for {@code int[][]},
+   * {@code int[][][]}, etc.
+   *
+   * @param clazz the class to test
+   * @return {@code true} if the specified type represents an array with a primitive
+   *     type as its deepest-level component type
+   * @see ArrayType
+   */
+  public static boolean isDeeplyPrimitiveArray(Class&lt;?&gt; clazz) {
+<span class="nc" id="L190">    Check.notNull(clazz);</span>
+<span class="nc bnc" id="L191" title="All 4 branches missed.">    return clazz.isArray() &amp;&amp; ArrayType.forClass(clazz).baseType().isPrimitive();</span>
+  }
+
+  /**
+   * Returns {@code true} if the specified class is one of the primitive wrapper
+   * classes. Use {@link NumberMethods#isWrapper(Class)} to establish whether the
+   * class is a primitive &lt;i&gt;number&lt;/i&gt; wrapper.
+   *
+   * @param clazz the class to test
+   * @return {@code true} if the specified class is one of the primitive wrapper
+   *     classes
+   */
+  public static boolean isWrapper(Class&lt;?&gt; clazz) {
+<span class="fc" id="L204">    return W2P.containsKey(clazz);</span>
+  }
+
+  /**
+   * Returns {@code true} if first argument is a primitive wrapper type and the
+   * second argument is the corresponding primitive type. If the first class is not a
+   * wrapper class (like {@code Integer.class}), or the second class is not a
+   * primitive type (like {@code int.class}), this method returns {@code false}. No
+   * exception is thrown!
+   *
+   * @param classToTest the class to test
+   * @param primitiveClass the class to compare it with (supposedly, but not
+   *     necessarily, a primitive type)
+   * @return whether instances of the first class will be auto-unboxed into instances
+   *     of the second class
+   */
+  public static boolean isAutoUnboxedAs(Class&lt;?&gt; classToTest,
+      Class&lt;?&gt; primitiveClass) {
+<span class="fc" id="L222">    Check.notNull(classToTest);</span>
+<span class="fc" id="L223">    Check.notNull(primitiveClass);</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">    return P2W.get(primitiveClass) == classToTest;</span>
+  }
+
+  /**
+   * Returns {@code true} if first argument is a primitive type and the second
+   * argument is the corresponding wrapper class. If the first class is not a
+   * primitive type (like {@code int.class}), or the second class is not a wrapper
+   * class (like {@code Integer.class}), this method returns {@code false}. No
+   * exception is thrown!
+   *
+   * @param classToTest the class to test
+   * @param wrapperClass the class to compare it with (supposedly, but not
+   *     necessarily, a primitive wrapper type)
+   * @return whether instances of the first class will be auto-unboxed into instances
+   *     of the second class
+   */
+  public static boolean isAutoBoxedAs(Class&lt;?&gt; classToTest, Class&lt;?&gt; wrapperClass) {
+<span class="fc" id="L241">    Check.notNull(classToTest);</span>
+<span class="fc" id="L242">    Check.notNull(wrapperClass);</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">    return W2P.get(wrapperClass) == classToTest;</span>
+  }
+
+  /**
+   * Returns the wrapper class corresponding to the specified class &lt;i&gt;if&lt;/i&gt; it is a
+   * primitive type; else the class itself is returned.
+   *
+   * @param clazz the (primitive) class
+   * @return The corresponding wrapper class
+   */
+  public static Class&lt;?&gt; box(Class&lt;?&gt; clazz) {
+<span class="fc" id="L254">    Check.notNull(clazz);</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">    return clazz.isPrimitive() ? P2W.get(clazz) : clazz;</span>
+  }
+
+  /**
+   * Returns the primitive type corresponding to the specified class &lt;i&gt;if&lt;/i&gt; it is
+   * a wrapper class; else the class itself is returned.
+   *
+   * @param clazz the (wrapper) class
+   * @return The corresponding primitive class
+   */
+  public static Class&lt;?&gt; unbox(Class&lt;?&gt; clazz) {
+<span class="fc" id="L266">    Check.notNull(clazz);</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">    return clazz.isPrimitive() ? clazz : W2P.getOrDefault(clazz, clazz);</span>
+  }
+
+  /**
+   * Returns the class hierarchy of the specified class up to, and including
+   * {@code Object.class}.
+   *
+   * @param clazz the class for which to get the class hierarchy.
+   * @return The superclasses of the specified class.
+   */
+  public static List&lt;Class&lt;?&gt;&gt; getAncestors(Class&lt;?&gt; clazz) {
+<span class="nc" id="L278">    Check.notNull(clazz).isNot(Class::isInterface,</span>
+        &quot;Cannot get ancestors for interface type {0}&quot;, clazz);
+<span class="nc" id="L280">    List&lt;Class&lt;?&gt;&gt; l = new ArrayList&lt;&gt;(5);</span>
+<span class="nc bnc" id="L281" title="All 2 branches missed.">    for (Class&lt;?&gt; x = clazz.getSuperclass(); x != null; x = x.getSuperclass()) {</span>
+<span class="nc" id="L282">      l.add(x);</span>
+    }
+<span class="nc" id="L284">    return l;</span>
+  }
+
+  /**
+   * Returns the number of classes in the class hierarchy of the specified class.
+   *
+   * @param clazz the class for which to count the number of classes in its class
+   *     hierarchy
+   * @return the number of classes in the class hierarchy of the specified class
+   */
+  public static int countAncestors(Class&lt;?&gt; clazz) {
+<span class="nc" id="L295">    Check.notNull(clazz).isNot(Class::isInterface,</span>
+        &quot;Cannot count ancestors for interface type {0}&quot;, clazz);
+<span class="nc" id="L297">    int i = 0;</span>
+<span class="nc bnc" id="L298" title="All 2 branches missed.">    for (Class&lt;?&gt; x = clazz.getSuperclass(); x != null; x = x.getSuperclass()) {</span>
+<span class="nc" id="L299">      ++i;</span>
+    }
+<span class="nc" id="L301">    return i;</span>
+  }
+
+  /**
+   * Returns the entire interface hierarchy, both &quot;horizontal&quot; and &quot;vertical&quot;,
+   * associated with specified class or interface. Returns an empty set if the
+   * argument is a top-level interface, or if the class is a regular class that does
+   * not implement any interface (directly, or indirectly via its superclass).
+   *
+   * @param clazz the {@code Class} object for which to retrieve the interface
+   *     hierarchy
+   * @return The interface hierarchy for the specified {@code Class} object
+   */
+  public static Set&lt;Class&lt;?&gt;&gt; getAllInterfaces(Class&lt;?&gt; clazz) {
+<span class="fc" id="L315">    Check.notNull(clazz);</span>
+<span class="fc" id="L316">    Set&lt;Class&lt;?&gt;&gt; bucket = new LinkedHashSet&lt;&gt;();</span>
+<span class="fc" id="L317">    collectInterfaces(clazz, bucket);</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">    for (Class&lt;?&gt; c = clazz.getSuperclass(); c != null; c = c.getSuperclass()) {</span>
+<span class="fc" id="L319">      collectInterfaces(c, bucket);</span>
+    }
+<span class="fc" id="L321">    return bucket;</span>
+  }
+
+  private static void collectInterfaces(Class&lt;?&gt; clazz,
+      Set&lt;Class&lt;?&gt;&gt; bucket) {
+<span class="fc" id="L326">    Class&lt;?&gt;[] myInterfaces = clazz.getInterfaces();</span>
+<span class="fc" id="L327">    bucket.addAll(Arrays.asList(myInterfaces));</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">    for (Class&lt;?&gt; c : myInterfaces) {</span>
+<span class="fc" id="L329">      collectInterfaces(c, bucket);</span>
+    }
+<span class="fc" id="L331">  }</span>
+
+  /**
+   * Returns a prettified version of the specified object's fully-qualified class
+   * name. Equivalent to {@link #className(Class) className(obj.getClass())}.
+   *
+   * @param obj The object whose class name to return
+   * @return The class name
+   */
+  public static String className(Object obj) {
+<span class="fc" id="L341">    Check.notNull(obj);</span>
+<span class="fc" id="L342">    return className(obj.getClass());</span>
+  }
+
+  /**
+   * Returns a prettified version of the fully-qualified class name. If the provided
+   * type is a non-array type, this method simply forwards to
+   * {@link Class#getName()}; otherwise it is equivalent to
+   * {@link ArrayType#arrayClassName() ArrayType.forClass(clazz).arrayClassName()}.
+   *
+   * @param clazz the class whose name to return
+   * @return The class name
+   */
+  public static String className(Class&lt;?&gt; clazz) {
+<span class="fc" id="L355">    Check.notNull(clazz);</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">    if (clazz.isArray()) {</span>
+<span class="fc" id="L357">      return ArrayType.forClass(clazz).arrayClassName();</span>
+    }
+<span class="fc" id="L359">    return clazz.getName();</span>
+  }
+
+  /**
+   * Returns a prettified version of an object's simple class name. If the type is a
+   * non-array type this method simply forwards to
+   * {@linkplain Class#getSimpleName()}; otherwise it is equivalent to
+   * {@code ArrayType.forClass(clazz).toString()}.
+   *
+   * @param obj The object whose class name to return
+   * @return The class name
+   */
+  public static String simpleClassName(Object obj) {
+<span class="fc" id="L372">    Check.notNull(obj);</span>
+<span class="fc" id="L373">    return simpleClassName(obj.getClass());</span>
+  }
+
+  /**
+   * Returns a prettified version of the simple class name. If the provided type is a
+   * non-array type this method simply forwards to
+   * {@linkplain Class#getSimpleName()}; otherwise it is equivalent to
+   * {@code ArrayType.forClass(clazz).toString()}.
+   *
+   * @param clazz the class whose ame to return
+   * @return The class name
+   */
+  public static String simpleClassName(Class&lt;?&gt; clazz) {
+<span class="fc" id="L386">    Check.notNull(clazz);</span>
+<span class="pc bpc" id="L387" title="1 of 2 branches missed.">    if (clazz.isArray()) {</span>
+<span class="nc" id="L388">      return ArrayType.forClass(clazz).toString();</span>
+    }
+<span class="fc" id="L390">    return clazz.getSimpleName();</span>
+  }
+
+  /**
+   * Returns a short description of the argument. Unless the argument is
+   * {@code null}, the description will at least contain the simple class name of the
+   * argument.
+   *
+   * &lt;ul&gt;
+   * &lt;li&gt;If the argument is {@code null}, the string &quot;null&quot; is returned.
+   * &lt;li&gt;If the argument is a {@link Collection}, the returned string will contain
+   * the collection's simple class name and its size. For example:
+   * &lt;b&gt;ArrayList[113]&lt;/b&gt;.
+   * &lt;li&gt;If the argument is a {@link Map}, the returned string will contain the map's
+   * simple class name and its size. For example: &lt;b&gt;TreeMap[97]&lt;/b&gt;.
+   * &lt;li&gt;If the argument is an array, the returned string will contain the simple
+   * class name of the array's innermost
+   * {@linkplain Class#getComponentType() component type} and its length. For
+   * example: &lt;b&gt;String[42][][]&lt;/b&gt;.
+   * &lt;li&gt;If the argument is a {@code Class} object, the returned string will look
+   * like this: &lt;b&gt;FileOutputStream.class&lt;/b&gt; (&quot;.class&quot; appended to the simple class
+   * name).
+   * &lt;li&gt;Otherwise, the plain simple class name of the argument is returned.
+   * &lt;/ul&gt;
+   *
+   * @param obj the object to describe
+   * @return a description of the object
+   * @see ArrayType#describe(Object)
+   */
+  public static String describe(Object obj) {
+<span class="fc bfc" id="L420" title="All 2 branches covered.">    if (obj == null) {</span>
+<span class="fc" id="L421">      return &quot;null&quot;;</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">    } else if (obj.getClass() == Class.class) {</span>
+<span class="fc" id="L423">      return ((Class&lt;?&gt;) obj).getSimpleName() + &quot;.class&quot;;</span>
+<span class="fc bfc" id="L424" title="All 2 branches covered.">    } else if (obj instanceof Collection&lt;?&gt; c) {</span>
+<span class="fc" id="L425">      return c.getClass().getSimpleName() + '[' + c.size() + ']';</span>
+<span class="fc bfc" id="L426" title="All 2 branches covered.">    } else if (obj instanceof Map&lt;?, ?&gt; m) {</span>
+<span class="fc" id="L427">      return m.getClass().getSimpleName() + '[' + m.size() + ']';</span>
+<span class="fc bfc" id="L428" title="All 2 branches covered.">    } else if (obj.getClass().isArray()) {</span>
+<span class="fc" id="L429">      return ArrayType.describe(obj);</span>
+    }
+<span class="fc" id="L431">    return obj.getClass().getSimpleName();</span>
+  }
+
+  /**
+   * Returns zero, cast to the appropriate type, for primitive types; {@code null}
+   * for any other type.
+   *
+   * @param &lt;T&gt; The type of the class
+   * @param type The class for which to retrieve the default value
+   * @return The default value
+   */
+  @SuppressWarnings(&quot;unchecked&quot;)
+  public static &lt;T&gt; T getTypeDefault(Class&lt;T&gt; type) {
+<span class="fc bfc" id="L444" title="All 2 branches covered.">    return Check.notNull(type, &quot;type&quot;).isNot(sameAs(), void.class).ok().isPrimitive()</span>
+<span class="fc" id="L445">        ? (T) PRIMITIVE_DEFAULTS.get(type)</span>
+<span class="fc" id="L446">        : null;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
