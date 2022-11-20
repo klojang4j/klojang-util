@@ -97,7 +97,7 @@ public final class ArrayMethods {
    */
   @SuppressWarnings(&quot;unchecked&quot;)
   public static &lt;T&gt; T[] concat(T[] arr0, T[] arr1) {
-<span class="fc" id="L100">    return (T[]) concat(arr0, arr1, new Object[0][0]);</span>
+<span class="nc" id="L100">    return (T[]) concat(arr0, arr1, new Object[0][0]);</span>
   }
 
   /**
@@ -126,7 +126,7 @@ public final class ArrayMethods {
 <span class="fc" id="L126">    arraycopy(arr1, 0, all, i, arr1.length);</span>
 <span class="fc" id="L127">    i += arr1.length;</span>
 <span class="fc" id="L128">    arraycopy(arr2, 0, all, i, arr2.length);</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">    if (moreArrays.length != 0) {</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">    if (moreArrays.length != 0) {</span>
 <span class="fc" id="L130">      i += arr2.length;</span>
 <span class="fc bfc" id="L131" title="All 2 branches covered.">      for (int j = 0; j &lt; moreArrays.length; ++j) {</span>
 <span class="fc" id="L132">        T[] arr = moreArrays[j];</span>

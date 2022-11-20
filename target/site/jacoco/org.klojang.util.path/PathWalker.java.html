@@ -40,24 +40,24 @@ public final class PathWalker {
    *
    * @param paths One or more paths representing possibly deeply-nested properties
    */
-<span class="fc" id="L43">  public PathWalker(Path... paths) {</span>
-<span class="fc" id="L44">    Check.that(paths, PATHS).isNot(empty()).is(deepNotNull());</span>
-<span class="fc" id="L45">    this.paths = Arrays.copyOf(paths, paths.length);</span>
-<span class="fc" id="L46">    this.se = true;</span>
-<span class="fc" id="L47">    this.kd = null;</span>
-<span class="fc" id="L48">  }</span>
+<span class="nc" id="L43">  public PathWalker(Path... paths) {</span>
+<span class="nc" id="L44">    Check.that(paths, PATHS).isNot(empty()).is(deepNotNull());</span>
+<span class="nc" id="L45">    this.paths = Arrays.copyOf(paths, paths.length);</span>
+<span class="nc" id="L46">    this.se = true;</span>
+<span class="nc" id="L47">    this.kd = null;</span>
+<span class="nc" id="L48">  }</span>
 
   /**
    * Creates a {@code PathWalker} for the specified paths.
    *
    * @param paths The paths to walk through the provided host objects
    */
-<span class="fc" id="L55">  public PathWalker(String... paths) {</span>
-<span class="fc" id="L56">    Check.that(paths, PATHS).isNot(empty()).is(deepNotNull());</span>
-<span class="fc" id="L57">    this.paths = Arrays.stream(paths).map(Path::from).toArray(Path[]::new);</span>
-<span class="fc" id="L58">    this.se = true;</span>
-<span class="fc" id="L59">    this.kd = null;</span>
-<span class="fc" id="L60">  }</span>
+<span class="nc" id="L55">  public PathWalker(String... paths) {</span>
+<span class="nc" id="L56">    Check.that(paths, PATHS).isNot(empty()).is(deepNotNull());</span>
+<span class="nc" id="L57">    this.paths = Arrays.stream(paths).map(Path::from).toArray(Path[]::new);</span>
+<span class="nc" id="L58">    this.se = true;</span>
+<span class="nc" id="L59">    this.kd = null;</span>
+<span class="nc" id="L60">  }</span>
 
   /**
    * Creates a {@code PathWalker} for the specified paths.
@@ -65,8 +65,8 @@ public final class PathWalker {
    * @param paths The paths to walk through the provided host objects
    */
   public PathWalker(List&lt;Path&gt; paths) {
-<span class="fc" id="L68">    this(paths, true);</span>
-<span class="fc" id="L69">  }</span>
+<span class="nc" id="L68">    this(paths, true);</span>
+<span class="nc" id="L69">  }</span>
 
   /**
    * Creates a {@code PathWalker} for the specified paths.
@@ -77,12 +77,12 @@ public final class PathWalker {
    *     having written the value. If {@code false}, a {@link PathWalkerException} will be thrown
    *     detailing the error.
    */
-<span class="fc" id="L80">  public PathWalker(List&lt;Path&gt; paths, boolean suppressExceptions) {</span>
-<span class="fc" id="L81">    Check.that(paths, PATHS).isNot(empty()).is(deepNotNull());</span>
-<span class="fc" id="L82">    this.paths = paths.toArray(Path[]::new);</span>
-<span class="fc" id="L83">    this.se = suppressExceptions;</span>
-<span class="fc" id="L84">    this.kd = null;</span>
-<span class="fc" id="L85">  }</span>
+<span class="nc" id="L80">  public PathWalker(List&lt;Path&gt; paths, boolean suppressExceptions) {</span>
+<span class="nc" id="L81">    Check.that(paths, PATHS).isNot(empty()).is(deepNotNull());</span>
+<span class="nc" id="L82">    this.paths = paths.toArray(Path[]::new);</span>
+<span class="nc" id="L83">    this.se = suppressExceptions;</span>
+<span class="nc" id="L84">    this.kd = null;</span>
+<span class="nc" id="L85">  }</span>
 
   /**
    * Creates a {@code PathWalker} for the specified paths.
@@ -95,20 +95,20 @@ public final class PathWalker {
    * @param keyDeserializer A function that converts path segments to map keys. You need to provide
    *     this if the host objects are, or contain, {@link Map} instances with non-string keys.
    */
-<span class="fc" id="L98">  public PathWalker(List&lt;Path&gt; paths, boolean suppressExceptions, KeyDeserializer keyDeserializer) {</span>
-<span class="fc" id="L99">    Check.that(paths, PATHS).is(deepNotEmpty());</span>
-<span class="fc" id="L100">    Check.notNull(keyDeserializer, &quot;keyDeserializer&quot;);</span>
-<span class="fc" id="L101">    this.paths = paths.toArray(Path[]::new);</span>
-<span class="fc" id="L102">    this.se = suppressExceptions;</span>
-<span class="fc" id="L103">    this.kd = keyDeserializer;</span>
-<span class="fc" id="L104">  }</span>
+<span class="nc" id="L98">  public PathWalker(List&lt;Path&gt; paths, boolean suppressExceptions, KeyDeserializer keyDeserializer) {</span>
+<span class="nc" id="L99">    Check.that(paths, PATHS).is(deepNotEmpty());</span>
+<span class="nc" id="L100">    Check.notNull(keyDeserializer, &quot;keyDeserializer&quot;);</span>
+<span class="nc" id="L101">    this.paths = paths.toArray(Path[]::new);</span>
+<span class="nc" id="L102">    this.se = suppressExceptions;</span>
+<span class="nc" id="L103">    this.kd = keyDeserializer;</span>
+<span class="nc" id="L104">  }</span>
 
   // For internal use
-<span class="fc" id="L107">  PathWalker(Path path, boolean suppressExceptions, KeyDeserializer keyDeserializer) {</span>
-<span class="fc" id="L108">    this.paths = new Path[] {path};</span>
-<span class="fc" id="L109">    this.se = suppressExceptions;</span>
-<span class="fc" id="L110">    this.kd = keyDeserializer;</span>
-<span class="fc" id="L111">  }</span>
+<span class="nc" id="L107">  PathWalker(Path path, boolean suppressExceptions, KeyDeserializer keyDeserializer) {</span>
+<span class="nc" id="L108">    this.paths = new Path[] {path};</span>
+<span class="nc" id="L109">    this.se = suppressExceptions;</span>
+<span class="nc" id="L110">    this.kd = keyDeserializer;</span>
+<span class="nc" id="L111">  }</span>
 
   /**
    * Returns the values of all paths specified through the constructor.
@@ -119,8 +119,8 @@ public final class PathWalker {
    *     fails to retrieve the values of one or more paths.
    */
   public Object[] readValues(Object host) throws PathWalkerException {
-<span class="fc" id="L122">    ObjectReader reader = new ObjectReader(se, kd);</span>
-<span class="fc" id="L123">    return Arrays.stream(paths).map(path -&gt; reader.read(host, path, 0)).toArray();</span>
+<span class="nc" id="L122">    ObjectReader reader = new ObjectReader(se, kd);</span>
+<span class="nc" id="L123">    return Arrays.stream(paths).map(path -&gt; reader.read(host, path, 0)).toArray();</span>
   }
 
   /**
@@ -133,12 +133,12 @@ public final class PathWalker {
    *     fails to retrieve the values of one or more paths.
    */
   public void readValues(Object host, Object[] output) throws PathWalkerException {
-<span class="fc" id="L136">    Check.notNull(output, Param.OUTPUT).has(length(), gte(), paths.length);</span>
-<span class="fc" id="L137">    ObjectReader reader = new ObjectReader(se, kd);</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">    for (int i = 0; i &lt; paths.length; ++i) {</span>
-<span class="fc" id="L139">      output[i] = reader.read(host, paths[i], 0);</span>
+<span class="nc" id="L136">    Check.notNull(output, Param.OUTPUT).has(length(), gte(), paths.length);</span>
+<span class="nc" id="L137">    ObjectReader reader = new ObjectReader(se, kd);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">    for (int i = 0; i &lt; paths.length; ++i) {</span>
+<span class="nc" id="L139">      output[i] = reader.read(host, paths[i], 0);</span>
     }
-<span class="fc" id="L141">  }</span>
+<span class="nc" id="L141">  }</span>
 
   /**
    * Reads the values of all paths and inserts them into the provided path-to-value map.
@@ -149,10 +149,10 @@ public final class PathWalker {
    *     fails to retrieve the values of one or more paths.
    */
   public void readValues(Object host, Map&lt;Path, Object&gt; output) throws PathWalkerException {
-<span class="fc" id="L152">    Check.notNull(output, Param.OUTPUT);</span>
-<span class="fc" id="L153">    ObjectReader reader = new ObjectReader(se, kd);</span>
-<span class="fc" id="L154">    Arrays.stream(paths).forEach(p -&gt; output.put(p, reader.read(host, p, 0)));</span>
-<span class="fc" id="L155">  }</span>
+<span class="nc" id="L152">    Check.notNull(output, Param.OUTPUT);</span>
+<span class="nc" id="L153">    ObjectReader reader = new ObjectReader(se, kd);</span>
+<span class="nc" id="L154">    Arrays.stream(paths).forEach(p -&gt; output.put(p, reader.read(host, p, 0)));</span>
+<span class="nc" id="L155">  }</span>
 
   /**
    * Reads the value of the first path specified through the constructor. Convenient if you
@@ -165,7 +165,7 @@ public final class PathWalker {
    *     fails to retrieve the value of the first path.
    */
   public &lt;T&gt; T read(Object host) {
-<span class="fc" id="L168">    return (T) new ObjectReader(se, kd).read(host, paths[0], 0);</span>
+<span class="nc" id="L168">    return (T) new ObjectReader(se, kd).read(host, paths[0], 0);</span>
   }
 
   /**
@@ -177,15 +177,15 @@ public final class PathWalker {
    * @return the number of successfully written values
    */
   public int writeValues(Object host, Object... values) {
-<span class="fc" id="L180">    Check.notNull(values, Param.VALUES).has(length(), eq(), paths.length);</span>
-<span class="fc" id="L181">    ObjectWriter writer = new ObjectWriter(se, kd);</span>
-<span class="fc" id="L182">    int x = 0;</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">    for (int i = 0; i &lt; paths.length; ++i) {</span>
-<span class="pc bpc" id="L184" title="1 of 2 branches missed.">      if (writer.write(host, paths[i], values[i])) {</span>
-<span class="fc" id="L185">        ++x;</span>
+<span class="nc" id="L180">    Check.notNull(values, Param.VALUES).has(length(), eq(), paths.length);</span>
+<span class="nc" id="L181">    ObjectWriter writer = new ObjectWriter(se, kd);</span>
+<span class="nc" id="L182">    int x = 0;</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">    for (int i = 0; i &lt; paths.length; ++i) {</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">      if (writer.write(host, paths[i], values[i])) {</span>
+<span class="nc" id="L185">        ++x;</span>
       }
     }
-<span class="fc" id="L188">    return x;</span>
+<span class="nc" id="L188">    return x;</span>
   }
 
   /**
@@ -197,7 +197,7 @@ public final class PathWalker {
    * @return {@code true} if the value was successfully written
    */
   public boolean write(Object host, Object value) {
-<span class="fc" id="L200">    return new ObjectWriter(se, kd).write(host, paths[0], value);</span>
+<span class="nc" id="L200">    return new ObjectWriter(se, kd).write(host, paths[0], value);</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

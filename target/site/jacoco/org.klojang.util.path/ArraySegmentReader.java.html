@@ -14,20 +14,20 @@ import org.klojang.util.path.SegmentReader;
 final class ArraySegmentReader extends SegmentReader&lt;Object[]&gt; {
 
   ArraySegmentReader(boolean suppressExceptions, KeyDeserializer keyDeserializer) {
-<span class="fc" id="L17">    super(suppressExceptions, keyDeserializer);</span>
-<span class="fc" id="L18">  }</span>
+<span class="nc" id="L17">    super(suppressExceptions, keyDeserializer);</span>
+<span class="nc" id="L18">  }</span>
 
   @Override
   Object read(Object[] array, Path path, int segment) {
-<span class="fc" id="L22">    OptionalInt opt = toInt(path.segment(segment));</span>
-<span class="pc bpc" id="L23" title="1 of 2 branches missed.">    if (opt.isEmpty()) {</span>
+<span class="nc" id="L22">    OptionalInt opt = toInt(path.segment(segment));</span>
+<span class="nc bnc" id="L23" title="All 2 branches missed.">    if (opt.isEmpty()) {</span>
 <span class="nc" id="L24">      return deadEnd(indexExpected(path, segment));</span>
     }
-<span class="fc" id="L26">    int idx = opt.getAsInt();</span>
-<span class="fc bfc" id="L27" title="All 2 branches covered.">    if (idx &lt; array.length) {</span>
-<span class="fc" id="L28">      return new ObjectReader(se, kd).read(array[idx], path, ++segment);</span>
+<span class="nc" id="L26">    int idx = opt.getAsInt();</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">    if (idx &lt; array.length) {</span>
+<span class="nc" id="L28">      return new ObjectReader(se, kd).read(array[idx], path, ++segment);</span>
     }
-<span class="fc" id="L30">    return deadEnd(indexOutOfBounds(path, segment));</span>
+<span class="nc" id="L30">    return deadEnd(indexOutOfBounds(path, segment));</span>
   }
 
 }

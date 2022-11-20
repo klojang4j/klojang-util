@@ -21,50 +21,50 @@ final class ObjectWriter {
   private final boolean se;
   private final KeyDeserializer kd;
 
-<span class="fc" id="L24">  ObjectWriter(boolean suppressExceptions, KeyDeserializer keyDeserializer) {</span>
-<span class="fc" id="L25">    this.se = suppressExceptions;</span>
-<span class="fc" id="L26">    this.kd = keyDeserializer;</span>
-<span class="fc" id="L27">  }</span>
+<span class="nc" id="L24">  ObjectWriter(boolean suppressExceptions, KeyDeserializer keyDeserializer) {</span>
+<span class="nc" id="L25">    this.se = suppressExceptions;</span>
+<span class="nc" id="L26">    this.kd = keyDeserializer;</span>
+<span class="nc" id="L27">  }</span>
 
   boolean write(Object host, Path path, Object value) {
     Object writeTo;
     int segment;
-<span class="fc bfc" id="L32" title="All 2 branches covered.">    if (path.size() == 1) {</span>
-<span class="fc" id="L33">      writeTo = host;</span>
-<span class="fc" id="L34">      segment = 0;</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">    if (path.size() == 1) {</span>
+<span class="nc" id="L33">      writeTo = host;</span>
+<span class="nc" id="L34">      segment = 0;</span>
     } else {
-<span class="fc" id="L36">      Path parent = path.parent();</span>
-<span class="fc" id="L37">      PathWalker pw = new PathWalker(path.parent(), false, kd);</span>
+<span class="nc" id="L36">      Path parent = path.parent();</span>
+<span class="nc" id="L37">      PathWalker pw = new PathWalker(path.parent(), false, kd);</span>
       try {
-<span class="fc" id="L39">        writeTo = pw.read(host);</span>
-<span class="fc" id="L40">      } catch (PathWalkerException e) {</span>
-<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (se) {</span>
+<span class="nc" id="L39">        writeTo = pw.read(host);</span>
+<span class="nc" id="L40">      } catch (PathWalkerException e) {</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        if (se) {</span>
 <span class="nc" id="L42">          return false;</span>
         }
-<span class="fc" id="L44">        throw e;</span>
-<span class="fc" id="L45">      }</span>
-<span class="fc" id="L46">      segment = parent.size() - 1;</span>
+<span class="nc" id="L44">        throw e;</span>
+<span class="nc" id="L45">      }</span>
+<span class="nc" id="L46">      segment = parent.size() - 1;</span>
     }
-<span class="fc bfc" id="L48" title="All 2 branches covered.">    if (writeTo == null) {</span>
-<span class="fc" id="L49">      return deadEnd(nullValue(path, segment));</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">    if (writeTo == null) {</span>
+<span class="nc" id="L49">      return deadEnd(nullValue(path, segment));</span>
     }
-<span class="fc bfc" id="L51" title="All 2 branches covered.">    if (writeTo instanceof List l) {</span>
-<span class="fc" id="L52">      return new ListSegmentWriter(se, kd).write(l, path, value);</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">    } else if (writeTo instanceof Map m) {</span>
-<span class="fc" id="L54">      return new MapSegmentWriter(se, kd).write(m, path, value);</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">    } else if (writeTo instanceof Object[] o) {</span>
-<span class="fc" id="L56">      return new ArraySegmentWriter(se, kd).write(o, path, value);</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">    } else if (isPrimitiveArray(writeTo)) {</span>
-<span class="fc" id="L58">      return new PrimitiveArraySegmentWriter(se, kd).write(writeTo, path, value);</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">    if (writeTo instanceof List l) {</span>
+<span class="nc" id="L52">      return new ListSegmentWriter(se, kd).write(l, path, value);</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">    } else if (writeTo instanceof Map m) {</span>
+<span class="nc" id="L54">      return new MapSegmentWriter(se, kd).write(m, path, value);</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">    } else if (writeTo instanceof Object[] o) {</span>
+<span class="nc" id="L56">      return new ArraySegmentWriter(se, kd).write(o, path, value);</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">    } else if (isPrimitiveArray(writeTo)) {</span>
+<span class="nc" id="L58">      return new PrimitiveArraySegmentWriter(se, kd).write(writeTo, path, value);</span>
     }
-<span class="fc" id="L60">    return new BeanSegmentWriter(se, kd).write(writeTo, path, value);</span>
+<span class="nc" id="L60">    return new BeanSegmentWriter(se, kd).write(writeTo, path, value);</span>
   }
 
   boolean deadEnd(PathWalkerException.Factory excFactory) {
-<span class="fc bfc" id="L64" title="All 2 branches covered.">    if (se) {</span>
-<span class="fc" id="L65">      return false;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">    if (se) {</span>
+<span class="nc" id="L65">      return false;</span>
     }
-<span class="fc" id="L67">    throw excFactory.get();</span>
+<span class="nc" id="L67">    throw excFactory.get();</span>
   }
 
 }

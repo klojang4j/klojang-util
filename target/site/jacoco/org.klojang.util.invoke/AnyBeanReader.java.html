@@ -30,8 +30,8 @@ public final class AnyBeanReader {
    * applied regarding which methods qualify as getters.
    */
   public AnyBeanReader() {
-<span class="fc" id="L33">    this(true);</span>
-<span class="fc" id="L34">  }</span>
+<span class="nc" id="L33">    this(true);</span>
+<span class="nc" id="L34">  }</span>
 
   /**
    * Creates a new {@code AnyBeanReader}.
@@ -46,9 +46,9 @@ public final class AnyBeanReader {
    *     parameter is quietly ignored for {@code record} classes. Records are always
    *     processed as though {@code strictNaming} were {@code false}.
    */
-<span class="fc" id="L49">  public AnyBeanReader(boolean strictNaming) {</span>
-<span class="fc" id="L50">    this.strict = strictNaming;</span>
-<span class="fc" id="L51">  }</span>
+<span class="nc" id="L49">  public AnyBeanReader(boolean strictNaming) {</span>
+<span class="nc" id="L50">    this.strict = strictNaming;</span>
+<span class="nc" id="L51">  }</span>
 
   /**
    * Returns the value of the specified property on the specified bean. If the
@@ -61,19 +61,19 @@ public final class AnyBeanReader {
    * @throws NoSuchPropertyException if the specified property does not exist
    */
   public &lt;U&gt; U read(Object bean, String property) throws NoSuchPropertyException {
-<span class="fc" id="L64">    Check.notNull(bean, Param.BEAN);</span>
-<span class="fc" id="L65">    Check.notNull(property, Param.PROPERTY);</span>
-<span class="fc" id="L66">    return doRead(bean, property);</span>
+<span class="nc" id="L64">    Check.notNull(bean, Param.BEAN);</span>
+<span class="nc" id="L65">    Check.notNull(property, Param.PROPERTY);</span>
+<span class="nc" id="L66">    return doRead(bean, property);</span>
   }
 
   @SuppressWarnings(&quot;unchecked&quot;)
   private &lt;U&gt; U doRead(Object bean, String prop) {
-<span class="fc" id="L71">    Map&lt;String, Getter&gt; getters = GetterFactory.INSTANCE</span>
-<span class="fc" id="L72">        .getGetters(bean.getClass(), strict);</span>
-<span class="fc" id="L73">    Getter getter = getters.get(prop);</span>
-<span class="fc" id="L74">    Check.that(getter).is(notNull(), () -&gt; noSuchProperty(bean, prop)).ok();</span>
+<span class="nc" id="L71">    Map&lt;String, Getter&gt; getters = GetterFactory.INSTANCE</span>
+<span class="nc" id="L72">        .getGetters(bean.getClass(), strict);</span>
+<span class="nc" id="L73">    Getter getter = getters.get(prop);</span>
+<span class="nc" id="L74">    Check.that(getter).is(notNull(), () -&gt; noSuchProperty(bean, prop)).ok();</span>
     try {
-<span class="fc" id="L76">      return (U) getter.read(bean);</span>
+<span class="nc" id="L76">      return (U) getter.read(bean);</span>
 <span class="nc" id="L77">    } catch (Throwable exc) {</span>
 <span class="nc" id="L78">      throw InvokeException.wrap(exc, bean, getter);</span>
     }

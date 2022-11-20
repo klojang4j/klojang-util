@@ -13,26 +13,26 @@ import org.klojang.util.path.SegmentReader;
 final class MapSegmentReader extends SegmentReader&lt;Map&lt;?, ?&gt;&gt; {
 
   MapSegmentReader(boolean suppressExceptions, KeyDeserializer keyDeserializer) {
-<span class="fc" id="L16">    super(suppressExceptions, keyDeserializer);</span>
-<span class="fc" id="L17">  }</span>
+<span class="nc" id="L16">    super(suppressExceptions, keyDeserializer);</span>
+<span class="nc" id="L17">  }</span>
 
   @Override
   Object read(Map&lt;?, ?&gt; map, Path path, int segment) {
     Object key;
-<span class="fc bfc" id="L22" title="All 2 branches covered.">    if (kd == null) {</span>
-<span class="fc" id="L23">      key = path.segment(segment);</span>
+<span class="nc bnc" id="L22" title="All 2 branches missed.">    if (kd == null) {</span>
+<span class="nc" id="L23">      key = path.segment(segment);</span>
     } else {
       try {
-<span class="fc" id="L26">        key = kd.deserialize(path, segment);</span>
+<span class="nc" id="L26">        key = kd.deserialize(path, segment);</span>
 <span class="nc" id="L27">      } catch (KeyDeserializationException e) {</span>
 <span class="nc" id="L28">        return deadEnd(keyDeserializationFailed(path, segment, e));</span>
-<span class="fc" id="L29">      }</span>
+<span class="nc" id="L29">      }</span>
     }
-<span class="fc" id="L31">    Object val = map.get(key);</span>
-<span class="fc bfc" id="L32" title="All 4 branches covered.">    if (val == null &amp;&amp; !map.containsKey(key)) {</span>
+<span class="nc" id="L31">    Object val = map.get(key);</span>
+<span class="nc bnc" id="L32" title="All 4 branches missed.">    if (val == null &amp;&amp; !map.containsKey(key)) {</span>
 <span class="nc" id="L33">      return deadEnd(noSuchKey(path, segment, key));</span>
     }
-<span class="fc" id="L35">    return new ObjectReader(se, kd).read(val, path, ++segment);</span>
+<span class="nc" id="L35">    return new ObjectReader(se, kd).read(val, path, ++segment);</span>
   }
 
 }

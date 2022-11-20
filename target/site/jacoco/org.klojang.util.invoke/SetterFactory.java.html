@@ -27,11 +27,11 @@ public final class SetterFactory {
   /**
    * The one and only instance of {@code SetterFactory}.
    */
-<span class="fc" id="L30">  public static final SetterFactory INSTANCE = new SetterFactory();</span>
+<span class="nc" id="L30">  public static final SetterFactory INSTANCE = new SetterFactory();</span>
 
-<span class="fc" id="L32">  private final Map&lt;Class&lt;?&gt;, Map&lt;String, Setter&gt;&gt; cache = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L32">  private final Map&lt;Class&lt;?&gt;, Map&lt;String, Setter&gt;&gt; cache = new HashMap&lt;&gt;();</span>
 
-<span class="fc" id="L34">  private SetterFactory() {}</span>
+<span class="nc" id="L34">  private SetterFactory() {}</span>
 
   /**
    * Returns the public {@link Setter setters} for the specified class. The returned
@@ -42,19 +42,19 @@ public final class SetterFactory {
    * @throws IllegalAssignmentException If the does not have any public setters
    */
   public Map&lt;String, Setter&gt; getSetters(Class&lt;?&gt; clazz) {
-<span class="fc" id="L45">    Map&lt;String, Setter&gt; setters = cache.get(clazz);</span>
-<span class="fc bfc" id="L46" title="All 2 branches covered.">    if (setters == null) {</span>
-<span class="fc" id="L47">      List&lt;Method&gt; methods = InvokeUtils.getSetters(clazz);</span>
-<span class="fc" id="L48">      Check.that(methods).isNot(empty(), () -&gt; new NoPublicSettersException(clazz));</span>
-<span class="fc" id="L49">      List&lt;Entry&lt;String, Setter&gt;&gt; entries = new ArrayList&lt;&gt;(methods.size());</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">      for (Method m : methods) {</span>
-<span class="fc" id="L51">        String prop = InvokeUtils.getPropertyNameFromSetter(m);</span>
-<span class="fc" id="L52">        entries.add(entry(prop, new Setter(m, prop)));</span>
-<span class="fc" id="L53">      }</span>
-<span class="fc" id="L54">      setters = Map.ofEntries(entries.toArray(Entry[]::new));</span>
-<span class="fc" id="L55">      cache.put(clazz, setters);</span>
+<span class="nc" id="L45">    Map&lt;String, Setter&gt; setters = cache.get(clazz);</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">    if (setters == null) {</span>
+<span class="nc" id="L47">      List&lt;Method&gt; methods = InvokeUtils.getSetters(clazz);</span>
+<span class="nc" id="L48">      Check.that(methods).isNot(empty(), () -&gt; new NoPublicSettersException(clazz));</span>
+<span class="nc" id="L49">      List&lt;Entry&lt;String, Setter&gt;&gt; entries = new ArrayList&lt;&gt;(methods.size());</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">      for (Method m : methods) {</span>
+<span class="nc" id="L51">        String prop = InvokeUtils.getPropertyNameFromSetter(m);</span>
+<span class="nc" id="L52">        entries.add(entry(prop, new Setter(m, prop)));</span>
+<span class="nc" id="L53">      }</span>
+<span class="nc" id="L54">      setters = Map.ofEntries(entries.toArray(Entry[]::new));</span>
+<span class="nc" id="L55">      cache.put(clazz, setters);</span>
     }
-<span class="fc" id="L57">    return setters;</span>
+<span class="nc" id="L57">    return setters;</span>
   }
 
 }

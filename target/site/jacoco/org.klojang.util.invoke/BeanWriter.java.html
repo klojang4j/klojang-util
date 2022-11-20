@@ -67,8 +67,8 @@ public final class BeanWriter&lt;T&gt; {
    * @param properties the properties to be written
    */
   public BeanWriter(Class&lt;T&gt; beanClass, String... properties) {
-<span class="fc" id="L70">    this(beanClass, INCLUDE, properties);</span>
-<span class="fc" id="L71">  }</span>
+<span class="nc" id="L70">    this(beanClass, INCLUDE, properties);</span>
+<span class="nc" id="L71">  }</span>
 
   /**
    * Creates a {@code BeanWriter} for the specified class. You can optionally specify
@@ -94,8 +94,8 @@ public final class BeanWriter&lt;T&gt; {
   public BeanWriter(Class&lt;T&gt; beanClass,
       FallibleBiFunction&lt;Setter, Object, Object, Throwable&gt; converter,
       String... properties) {
-<span class="fc" id="L97">    this(beanClass, converter, INCLUDE, properties);</span>
-<span class="fc" id="L98">  }</span>
+<span class="nc" id="L97">    this(beanClass, converter, INCLUDE, properties);</span>
+<span class="nc" id="L98">  }</span>
 
   /**
    * Creates a {@code BeanWriter} for the specified class. You can optionally specify
@@ -109,13 +109,13 @@ public final class BeanWriter&lt;T&gt; {
    */
   public BeanWriter(Class&lt;T&gt; beanClass,
       IncludeExclude includeExclude,
-<span class="fc" id="L112">      String... properties) {</span>
-<span class="fc" id="L113">    this.beanClass = Check.notNull(beanClass, &quot;beanClass&quot;).ok();</span>
-<span class="fc" id="L114">    this.converter = null;</span>
-<span class="fc" id="L115">    Check.notNull(includeExclude, &quot;includeExclude&quot;);</span>
-<span class="fc" id="L116">    Check.notNull(properties, &quot;properties&quot;);</span>
-<span class="fc" id="L117">    this.setters = getSetters(includeExclude, properties);</span>
-<span class="fc" id="L118">  }</span>
+<span class="nc" id="L112">      String... properties) {</span>
+<span class="nc" id="L113">    this.beanClass = Check.notNull(beanClass, &quot;beanClass&quot;).ok();</span>
+<span class="nc" id="L114">    this.converter = null;</span>
+<span class="nc" id="L115">    Check.notNull(includeExclude, &quot;includeExclude&quot;);</span>
+<span class="nc" id="L116">    Check.notNull(properties, &quot;properties&quot;);</span>
+<span class="nc" id="L117">    this.setters = getSetters(includeExclude, properties);</span>
+<span class="nc" id="L118">  }</span>
 
   /**
    * Creates a {@code BeanWriter} for the specified class. You can optionally specify
@@ -150,13 +150,13 @@ public final class BeanWriter&lt;T&gt; {
   public BeanWriter(Class&lt;T&gt; beanClass,
       FallibleBiFunction&lt;Setter, Object, Object, Throwable&gt; converter,
       IncludeExclude includeExclude,
-<span class="fc" id="L153">      String... properties) {</span>
-<span class="fc" id="L154">    this.beanClass = Check.notNull(beanClass, &quot;beanClass&quot;).ok();</span>
-<span class="fc" id="L155">    this.converter = Check.notNull(converter, &quot;converter&quot;).ok();</span>
-<span class="fc" id="L156">    Check.notNull(includeExclude, &quot;includeExclude&quot;);</span>
-<span class="fc" id="L157">    Check.notNull(properties, &quot;properties&quot;);</span>
-<span class="fc" id="L158">    this.setters = getSetters(includeExclude, properties);</span>
-<span class="fc" id="L159">  }</span>
+<span class="nc" id="L153">      String... properties) {</span>
+<span class="nc" id="L154">    this.beanClass = Check.notNull(beanClass, &quot;beanClass&quot;).ok();</span>
+<span class="nc" id="L155">    this.converter = Check.notNull(converter, &quot;converter&quot;).ok();</span>
+<span class="nc" id="L156">    Check.notNull(includeExclude, &quot;includeExclude&quot;);</span>
+<span class="nc" id="L157">    Check.notNull(properties, &quot;properties&quot;);</span>
+<span class="nc" id="L158">    this.setters = getSetters(includeExclude, properties);</span>
+<span class="nc" id="L159">  }</span>
 
   /**
    * Sets the value of the specified property on the specified bean.
@@ -172,11 +172,11 @@ public final class BeanWriter&lt;T&gt; {
    *     {@code java.lang.invoke} package
    */
   public void write(T bean, String property, Object value) throws Throwable {
-<span class="fc" id="L175">    Check.notNull(bean, BEAN);</span>
-<span class="fc" id="L176">    Setter setter = Check.notNull(property, PROPERTY).ok(setters::get);</span>
-<span class="fc" id="L177">    Check.that(setter).is(notNull(), () -&gt; noSuchProperty(bean, property));</span>
-<span class="fc" id="L178">    set(bean, setter, value);</span>
-<span class="fc" id="L179">  }</span>
+<span class="nc" id="L175">    Check.notNull(bean, BEAN);</span>
+<span class="nc" id="L176">    Setter setter = Check.notNull(property, PROPERTY).ok(setters::get);</span>
+<span class="nc" id="L177">    Check.that(setter).is(notNull(), () -&gt; noSuchProperty(bean, property));</span>
+<span class="nc" id="L178">    set(bean, setter, value);</span>
+<span class="nc" id="L179">  }</span>
 
   /**
    * Overwrites all properties in the second bean with the values they have in the
@@ -189,13 +189,13 @@ public final class BeanWriter&lt;T&gt; {
    *     {@code java.lang.invoke} package
    */
   public void copy(T fromBean, T toBean) throws Throwable {
-<span class="fc" id="L192">    Check.notNull(fromBean, &quot;source bean&quot;);</span>
-<span class="fc" id="L193">    Check.notNull(toBean, &quot;target bean&quot;);</span>
-<span class="fc" id="L194">    BeanReader&lt;T&gt; reader = getBeanReader();</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">    for (Setter setter : setters.values()) {</span>
-<span class="fc" id="L196">      set(toBean, setter, reader.read(fromBean, setter.getProperty()));</span>
-<span class="fc" id="L197">    }</span>
-<span class="fc" id="L198">  }</span>
+<span class="nc" id="L192">    Check.notNull(fromBean, &quot;source bean&quot;);</span>
+<span class="nc" id="L193">    Check.notNull(toBean, &quot;target bean&quot;);</span>
+<span class="nc" id="L194">    BeanReader&lt;T&gt; reader = getBeanReader();</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">    for (Setter setter : setters.values()) {</span>
+<span class="nc" id="L196">      set(toBean, setter, reader.read(fromBean, setter.getProperty()));</span>
+<span class="nc" id="L197">    }</span>
+<span class="nc" id="L198">  }</span>
 
   /**
    * Copies all non-null properties from the first bean to the second bean. This can
@@ -208,16 +208,16 @@ public final class BeanWriter&lt;T&gt; {
    *     {@code java.lang.invoke} package
    */
   public void copyNonNull(T fromBean, T toBean) throws Throwable {
-<span class="fc" id="L211">    Check.notNull(fromBean, &quot;source bean&quot;);</span>
-<span class="fc" id="L212">    Check.notNull(toBean, &quot;target bean&quot;);</span>
-<span class="fc" id="L213">    BeanReader&lt;T&gt; reader = getBeanReader();</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">    for (Setter setter : setters.values()) {</span>
-<span class="fc" id="L215">      Object v = reader.read(fromBean, setter.getProperty());</span>
-<span class="fc bfc" id="L216" title="All 2 branches covered.">      if (v != null) {</span>
-<span class="fc" id="L217">        set(toBean, setter, v);</span>
+<span class="nc" id="L211">    Check.notNull(fromBean, &quot;source bean&quot;);</span>
+<span class="nc" id="L212">    Check.notNull(toBean, &quot;target bean&quot;);</span>
+<span class="nc" id="L213">    BeanReader&lt;T&gt; reader = getBeanReader();</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">    for (Setter setter : setters.values()) {</span>
+<span class="nc" id="L215">      Object v = reader.read(fromBean, setter.getProperty());</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">      if (v != null) {</span>
+<span class="nc" id="L217">        set(toBean, setter, v);</span>
       }
-<span class="fc" id="L219">    }</span>
-<span class="fc" id="L220">  }</span>
+<span class="nc" id="L219">    }</span>
+<span class="nc" id="L220">  }</span>
 
   /**
    * Overwrites all properties in the second bean whose value is {@code null} with
@@ -230,16 +230,16 @@ public final class BeanWriter&lt;T&gt; {
    *     {@code java.lang.invoke} package
    */
   public void enrich(T fromBean, T toBean) throws Throwable {
-<span class="fc" id="L233">    Check.notNull(fromBean, &quot;source bean&quot;);</span>
-<span class="fc" id="L234">    Check.notNull(toBean, &quot;target bean&quot;);</span>
-<span class="fc" id="L235">    BeanReader&lt;T&gt; reader = getBeanReader();</span>
-<span class="fc bfc" id="L236" title="All 2 branches covered.">    for (Setter setter : setters.values()) {</span>
-<span class="fc" id="L237">      Object v = reader.read(fromBean, setter.getProperty());</span>
-<span class="fc bfc" id="L238" title="All 4 branches covered.">      if (v != null &amp;&amp; reader.read(toBean, setter.getProperty()) == null) {</span>
-<span class="fc" id="L239">        set(toBean, setter, v);</span>
+<span class="nc" id="L233">    Check.notNull(fromBean, &quot;source bean&quot;);</span>
+<span class="nc" id="L234">    Check.notNull(toBean, &quot;target bean&quot;);</span>
+<span class="nc" id="L235">    BeanReader&lt;T&gt; reader = getBeanReader();</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">    for (Setter setter : setters.values()) {</span>
+<span class="nc" id="L237">      Object v = reader.read(fromBean, setter.getProperty());</span>
+<span class="nc bnc" id="L238" title="All 4 branches missed.">      if (v != null &amp;&amp; reader.read(toBean, setter.getProperty()) == null) {</span>
+<span class="nc" id="L239">        set(toBean, setter, v);</span>
       }
-<span class="fc" id="L241">    }</span>
-<span class="fc" id="L242">  }</span>
+<span class="nc" id="L241">    }</span>
+<span class="nc" id="L242">  }</span>
 
   /**
    * Overwrites all properties in the specified bean with the corresponding values in
@@ -258,17 +258,17 @@ public final class BeanWriter&lt;T&gt; {
    */
   public void copy(Map&lt;String, ?&gt; fromMap, T toBean)
       throws IllegalAssignmentException, Throwable {
-<span class="fc" id="L261">    Check.notNull(fromMap, &quot;fromMap&quot;);</span>
-<span class="fc" id="L262">    Check.notNull(toBean, &quot;toBean&quot;);</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">    for (Map.Entry&lt;String, ?&gt; e : fromMap.entrySet()) {</span>
-<span class="pc bpc" id="L264" title="1 of 2 branches missed.">      if (e.getKey() != null) {</span>
-<span class="fc" id="L265">        Setter setter = setters.get(e.getKey());</span>
-<span class="pc bpc" id="L266" title="1 of 2 branches missed.">        if (setter != null) {</span>
-<span class="fc" id="L267">          set(toBean, setter, e.getValue());</span>
+<span class="nc" id="L261">    Check.notNull(fromMap, &quot;fromMap&quot;);</span>
+<span class="nc" id="L262">    Check.notNull(toBean, &quot;toBean&quot;);</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">    for (Map.Entry&lt;String, ?&gt; e : fromMap.entrySet()) {</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">      if (e.getKey() != null) {</span>
+<span class="nc" id="L265">        Setter setter = setters.get(e.getKey());</span>
+<span class="nc bnc" id="L266" title="All 2 branches missed.">        if (setter != null) {</span>
+<span class="nc" id="L267">          set(toBean, setter, e.getValue());</span>
         }
       }
-<span class="fc" id="L270">    }</span>
-<span class="fc" id="L271">  }</span>
+<span class="nc" id="L270">    }</span>
+<span class="nc" id="L271">  }</span>
 
   /**
    * Copies all non-null values from the specified map to the specified bean. Map
@@ -285,17 +285,17 @@ public final class BeanWriter&lt;T&gt; {
    *     {@code java.lang.invoke} package
    */
   public void copyNonNull(Map&lt;String, ?&gt; fromMap, T toBean) throws Throwable {
-<span class="fc" id="L288">    Check.notNull(fromMap, &quot;source map&quot;);</span>
-<span class="fc" id="L289">    Check.notNull(toBean, &quot;target bean&quot;);</span>
-<span class="fc bfc" id="L290" title="All 2 branches covered.">    for (Map.Entry&lt;String, ?&gt; e : fromMap.entrySet()) {</span>
-<span class="pc bpc" id="L291" title="1 of 4 branches missed.">      if (e.getValue() != null &amp;&amp; e.getKey() != null) {</span>
-<span class="fc" id="L292">        Setter setter = setters.get(e.getKey());</span>
-<span class="pc bpc" id="L293" title="1 of 2 branches missed.">        if (setter != null) {</span>
-<span class="fc" id="L294">          set(toBean, setter, e.getValue());</span>
+<span class="nc" id="L288">    Check.notNull(fromMap, &quot;source map&quot;);</span>
+<span class="nc" id="L289">    Check.notNull(toBean, &quot;target bean&quot;);</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">    for (Map.Entry&lt;String, ?&gt; e : fromMap.entrySet()) {</span>
+<span class="nc bnc" id="L291" title="All 4 branches missed.">      if (e.getValue() != null &amp;&amp; e.getKey() != null) {</span>
+<span class="nc" id="L292">        Setter setter = setters.get(e.getKey());</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">        if (setter != null) {</span>
+<span class="nc" id="L294">          set(toBean, setter, e.getValue());</span>
         }
       }
-<span class="fc" id="L297">    }</span>
-<span class="fc" id="L298">  }</span>
+<span class="nc" id="L297">    }</span>
+<span class="nc" id="L298">  }</span>
 
   /**
    * Overwrites all properties in the specified bean whose value is {@codd null} with
@@ -314,18 +314,18 @@ public final class BeanWriter&lt;T&gt; {
    */
   public void enrich(Map&lt;String, ?&gt; fromMap, T toBean)
       throws IllegalAssignmentException, Throwable {
-<span class="fc" id="L317">    Check.notNull(fromMap, &quot;fromMap&quot;);</span>
-<span class="fc" id="L318">    Check.notNull(toBean, &quot;toBean&quot;);</span>
-<span class="fc" id="L319">    BeanReader&lt;T&gt; reader = getBeanReader();</span>
-<span class="fc bfc" id="L320" title="All 2 branches covered.">    for (Map.Entry&lt;String, ?&gt; e : fromMap.entrySet()) {</span>
-<span class="pc bpc" id="L321" title="1 of 4 branches missed.">      if (e.getValue() != null &amp;&amp; e.getKey() != null) {</span>
-<span class="fc" id="L322">        Setter setter = setters.get(e.getKey());</span>
-<span class="pc bpc" id="L323" title="1 of 4 branches missed.">        if (setter != null &amp;&amp; reader.read(toBean, e.getKey()) == null) {</span>
-<span class="fc" id="L324">          set(toBean, setter, e.getValue());</span>
+<span class="nc" id="L317">    Check.notNull(fromMap, &quot;fromMap&quot;);</span>
+<span class="nc" id="L318">    Check.notNull(toBean, &quot;toBean&quot;);</span>
+<span class="nc" id="L319">    BeanReader&lt;T&gt; reader = getBeanReader();</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">    for (Map.Entry&lt;String, ?&gt; e : fromMap.entrySet()) {</span>
+<span class="nc bnc" id="L321" title="All 4 branches missed.">      if (e.getValue() != null &amp;&amp; e.getKey() != null) {</span>
+<span class="nc" id="L322">        Setter setter = setters.get(e.getKey());</span>
+<span class="nc bnc" id="L323" title="All 4 branches missed.">        if (setter != null &amp;&amp; reader.read(toBean, e.getKey()) == null) {</span>
+<span class="nc" id="L324">          set(toBean, setter, e.getValue());</span>
         }
       }
-<span class="fc" id="L327">    }</span>
-<span class="fc" id="L328">  }</span>
+<span class="nc" id="L327">    }</span>
+<span class="nc" id="L328">  }</span>
 
   /**
    * Returns the type of the objects this {@code BeanWriter} can write to.
@@ -375,42 +375,42 @@ public final class BeanWriter&lt;T&gt; {
   }
 
   private Map&lt;String, Setter&gt; getSetters(IncludeExclude ie, String[] props) {
-<span class="fc" id="L378">    Map&lt;String, Setter&gt; tmp = SetterFactory.INSTANCE.getSetters(beanClass);</span>
-<span class="fc bfc" id="L379" title="All 2 branches covered.">    if (props.length != 0) {</span>
-<span class="fc" id="L380">      tmp = new HashMap&lt;&gt;(tmp);</span>
-<span class="fc bfc" id="L381" title="All 2 branches covered.">      if (ie.isExclude()) {</span>
-<span class="fc" id="L382">        tmp.keySet().removeAll(Set.of(props));</span>
+<span class="nc" id="L378">    Map&lt;String, Setter&gt; tmp = SetterFactory.INSTANCE.getSetters(beanClass);</span>
+<span class="nc bnc" id="L379" title="All 2 branches missed.">    if (props.length != 0) {</span>
+<span class="nc" id="L380">      tmp = new HashMap&lt;&gt;(tmp);</span>
+<span class="nc bnc" id="L381" title="All 2 branches missed.">      if (ie.isExclude()) {</span>
+<span class="nc" id="L382">        tmp.keySet().removeAll(Set.of(props));</span>
       } else {
-<span class="fc" id="L384">        tmp.keySet().retainAll(Set.of(props));</span>
+<span class="nc" id="L384">        tmp.keySet().retainAll(Set.of(props));</span>
       }
-<span class="pc" id="L386">      Check.that(tmp).isNot(empty(), () -&gt; new NoPublicSettersException(beanClass));</span>
-<span class="fc" id="L387">      tmp = Map.copyOf(tmp);</span>
+<span class="nc" id="L386">      Check.that(tmp).isNot(empty(), () -&gt; new NoPublicSettersException(beanClass));</span>
+<span class="nc" id="L387">      tmp = Map.copyOf(tmp);</span>
     }
-<span class="fc" id="L389">    return tmp;</span>
+<span class="nc" id="L389">    return tmp;</span>
   }
 
   private void set(T bean, Setter setter, Object value) throws Throwable {
-<span class="fc bfc" id="L393" title="All 2 branches covered.">    if (converter == null) {</span>
-<span class="fc" id="L394">      setter.write(bean, value);</span>
+<span class="nc bnc" id="L393" title="All 2 branches missed.">    if (converter == null) {</span>
+<span class="nc" id="L394">      setter.write(bean, value);</span>
     } else {
       Object val;
       try {
-<span class="fc" id="L398">        val = converter.apply(setter, value);</span>
+<span class="nc" id="L398">        val = converter.apply(setter, value);</span>
 <span class="nc" id="L399">      } catch (TypeConversionException e) {</span>
 <span class="nc" id="L400">        throw setter.illegalAssignment(value);</span>
-<span class="fc" id="L401">      }</span>
-<span class="fc" id="L402">      setter.write(bean, val);</span>
+<span class="nc" id="L401">      }</span>
+<span class="nc" id="L402">      setter.write(bean, val);</span>
     }
-<span class="fc" id="L404">  }</span>
+<span class="nc" id="L404">  }</span>
 
   private BeanReader&lt;T&gt; beanReader;
 
   private BeanReader&lt;T&gt; getBeanReader() {
-<span class="pc bpc" id="L409" title="1 of 2 branches missed.">    if (beanReader == null) {</span>
-<span class="fc" id="L410">      beanReader = new BeanReader&lt;&gt;(beanClass,</span>
-<span class="fc" id="L411">          setters.keySet().toArray(String[]::new));</span>
+<span class="nc bnc" id="L409" title="All 2 branches missed.">    if (beanReader == null) {</span>
+<span class="nc" id="L410">      beanReader = new BeanReader&lt;&gt;(beanClass,</span>
+<span class="nc" id="L411">          setters.keySet().toArray(String[]::new));</span>
     }
-<span class="fc" id="L413">    return beanReader;</span>
+<span class="nc" id="L413">    return beanReader;</span>
   }
 
 }

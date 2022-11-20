@@ -7,18 +7,18 @@ import org.klojang.util.invoke.BeanWriter;
  * Used to indicate whether you want to allow or disallow properties from being read
  * by a {@link BeanReader} or written by a {@link BeanWriter}.
  */
-<span class="fc" id="L10">public enum IncludeExclude {</span>
+<span class="nc" id="L10">public enum IncludeExclude {</span>
   /**
    * Only allow the provided properties to be read/written
    */
-<span class="fc" id="L14">  INCLUDE,</span>
+<span class="nc" id="L14">  INCLUDE,</span>
   /**
    * Exclude the provided properties from being read/written.
    */
-<span class="fc" id="L18">  EXCLUDE;</span>
+<span class="nc" id="L18">  EXCLUDE;</span>
 
   boolean isExclude() {
-<span class="fc bfc" id="L21" title="All 2 branches covered.">    return this == EXCLUDE;</span>
+<span class="nc bnc" id="L21" title="All 2 branches missed.">    return this == EXCLUDE;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

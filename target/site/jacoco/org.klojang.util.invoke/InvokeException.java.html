@@ -43,10 +43,10 @@ public sealed class InvokeException extends RuntimeException permits
    */
   public static InvokeException noSuchConstructor(Class&lt;?&gt; clazz,
       Class&lt;?&gt;... params) {
-<span class="fc" id="L46">    String msg = String.format(&quot;no such constructor: %s(%s)&quot;,</span>
-<span class="fc" id="L47">        simpleClassName(clazz),</span>
-<span class="fc" id="L48">        implode(params, ClassMethods::simpleClassName, &quot;, &quot;, 0, -1));</span>
-<span class="fc" id="L49">    return new InvokeException(msg);</span>
+<span class="nc" id="L46">    String msg = String.format(&quot;no such constructor: %s(%s)&quot;,</span>
+<span class="nc" id="L47">        simpleClassName(clazz),</span>
+<span class="nc" id="L48">        implode(params, ClassMethods::simpleClassName, &quot;, &quot;, 0, -1));</span>
+<span class="nc" id="L49">    return new InvokeException(msg);</span>
   }
 
   /**
@@ -68,11 +68,11 @@ public sealed class InvokeException extends RuntimeException permits
   }
 
   static InvokeException wrap(Throwable t, Object bean, Getter getter) {
-<span class="fc" id="L71">    String msg = String.format(&quot;Error while reading %s.%s: %s&quot;,</span>
-<span class="fc" id="L72">        simpleClassName(bean),</span>
-<span class="fc" id="L73">        getter.getProperty(),</span>
-<span class="fc" id="L74">        getRootCause(t));</span>
-<span class="fc" id="L75">    return new InvokeException(msg);</span>
+<span class="nc" id="L71">    String msg = String.format(&quot;Error while reading %s.%s: %s&quot;,</span>
+<span class="nc" id="L72">        simpleClassName(bean),</span>
+<span class="nc" id="L73">        getter.getProperty(),</span>
+<span class="nc" id="L74">        getRootCause(t));</span>
+<span class="nc" id="L75">    return new InvokeException(msg);</span>
   }
 
   InvokeException(String message) {

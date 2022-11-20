@@ -26,21 +26,21 @@ public final class NoSuchPropertyException extends InvokeException {
    */
   public static NoSuchPropertyException noSuchProperty(Object bean,
       String property) {
-<span class="fc" id="L29">    return new NoSuchPropertyException(</span>
+<span class="nc" id="L29">    return new NoSuchPropertyException(</span>
         &quot;No such property in class %s: \&quot;%s\&quot;&quot;,
-<span class="fc" id="L31">        pack(ClassMethods.className(bean.getClass()), property));</span>
+<span class="nc" id="L31">        pack(ClassMethods.className(bean.getClass()), property));</span>
   }
 
   private NoSuchPropertyException(String message, Object[] msgArgs) {
-<span class="fc" id="L35">    super(createMessage(message, msgArgs));</span>
-<span class="fc" id="L36">  }</span>
+<span class="nc" id="L35">    super(createMessage(message, msgArgs));</span>
+<span class="nc" id="L36">  }</span>
 
   private static String createMessage(String message, Object[] msgArgs) {
-<span class="fc" id="L39">    Check.notNull(message, &quot;message&quot;);</span>
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">    if (isEmpty(msgArgs)) {</span>
+<span class="nc" id="L39">    Check.notNull(message, &quot;message&quot;);</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">    if (isEmpty(msgArgs)) {</span>
 <span class="nc" id="L41">      return message;</span>
     }
-<span class="fc" id="L43">    return String.format(message, msgArgs);</span>
+<span class="nc" id="L43">    return String.format(message, msgArgs);</span>
   }
 
 }

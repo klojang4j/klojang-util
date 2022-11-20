@@ -18,15 +18,15 @@ public final class Getter {
   private final MethodHandle mh;
   private final String property;
 
-<span class="fc" id="L21">  Getter(Method method, String property) {</span>
-<span class="fc" id="L22">    this.method = method;</span>
-<span class="fc" id="L23">    this.property = property;</span>
+<span class="nc" id="L21">  Getter(Method method, String property) {</span>
+<span class="nc" id="L22">    this.method = method;</span>
+<span class="nc" id="L23">    this.property = property;</span>
     try {
-<span class="fc" id="L25">      this.mh = lookup().unreflect(method);</span>
+<span class="nc" id="L25">      this.mh = lookup().unreflect(method);</span>
 <span class="nc" id="L26">    } catch (IllegalAccessException e) {</span>
 <span class="nc" id="L27">      throw ExceptionMethods.uncheck(e);</span>
-<span class="fc" id="L28">    }</span>
-<span class="fc" id="L29">  }</span>
+<span class="nc" id="L28">    }</span>
+<span class="nc" id="L29">  }</span>
 
   /**
    * Returns the name of the property.
@@ -34,7 +34,7 @@ public final class Getter {
    * @return the name of the property
    */
   public String getProperty() {
-<span class="fc" id="L37">    return property;</span>
+<span class="nc" id="L37">    return property;</span>
   }
 
   /**
@@ -55,7 +55,7 @@ public final class Getter {
    *     {@link MethodHandle#invoke(Object...) MethodHandle.invoke}.
    */
   public Object read(Object bean) throws Throwable {
-<span class="fc" id="L58">    return mh.invoke(bean);</span>
+<span class="nc" id="L58">    return mh.invoke(bean);</span>
   }
 
 }

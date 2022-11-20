@@ -9,7 +9,6 @@
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/module-info.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/ArrayMethods.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/MorphToNumber.java
-/home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/x/collection/ImmutableMap.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/invoke/IncludeExclude.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/path/ArraySegmentWriter.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/invoke/IllegalAssignmentException.java
@@ -18,7 +17,6 @@
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/x/collection/ImmutableSet.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/Morph.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/path/KeyDeserializationException.java
-/home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/x/collection/PrettyTypeComparator.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/IntPair.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/IOMethods.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/invoke/NoPublicGettersException.java
@@ -74,7 +72,6 @@
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/x/Param.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/invoke/GetterFactory.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/x/Generated.java
-/home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/x/collection/BasicTypeComparator.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/exception/package-info.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/path/SegmentWriter.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/path/BeanSegmentWriter.java
@@ -83,7 +80,6 @@
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/x/collection/ArraySet.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/util/package-info.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/path/ObjectReader.java
-/home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/util/MapBuilder.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/util/EnumParser.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/Pair.java
 /home/ayco/git-repos/klojang/klojang-util/src/main/java/org/klojang/util/MorphToCollection.java

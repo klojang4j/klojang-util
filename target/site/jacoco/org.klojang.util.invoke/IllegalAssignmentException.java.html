@@ -22,26 +22,26 @@ public final class IllegalAssignmentException extends InvokeException {
       String propertyName,
       Class&lt;?&gt; propertyType,
       Object value) {
-<span class="fc" id="L25">    super(createMessage(beanClass, propertyName, propertyType, value));</span>
-<span class="fc" id="L26">    this.beanClass = beanClass;</span>
-<span class="fc" id="L27">    this.propertyName = propertyName;</span>
-<span class="fc" id="L28">    this.propertyType = propertyType;</span>
-<span class="fc" id="L29">    this.value = value;</span>
-<span class="fc" id="L30">  }</span>
+<span class="nc" id="L25">    super(createMessage(beanClass, propertyName, propertyType, value));</span>
+<span class="nc" id="L26">    this.beanClass = beanClass;</span>
+<span class="nc" id="L27">    this.propertyName = propertyName;</span>
+<span class="nc" id="L28">    this.propertyType = propertyType;</span>
+<span class="nc" id="L29">    this.value = value;</span>
+<span class="nc" id="L30">  }</span>
 
   private static String createMessage(Class&lt;?&gt; beanClass,
       String propertyName,
       Class&lt;?&gt; propertyType,
       Object value) {
-<span class="fc" id="L36">    String valueType = ifNotNull(value, ClassMethods::simpleClassName, &quot;null&quot;);</span>
-<span class="fc" id="L37">    return &quot;illegal assignment for &quot;</span>
-<span class="fc" id="L38">        + simpleClassName(beanClass)</span>
+<span class="nc" id="L36">    String valueType = ifNotNull(value, ClassMethods::simpleClassName, &quot;null&quot;);</span>
+<span class="nc" id="L37">    return &quot;illegal assignment for &quot;</span>
+<span class="nc" id="L38">        + simpleClassName(beanClass)</span>
         + &quot;.&quot;
         + propertyName
         + &quot;: cannot assign &quot;
         + valueType
         + &quot; to &quot;
-<span class="fc" id="L44">        + simpleClassName(propertyType);</span>
+<span class="nc" id="L44">        + simpleClassName(propertyType);</span>
   }
 
   /**
@@ -50,7 +50,7 @@ public final class IllegalAssignmentException extends InvokeException {
    * @return The class containing the property
    */
   public Class&lt;?&gt; getBeanClass() {
-<span class="fc" id="L53">    return beanClass;</span>
+<span class="nc" id="L53">    return beanClass;</span>
   }
 
   /**
@@ -59,7 +59,7 @@ public final class IllegalAssignmentException extends InvokeException {
    * @return The name of the property
    */
   public String getPropertyName() {
-<span class="fc" id="L62">    return propertyName;</span>
+<span class="nc" id="L62">    return propertyName;</span>
   }
 
   /**
@@ -68,7 +68,7 @@ public final class IllegalAssignmentException extends InvokeException {
    * @return The class of the property
    */
   public Class&lt;?&gt; getPropertyType() {
-<span class="fc" id="L71">    return propertyType;</span>
+<span class="nc" id="L71">    return propertyType;</span>
   }
 
   /**
@@ -77,7 +77,7 @@ public final class IllegalAssignmentException extends InvokeException {
    * @return The value that was attempted to be assigned to the property
    */
   public Object getValue() {
-<span class="fc" id="L80">    return value;</span>
+<span class="nc" id="L80">    return value;</span>
   }
 
 }

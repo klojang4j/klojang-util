@@ -14,28 +14,28 @@ import org.klojang.util.path.SegmentWriter;
 final class MapSegmentWriter extends SegmentWriter&lt;Map&gt; {
 
   MapSegmentWriter(boolean suppressExceptions, KeyDeserializer keyDeserializer) {
-<span class="fc" id="L17">    super(suppressExceptions, keyDeserializer);</span>
-<span class="fc" id="L18">  }</span>
+<span class="nc" id="L17">    super(suppressExceptions, keyDeserializer);</span>
+<span class="nc" id="L18">  }</span>
 
   @Override
   boolean write(Map map, Path path, Object value) {
-<span class="fc" id="L22">    int segment = path.size() - 1;</span>
+<span class="nc" id="L22">    int segment = path.size() - 1;</span>
     Object key;
-<span class="fc bfc" id="L24" title="All 2 branches covered.">    if (kd == null) {</span>
-<span class="fc" id="L25">      key = path.segment(segment);</span>
+<span class="nc bnc" id="L24" title="All 2 branches missed.">    if (kd == null) {</span>
+<span class="nc" id="L25">      key = path.segment(segment);</span>
     } else {
       try {
-<span class="fc" id="L28">        key = kd.deserialize(path, segment);</span>
-<span class="fc" id="L29">      } catch (KeyDeserializationException e) {</span>
-<span class="fc" id="L30">        return deadEnd(keyDeserializationFailed(path, segment, e));</span>
-<span class="fc" id="L31">      }</span>
+<span class="nc" id="L28">        key = kd.deserialize(path, segment);</span>
+<span class="nc" id="L29">      } catch (KeyDeserializationException e) {</span>
+<span class="nc" id="L30">        return deadEnd(keyDeserializationFailed(path, segment, e));</span>
+<span class="nc" id="L31">      }</span>
     }
     try {
-<span class="fc" id="L34">      map.put(key, value);</span>
-<span class="fc" id="L35">    } catch (UnsupportedOperationException e) {</span>
+<span class="nc" id="L34">      map.put(key, value);</span>
+<span class="nc" id="L35">    } catch (UnsupportedOperationException e) {</span>
 <span class="nc" id="L36">      return deadEnd(notModifiable(path, segment, Map.class));</span>
-<span class="fc" id="L37">    }</span>
-<span class="fc" id="L38">    return true;</span>
+<span class="nc" id="L37">    }</span>
+<span class="nc" id="L38">    return true;</span>
   }
 
 }

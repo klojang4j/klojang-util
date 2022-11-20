@@ -73,7 +73,7 @@ import static org.klojang.util.ArrayMethods.implode;
  */
 public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt;, Emptyable {
 
-<span class="fc" id="L76">  private static final Path EMPTY_PATH = new Path();</span>
+<span class="nc" id="L76">  private static final Path EMPTY_PATH = new Path();</span>
 
   // segment separator
   private static final char SEP = '.';
@@ -91,11 +91,11 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return a new {@code Path} instance for the specified path string
    */
   public static Path from(String path) {
-<span class="fc" id="L94">    Check.notNull(path, Param.PATH);</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">    if (path.isEmpty()) {</span>
-<span class="fc" id="L96">      return EMPTY_PATH;</span>
+<span class="nc" id="L94">    Check.notNull(path, Param.PATH);</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">    if (path.isEmpty()) {</span>
+<span class="nc" id="L96">      return EMPTY_PATH;</span>
     }
-<span class="fc" id="L98">    return new Path(path);</span>
+<span class="nc" id="L98">    return new Path(path);</span>
   }
 
   /**
@@ -104,7 +104,7 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return an empty {@code Path} instance, consisting of zero path segments
    */
   public static Path empty() {
-<span class="fc" id="L107">    return EMPTY_PATH;</span>
+<span class="nc" id="L107">    return EMPTY_PATH;</span>
   }
 
   /**
@@ -115,7 +115,7 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return a {@code Path} consisting of a single segment
    */
   public static Path of(String segment) {
-<span class="fc" id="L118">    return new Path(new String[] {segment});</span>
+<span class="nc" id="L118">    return new Path(new String[] {segment});</span>
   }
 
   /**
@@ -127,7 +127,7 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return a {@code Path} consisting of the specified segments
    */
   public static Path of(String segment0, String segment1) {
-<span class="fc" id="L130">    return new Path(new String[] {segment0, segment1});</span>
+<span class="nc" id="L130">    return new Path(new String[] {segment0, segment1});</span>
   }
 
   /**
@@ -140,7 +140,7 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return a {@code Path} consisting of the specified segments
    */
   public static Path of(String segment0, String segment1, String segment2) {
-<span class="fc" id="L143">    return new Path(new String[] {segment0, segment1, segment2});</span>
+<span class="nc" id="L143">    return new Path(new String[] {segment0, segment1, segment2});</span>
   }
 
   /**
@@ -157,7 +157,7 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
       String segment1,
       String segment2,
       String segment3) {
-<span class="fc" id="L160">    return new Path(new String[] {segment0, segment1, segment2, segment3});</span>
+<span class="nc" id="L160">    return new Path(new String[] {segment0, segment1, segment2, segment3});</span>
   }
 
   /**
@@ -176,7 +176,7 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
       String segment2,
       String segment3,
       String segment4) {
-<span class="fc" id="L179">    return new Path(new String[] {segment0, segment1, segment2, segment3, segment4});</span>
+<span class="nc" id="L179">    return new Path(new String[] {segment0, segment1, segment2, segment3, segment4});</span>
   }
 
   /**
@@ -187,7 +187,7 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return a {@code Path} consisting of the specified segments
    */
   public static Path of(String... segments) {
-<span class="fc" id="L190">    return ofSegments(segments);</span>
+<span class="nc" id="L190">    return ofSegments(segments);</span>
   }
 
   /**
@@ -198,8 +198,8 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return a {@code Path} consisting of the specified segments
    */
   public static Path ofSegments(String[] segments) {
-<span class="fc" id="L201">    Check.notNull(segments);</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">    return segments.length == 0 ? EMPTY_PATH : new Path(segments);</span>
+<span class="nc" id="L201">    Check.notNull(segments);</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">    return segments.length == 0 ? EMPTY_PATH : new Path(segments);</span>
   }
 
   /**
@@ -209,7 +209,7 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return a copy of the specified path
    */
   public static Path copyOf(Path other) {
-<span class="pc bpc" id="L212" title="1 of 2 branches missed.">    return other == EMPTY_PATH ? other : Check.notNull(other).ok(Path::new);</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">    return other == EMPTY_PATH ? other : Check.notNull(other).ok(Path::new);</span>
   }
 
   /**
@@ -223,23 +223,23 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return the escaped version of the segment
    */
   public static String escape(String segment) {
-<span class="fc bfc" id="L226" title="All 2 branches covered.">    if (segment == null) {</span>
-<span class="fc" id="L227">      return NULL_SEGMENT;</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">    if (segment == null) {</span>
+<span class="nc" id="L227">      return NULL_SEGMENT;</span>
     }
-<span class="fc" id="L229">    int x = segment.indexOf(SEP);</span>
-<span class="fc bfc" id="L230" title="All 2 branches covered.">    if (x == -1) {</span>
-<span class="fc" id="L231">      return segment;</span>
+<span class="nc" id="L229">    int x = segment.indexOf(SEP);</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">    if (x == -1) {</span>
+<span class="nc" id="L231">      return segment;</span>
     }
-<span class="fc" id="L233">    StringBuilder sb = new StringBuilder(segment.length() + 5);</span>
-<span class="fc" id="L234">    sb.append(segment, 0, x);</span>
-<span class="fc bfc" id="L235" title="All 2 branches covered.">    for (int i = x; i &lt; segment.length(); i++) {</span>
-<span class="fc bfc" id="L236" title="All 2 branches covered.">      if (segment.charAt(i) == SEP) {</span>
-<span class="fc" id="L237">        sb.append(ESC).append(SEP);</span>
+<span class="nc" id="L233">    StringBuilder sb = new StringBuilder(segment.length() + 5);</span>
+<span class="nc" id="L234">    sb.append(segment, 0, x);</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">    for (int i = x; i &lt; segment.length(); i++) {</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">      if (segment.charAt(i) == SEP) {</span>
+<span class="nc" id="L237">        sb.append(ESC).append(SEP);</span>
       } else {
-<span class="fc" id="L239">        sb.append(segment.charAt(i));</span>
+<span class="nc" id="L239">        sb.append(segment.charAt(i));</span>
       }
     }
-<span class="fc" id="L242">    return sb.toString();</span>
+<span class="nc" id="L242">    return sb.toString();</span>
   }
 
   private final String[] elems;
@@ -247,25 +247,25 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
   private int hash; // Caches hashCode()
 
   // Reserved for EMPTY_PATH
-<span class="fc" id="L250">  private Path() {</span>
-<span class="fc" id="L251">    elems = EMPTY_STRING_ARRAY;</span>
-<span class="fc" id="L252">  }</span>
+<span class="nc" id="L250">  private Path() {</span>
+<span class="nc" id="L251">    elems = EMPTY_STRING_ARRAY;</span>
+<span class="nc" id="L252">  }</span>
 
-<span class="fc" id="L254">  private Path(String path) {</span>
-<span class="fc" id="L255">    elems = parse(str = path);</span>
-<span class="fc" id="L256">  }</span>
+<span class="nc" id="L254">  private Path(String path) {</span>
+<span class="nc" id="L255">    elems = parse(str = path);</span>
+<span class="nc" id="L256">  }</span>
 
-<span class="fc" id="L258">  private Path(String[] segments) {</span>
-<span class="fc" id="L259">    elems = new String[segments.length];</span>
-<span class="fc" id="L260">    arraycopy(segments, 0, elems, 0, segments.length);</span>
-<span class="fc" id="L261">  }</span>
+<span class="nc" id="L258">  private Path(String[] segments) {</span>
+<span class="nc" id="L259">    elems = new String[segments.length];</span>
+<span class="nc" id="L260">    arraycopy(segments, 0, elems, 0, segments.length);</span>
+<span class="nc" id="L261">  }</span>
 
-<span class="fc" id="L263">  private Path(Path other) {</span>
+<span class="nc" id="L263">  private Path(Path other) {</span>
     // Since we are immutable we can happily share state
-<span class="fc" id="L265">    this.elems = other.elems;</span>
-<span class="fc" id="L266">    this.str = other.str;</span>
-<span class="fc" id="L267">    this.hash = other.hash;</span>
-<span class="fc" id="L268">  }</span>
+<span class="nc" id="L265">    this.elems = other.elems;</span>
+<span class="nc" id="L266">    this.str = other.str;</span>
+<span class="nc" id="L267">    this.hash = other.hash;</span>
+<span class="nc" id="L268">  }</span>
 
   /**
    * Returns the path segment at the specified index. Specify a negative index to
@@ -276,12 +276,12 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return the path segment at the specified index.
    */
   public String segment(int index) {
-<span class="fc bfc" id="L279" title="All 2 branches covered.">    if (index &lt; 0) {</span>
-<span class="fc" id="L280">      return Check.that(elems.length + index)</span>
-<span class="fc" id="L281">          .is(indexOf(), elems)</span>
-<span class="fc" id="L282">          .mapToObj(x -&gt; elems[x]);</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">    if (index &lt; 0) {</span>
+<span class="nc" id="L280">      return Check.that(elems.length + index)</span>
+<span class="nc" id="L281">          .is(indexOf(), elems)</span>
+<span class="nc" id="L282">          .mapToObj(x -&gt; elems[x]);</span>
     }
-<span class="fc" id="L284">    return Check.that(index).is(indexOf(), elems).mapToObj(x -&gt; elems[x]);</span>
+<span class="nc" id="L284">    return Check.that(index).is(indexOf(), elems).mapToObj(x -&gt; elems[x]);</span>
   }
 
   /**
@@ -294,11 +294,11 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    *     index
    */
   public Path subPath(int offset) {
-<span class="fc bfc" id="L297" title="All 2 branches covered.">    int from = offset &lt; 0</span>
-<span class="fc" id="L298">        ? elems.length + offset</span>
-<span class="fc" id="L299">        : offset;</span>
-<span class="fc" id="L300">    Check.that(from).is(lt(), elems.length);</span>
-<span class="fc" id="L301">    return new Path(copyOfRange(elems, from, elems.length));</span>
+<span class="nc bnc" id="L297" title="All 2 branches missed.">    int from = offset &lt; 0</span>
+<span class="nc" id="L298">        ? elems.length + offset</span>
+<span class="nc" id="L299">        : offset;</span>
+<span class="nc" id="L300">    Check.that(from).is(lt(), elems.length);</span>
+<span class="nc" id="L301">    return new Path(copyOfRange(elems, from, elems.length));</span>
   }
 
   /**
@@ -313,11 +313,11 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    *     segment {@code from}.
    */
   public Path subPath(int offset, int length) {
-<span class="fc bfc" id="L316" title="All 2 branches covered.">    if (offset &lt; 0) {</span>
-<span class="fc" id="L317">      offset = elems.length + offset;</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">    if (offset &lt; 0) {</span>
+<span class="nc" id="L317">      offset = elems.length + offset;</span>
     }
-<span class="fc" id="L319">    Check.offsetLength(elems.length, offset, length);</span>
-<span class="fc" id="L320">    return new Path(copyOfRange(elems, offset, offset + length));</span>
+<span class="nc" id="L319">    Check.offsetLength(elems.length, offset, length);</span>
+<span class="nc" id="L320">    return new Path(copyOfRange(elems, offset, offset + length));</span>
   }
 
   /**
@@ -328,13 +328,13 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return the parent of this {@code Path}
    */
   public Path parent() {
-<span class="fc bfc" id="L331" title="All 2 branches covered.">    if (elems.length == 0) {</span>
-<span class="fc" id="L332">      return null;</span>
-<span class="fc bfc" id="L333" title="All 2 branches covered.">    } else if (elems.length == 1) {</span>
-<span class="fc" id="L334">      return EMPTY_PATH;</span>
+<span class="nc bnc" id="L331" title="All 2 branches missed.">    if (elems.length == 0) {</span>
+<span class="nc" id="L332">      return null;</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">    } else if (elems.length == 1) {</span>
+<span class="nc" id="L334">      return EMPTY_PATH;</span>
     }
-<span class="fc" id="L336">    String[] segments = copyOfRange(elems, 0, elems.length - 1);</span>
-<span class="fc" id="L337">    return new Path(segments);</span>
+<span class="nc" id="L336">    String[] segments = copyOfRange(elems, 0, elems.length - 1);</span>
+<span class="nc" id="L337">    return new Path(segments);</span>
   }
 
   /**
@@ -344,10 +344,10 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return a new {@code Path} without any array indices
    */
   public Path getCanonicalPath() {
-<span class="fc" id="L347">    String[] canonical = stream()</span>
-<span class="fc" id="L348">        .filter(not(NumberMethods::isInt))</span>
-<span class="fc" id="L349">        .toArray(String[]::new);</span>
-<span class="pc bpc" id="L350" title="1 of 2 branches missed.">    return canonical.length == 0 ? EMPTY_PATH : new Path(canonical);</span>
+<span class="nc" id="L347">    String[] canonical = stream()</span>
+<span class="nc" id="L348">        .filter(not(NumberMethods::isInt))</span>
+<span class="nc" id="L349">        .toArray(String[]::new);</span>
+<span class="nc bnc" id="L350" title="All 2 branches missed.">    return canonical.length == 0 ? EMPTY_PATH : new Path(canonical);</span>
   }
 
   /**
@@ -359,8 +359,8 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    *     and the specified {@code Path}
    */
   public Path append(String path) {
-<span class="fc" id="L362">    Check.notNull(path);</span>
-<span class="fc" id="L363">    return append(new Path(parse(path)));</span>
+<span class="nc" id="L362">    Check.notNull(path);</span>
+<span class="nc" id="L363">    return append(new Path(parse(path)));</span>
   }
 
   /**
@@ -372,8 +372,8 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    *     the segments of the specified {@code Path}
    */
   public Path append(Path other) {
-<span class="fc" id="L375">    Check.notNull(other);</span>
-<span class="fc" id="L376">    return new Path(ArrayMethods.concat(elems, other.elems));</span>
+<span class="nc" id="L375">    Check.notNull(other);</span>
+<span class="nc" id="L376">    return new Path(ArrayMethods.concat(elems, other.elems));</span>
   }
 
   /**
@@ -386,10 +386,10 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    *     set to the new value
    */
   public Path replace(int index, String newValue) {
-<span class="fc" id="L389">    Check.on(INDEX, index, Param.INDEX).is(indexOf(), elems);</span>
-<span class="fc" id="L390">    String[] copy = Arrays.copyOf(elems, elems.length);</span>
-<span class="fc" id="L391">    copy[index] = newValue;</span>
-<span class="fc" id="L392">    return new Path(copy);</span>
+<span class="nc" id="L389">    Check.on(INDEX, index, Param.INDEX).is(indexOf(), elems);</span>
+<span class="nc" id="L390">    String[] copy = Arrays.copyOf(elems, elems.length);</span>
+<span class="nc" id="L391">    copy[index] = newValue;</span>
+<span class="nc" id="L392">    return new Path(copy);</span>
   }
 
   /**
@@ -401,13 +401,13 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    */
   public Path shift() {
     String[] elems;
-<span class="fc" id="L404">    Check.on(STATE, (elems = this.elems).length).is(ne(), 0, &quot;empty path&quot;);</span>
-<span class="fc bfc" id="L405" title="All 2 branches covered.">    if (elems.length == 1) {</span>
-<span class="fc" id="L406">      return EMPTY_PATH;</span>
+<span class="nc" id="L404">    Check.on(STATE, (elems = this.elems).length).is(ne(), 0, &quot;empty path&quot;);</span>
+<span class="nc bnc" id="L405" title="All 2 branches missed.">    if (elems.length == 1) {</span>
+<span class="nc" id="L406">      return EMPTY_PATH;</span>
     }
-<span class="fc" id="L408">    String[] shifted = new String[elems.length - 1];</span>
-<span class="fc" id="L409">    arraycopy(elems, 1, shifted, 0, elems.length - 1);</span>
-<span class="fc" id="L410">    return new Path(shifted);</span>
+<span class="nc" id="L408">    String[] shifted = new String[elems.length - 1];</span>
+<span class="nc" id="L409">    arraycopy(elems, 1, shifted, 0, elems.length - 1);</span>
+<span class="nc" id="L410">    return new Path(shifted);</span>
   }
 
   /**
@@ -417,14 +417,14 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    */
   public Path reverse() {
     String[] elems;
-<span class="fc bfc" id="L420" title="All 2 branches covered.">    if ((elems = this.elems).length &gt; 1) {</span>
-<span class="fc" id="L421">      String[] segments = new String[elems.length];</span>
-<span class="fc bfc" id="L422" title="All 2 branches covered.">      for (int i = 0; i &lt; elems.length; ++i) {</span>
-<span class="fc" id="L423">        segments[i] = elems[elems.length - 1 - i];</span>
+<span class="nc bnc" id="L420" title="All 2 branches missed.">    if ((elems = this.elems).length &gt; 1) {</span>
+<span class="nc" id="L421">      String[] segments = new String[elems.length];</span>
+<span class="nc bnc" id="L422" title="All 2 branches missed.">      for (int i = 0; i &lt; elems.length; ++i) {</span>
+<span class="nc" id="L423">        segments[i] = elems[elems.length - 1 - i];</span>
       }
-<span class="fc" id="L425">      return new Path(segments);</span>
+<span class="nc" id="L425">      return new Path(segments);</span>
     }
-<span class="fc" id="L427">    return this;</span>
+<span class="nc" id="L427">    return this;</span>
   }
 
   /**
@@ -434,18 +434,18 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    */
   @Override
   public Iterator&lt;String&gt; iterator() {
-<span class="fc" id="L437">    return new Iterator&lt;&gt;() {</span>
+<span class="nc" id="L437">    return new Iterator&lt;&gt;() {</span>
       private int i;
 
       public boolean hasNext() {
-<span class="fc bfc" id="L441" title="All 2 branches covered.">        return i &lt; elems.length;</span>
+<span class="nc bnc" id="L441" title="All 2 branches missed.">        return i &lt; elems.length;</span>
       }
 
       public String next() {
-<span class="fc bfc" id="L445" title="All 2 branches covered.">        if (i &lt; elems.length) {</span>
-<span class="fc" id="L446">          return elems[i++];</span>
+<span class="nc bnc" id="L445" title="All 2 branches missed.">        if (i &lt; elems.length) {</span>
+<span class="nc" id="L446">          return elems[i++];</span>
         }
-<span class="fc" id="L448">        throw new IndexOutOfBoundsException(i);</span>
+<span class="nc" id="L448">        throw new IndexOutOfBoundsException(i);</span>
       }
     };
   }
@@ -456,7 +456,7 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return a {@code Stream} of path segments
    */
   public Stream&lt;String&gt; stream() {
-<span class="fc" id="L459">    return Arrays.stream(elems);</span>
+<span class="nc" id="L459">    return Arrays.stream(elems);</span>
   }
 
   /**
@@ -465,7 +465,7 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return the number of segments in this {@code Path}
    */
   public int size() {
-<span class="fc" id="L468">    return elems.length;</span>
+<span class="nc" id="L468">    return elems.length;</span>
   }
 
   /**
@@ -476,27 +476,27 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    *     segments
    */
   public boolean isEmpty() {
-<span class="fc bfc" id="L479" title="All 2 branches covered.">    return elems.length == 0;</span>
+<span class="nc bnc" id="L479" title="All 2 branches missed.">    return elems.length == 0;</span>
   }
 
   @Override
   public boolean equals(Object obj) {
-<span class="fc" id="L484">    return this == obj</span>
-<span class="fc bfc" id="L485" title="All 6 branches covered.">        || (obj instanceof Path p &amp;&amp; Arrays.equals(elems, p.elems));</span>
+<span class="nc" id="L484">    return this == obj</span>
+<span class="nc bnc" id="L485" title="All 6 branches missed.">        || (obj instanceof Path p &amp;&amp; Arrays.equals(elems, p.elems));</span>
   }
 
   @Override
   public int hashCode() {
-<span class="pc bpc" id="L490" title="1 of 2 branches missed.">    if (hash == 0) {</span>
-<span class="fc" id="L491">      hash = Arrays.deepHashCode(elems);</span>
+<span class="nc bnc" id="L490" title="All 2 branches missed.">    if (hash == 0) {</span>
+<span class="nc" id="L491">      hash = Arrays.deepHashCode(elems);</span>
     }
-<span class="fc" id="L493">    return hash;</span>
+<span class="nc" id="L493">    return hash;</span>
   }
 
   @Override
   public int compareTo(Path other) {
-<span class="fc" id="L498">    Check.notNull(other);</span>
-<span class="fc" id="L499">    return Arrays.compare(elems, other.elems);</span>
+<span class="nc" id="L498">    Check.notNull(other);</span>
+<span class="nc" id="L499">    return Arrays.compare(elems, other.elems);</span>
   }
 
   /**
@@ -506,41 +506,41 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    */
   @Override
   public String toString() {
-<span class="fc bfc" id="L509" title="All 2 branches covered.">    if (str == null) {</span>
-<span class="fc" id="L510">      str = implode(elems, Path::escape, &quot;.&quot;, 0, elems.length);</span>
+<span class="nc bnc" id="L509" title="All 2 branches missed.">    if (str == null) {</span>
+<span class="nc" id="L510">      str = implode(elems, Path::escape, &quot;.&quot;, 0, elems.length);</span>
     }
-<span class="fc" id="L512">    return str;</span>
+<span class="nc" id="L512">    return str;</span>
   }
 
   private static String[] parse(String path) {
-<span class="fc" id="L516">    ArrayList&lt;String&gt; elems = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L517">    StringBuilder sb = new StringBuilder();</span>
-<span class="fc bfc" id="L518" title="All 2 branches covered.">    for (int i = 0; i &lt; path.length(); i++) {</span>
-<span class="fc bfc" id="L519" title="All 3 branches covered.">      switch (path.charAt(i)) {</span>
+<span class="nc" id="L516">    ArrayList&lt;String&gt; elems = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L517">    StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L518" title="All 2 branches missed.">    for (int i = 0; i &lt; path.length(); i++) {</span>
+<span class="nc bnc" id="L519" title="All 3 branches missed.">      switch (path.charAt(i)) {</span>
         case SEP:
-<span class="fc" id="L521">          String s = sb.toString();</span>
-<span class="fc bfc" id="L522" title="All 2 branches covered.">          elems.add(s.equals(NULL_SEGMENT) ? null : s);</span>
-<span class="fc" id="L523">          sb.setLength(0);</span>
-<span class="fc" id="L524">          break;</span>
+<span class="nc" id="L521">          String s = sb.toString();</span>
+<span class="nc bnc" id="L522" title="All 2 branches missed.">          elems.add(s.equals(NULL_SEGMENT) ? null : s);</span>
+<span class="nc" id="L523">          sb.setLength(0);</span>
+<span class="nc" id="L524">          break;</span>
         case ESC:
-<span class="fc bfc" id="L526" title="All 4 branches covered.">          if (i &lt; path.length() - 1 &amp;&amp; path.charAt(i + 1) == SEP) {</span>
-<span class="fc" id="L527">            sb.append(SEP);</span>
-<span class="fc" id="L528">            ++i;</span>
+<span class="nc bnc" id="L526" title="All 4 branches missed.">          if (i &lt; path.length() - 1 &amp;&amp; path.charAt(i + 1) == SEP) {</span>
+<span class="nc" id="L527">            sb.append(SEP);</span>
+<span class="nc" id="L528">            ++i;</span>
           } else {
-<span class="fc" id="L530">            sb.append(ESC);</span>
+<span class="nc" id="L530">            sb.append(ESC);</span>
           }
-<span class="fc" id="L532">          break;</span>
+<span class="nc" id="L532">          break;</span>
         default:
-<span class="fc" id="L534">          sb.append(path.charAt(i));</span>
+<span class="nc" id="L534">          sb.append(path.charAt(i));</span>
       }
     }
-<span class="fc bfc" id="L537" title="All 2 branches covered.">    if (sb.length() &gt; 0) {</span>
-<span class="fc" id="L538">      String s = sb.toString();</span>
-<span class="fc bfc" id="L539" title="All 2 branches covered.">      elems.add(s.equals(NULL_SEGMENT) ? null : s);</span>
-<span class="pc bpc" id="L540" title="1 of 2 branches missed.">    } else if (path.endsWith(&quot;.&quot;)) {</span>
-<span class="fc" id="L541">      elems.add(StringMethods.EMPTY_STRING);</span>
+<span class="nc bnc" id="L537" title="All 2 branches missed.">    if (sb.length() &gt; 0) {</span>
+<span class="nc" id="L538">      String s = sb.toString();</span>
+<span class="nc bnc" id="L539" title="All 2 branches missed.">      elems.add(s.equals(NULL_SEGMENT) ? null : s);</span>
+<span class="nc bnc" id="L540" title="All 2 branches missed.">    } else if (path.endsWith(&quot;.&quot;)) {</span>
+<span class="nc" id="L541">      elems.add(StringMethods.EMPTY_STRING);</span>
     }
-<span class="fc" id="L543">    return elems.toArray(String[]::new);</span>
+<span class="nc" id="L543">    return elems.toArray(String[]::new);</span>
   }
 
 }

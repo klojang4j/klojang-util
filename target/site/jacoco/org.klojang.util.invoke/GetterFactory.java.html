@@ -28,11 +28,11 @@ public final class GetterFactory {
   /**
    * The one and only instance of {@code GetterFactory}.
    */
-<span class="fc" id="L31">  public static final GetterFactory INSTANCE = new GetterFactory();</span>
+<span class="nc" id="L31">  public static final GetterFactory INSTANCE = new GetterFactory();</span>
 
-<span class="fc" id="L33">  private final Map&lt;Class&lt;?&gt;, Map&lt;String, Getter&gt;&gt; cache = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L33">  private final Map&lt;Class&lt;?&gt;, Map&lt;String, Getter&gt;&gt; cache = new HashMap&lt;&gt;();</span>
 
-<span class="fc" id="L35">  private GetterFactory() {}</span>
+<span class="nc" id="L35">  private GetterFactory() {}</span>
 
   /**
    * Returns the public {@link Getter getters} for the specified class. The returned
@@ -49,19 +49,19 @@ public final class GetterFactory {
    * @throws IllegalAssignmentException if the does not have any public getters
    */
   public Map&lt;String, Getter&gt; getGetters(Class&lt;?&gt; clazz, boolean strict) {
-<span class="fc" id="L52">    Map&lt;String, Getter&gt; getters = cache.get(clazz);</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">    if (getters == null) {</span>
-<span class="fc" id="L54">      List&lt;Method&gt; methods = InvokeUtils.getGetters(clazz, strict);</span>
-<span class="pc" id="L55">      Check.that(methods).isNot(empty(), () -&gt; new NoPublicGettersException(clazz));</span>
-<span class="fc" id="L56">      List&lt;Entry&lt;String, Getter&gt;&gt; entries = new ArrayList&lt;&gt;(methods.size());</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">      for (Method m : methods) {</span>
-<span class="fc" id="L58">        String prop = getPropertyNameFromGetter(m, strict);</span>
-<span class="fc" id="L59">        entries.add(entry(prop, new Getter(m, prop)));</span>
-<span class="fc" id="L60">      }</span>
-<span class="fc" id="L61">      getters = Map.ofEntries(entries.toArray(Entry[]::new));</span>
-<span class="fc" id="L62">      cache.put(clazz, getters);</span>
+<span class="nc" id="L52">    Map&lt;String, Getter&gt; getters = cache.get(clazz);</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">    if (getters == null) {</span>
+<span class="nc" id="L54">      List&lt;Method&gt; methods = InvokeUtils.getGetters(clazz, strict);</span>
+<span class="nc" id="L55">      Check.that(methods).isNot(empty(), () -&gt; new NoPublicGettersException(clazz));</span>
+<span class="nc" id="L56">      List&lt;Entry&lt;String, Getter&gt;&gt; entries = new ArrayList&lt;&gt;(methods.size());</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">      for (Method m : methods) {</span>
+<span class="nc" id="L58">        String prop = getPropertyNameFromGetter(m, strict);</span>
+<span class="nc" id="L59">        entries.add(entry(prop, new Getter(m, prop)));</span>
+<span class="nc" id="L60">      }</span>
+<span class="nc" id="L61">      getters = Map.ofEntries(entries.toArray(Entry[]::new));</span>
+<span class="nc" id="L62">      cache.put(clazz, getters);</span>
     }
-<span class="fc" id="L64">    return getters;</span>
+<span class="nc" id="L64">    return getters;</span>
   }
 
 }

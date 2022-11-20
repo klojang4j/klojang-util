@@ -18,22 +18,22 @@ final class CollectionSegmentReader extends SegmentReader&lt;Collection&gt; {
 
   CollectionSegmentReader(boolean suppressExceptions,
       KeyDeserializer keyDeserializer) {
-<span class="fc" id="L21">    super(suppressExceptions, keyDeserializer);</span>
-<span class="fc" id="L22">  }</span>
+<span class="nc" id="L21">    super(suppressExceptions, keyDeserializer);</span>
+<span class="nc" id="L22">  }</span>
 
   @Override
   Object read(Collection collection, Path path, int segment) {
-<span class="fc" id="L26">    OptionalInt opt = toInt(path.segment(segment));</span>
-<span class="pc bpc" id="L27" title="1 of 2 branches missed.">    if (opt.isEmpty()) {</span>
+<span class="nc" id="L26">    OptionalInt opt = toInt(path.segment(segment));</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">    if (opt.isEmpty()) {</span>
 <span class="nc" id="L28">      return deadEnd(indexExpected(path, segment));</span>
     }
-<span class="fc" id="L30">    int idx = opt.getAsInt();</span>
-<span class="pc bpc" id="L31" title="1 of 2 branches missed.">    if (idx &lt; collection.size()) {</span>
-<span class="fc" id="L32">      Iterator iter = collection.iterator();</span>
-<span class="pc bpc" id="L33" title="1 of 4 branches missed.">      for (; idx != 0 &amp;&amp; iter.hasNext(); --idx, iter.next())</span>
+<span class="nc" id="L30">    int idx = opt.getAsInt();</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">    if (idx &lt; collection.size()) {</span>
+<span class="nc" id="L32">      Iterator iter = collection.iterator();</span>
+<span class="nc bnc" id="L33" title="All 4 branches missed.">      for (; idx != 0 &amp;&amp; iter.hasNext(); --idx, iter.next())</span>
         ;
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">      if (iter.hasNext()) {</span>
-<span class="fc" id="L36">        return new ObjectReader(se, kd).read(iter.next(), path, ++segment);</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">      if (iter.hasNext()) {</span>
+<span class="nc" id="L36">        return new ObjectReader(se, kd).read(iter.next(), path, ++segment);</span>
       }
     }
 <span class="nc" id="L39">    return deadEnd(indexOutOfBounds(path, segment));</span>

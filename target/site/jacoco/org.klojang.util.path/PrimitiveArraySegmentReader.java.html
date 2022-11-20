@@ -16,20 +16,20 @@ final class PrimitiveArraySegmentReader extends SegmentReader&lt;Object&gt; {
 
   PrimitiveArraySegmentReader(boolean suppressExceptions,
       KeyDeserializer keyDeserializer) {
-<span class="fc" id="L19">    super(suppressExceptions, keyDeserializer);</span>
-<span class="fc" id="L20">  }</span>
+<span class="nc" id="L19">    super(suppressExceptions, keyDeserializer);</span>
+<span class="nc" id="L20">  }</span>
 
   @Override
   Object read(Object array, Path path, int segment) {
-<span class="fc" id="L24">    OptionalInt opt = toInt(path.segment(segment));</span>
-<span class="pc bpc" id="L25" title="1 of 2 branches missed.">    if (opt.isEmpty()) {</span>
+<span class="nc" id="L24">    OptionalInt opt = toInt(path.segment(segment));</span>
+<span class="nc bnc" id="L25" title="All 2 branches missed.">    if (opt.isEmpty()) {</span>
 <span class="nc" id="L26">      return deadEnd(indexExpected(path, segment));</span>
     }
-<span class="fc" id="L28">    int idx = opt.getAsInt();</span>
-<span class="fc" id="L29">    int len = getArrayLength(array);</span>
-<span class="pc bpc" id="L30" title="2 of 4 branches missed.">    if (idx &gt;= 0 &amp;&amp; idx &lt; len) {</span>
-<span class="fc" id="L31">      Object val = getArrayElement(array, idx);</span>
-<span class="fc" id="L32">      return new ObjectReader(se, kd).read(val, path, ++segment);</span>
+<span class="nc" id="L28">    int idx = opt.getAsInt();</span>
+<span class="nc" id="L29">    int len = getArrayLength(array);</span>
+<span class="nc bnc" id="L30" title="All 4 branches missed.">    if (idx &gt;= 0 &amp;&amp; idx &lt; len) {</span>
+<span class="nc" id="L31">      Object val = getArrayElement(array, idx);</span>
+<span class="nc" id="L32">      return new ObjectReader(se, kd).read(val, path, ++segment);</span>
     }
 <span class="nc" id="L34">    return deadEnd(indexOutOfBounds(path, segment));</span>
   }

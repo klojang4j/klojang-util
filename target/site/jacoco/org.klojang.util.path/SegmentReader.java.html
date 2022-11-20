@@ -15,18 +15,18 @@ abstract sealed class SegmentReader&lt;T&gt; permits ArraySegmentReader, BeanSeg
   final boolean se;
   final KeyDeserializer kd;
 
-<span class="fc" id="L18">  SegmentReader(boolean suppressExceptions, KeyDeserializer keyDeserializer) {</span>
-<span class="fc" id="L19">    this.se = suppressExceptions;</span>
-<span class="fc" id="L20">    this.kd = keyDeserializer;</span>
-<span class="fc" id="L21">  }</span>
+<span class="nc" id="L18">  SegmentReader(boolean suppressExceptions, KeyDeserializer keyDeserializer) {</span>
+<span class="nc" id="L19">    this.se = suppressExceptions;</span>
+<span class="nc" id="L20">    this.kd = keyDeserializer;</span>
+<span class="nc" id="L21">  }</span>
 
   abstract Object read(T obj, Path path, int segment);
 
   Object deadEnd(PathWalkerException.Factory excFactory) {
-<span class="fc bfc" id="L26" title="All 2 branches covered.">    if (se) {</span>
-<span class="fc" id="L27">      return null;</span>
+<span class="nc bnc" id="L26" title="All 2 branches missed.">    if (se) {</span>
+<span class="nc" id="L27">      return null;</span>
     }
-<span class="fc" id="L29">    throw excFactory.get();</span>
+<span class="nc" id="L29">    throw excFactory.get();</span>
   }
 
 }

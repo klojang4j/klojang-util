@@ -43,8 +43,8 @@ public final class BeanReader&lt;T&gt; {
    * @param properties the properties to be included/excluded
    */
   public BeanReader(Class&lt;? super T&gt; beanClass, String... properties) {
-<span class="fc" id="L46">    this(beanClass, true, INCLUDE, properties);</span>
-<span class="fc" id="L47">  }</span>
+<span class="nc" id="L46">    this(beanClass, true, INCLUDE, properties);</span>
+<span class="nc" id="L47">  }</span>
 
   /**
    * Creates a {@code BeanReader} for the specified properties of the specified
@@ -61,8 +61,8 @@ public final class BeanReader&lt;T&gt; {
   public BeanReader(Class&lt;? super T&gt; beanClass,
       IncludeExclude includeExclude,
       String... properties) {
-<span class="fc" id="L64">    this(beanClass, true, includeExclude, properties);</span>
-<span class="fc" id="L65">  }</span>
+<span class="nc" id="L64">    this(beanClass, true, includeExclude, properties);</span>
+<span class="nc" id="L65">  }</span>
 
   /**
    * Creates a {@code BeanReader} for the specified properties of the specified
@@ -92,13 +92,13 @@ public final class BeanReader&lt;T&gt; {
   public BeanReader(Class&lt;? super T&gt; beanClass,
       boolean strictNaming,
       IncludeExclude includeExclude,
-<span class="fc" id="L95">      String... properties) {</span>
-<span class="fc" id="L96">    Check.notNull(beanClass, &quot;beanClass&quot;);</span>
-<span class="fc" id="L97">    Check.notNull(includeExclude, &quot;includeExclude&quot;);</span>
-<span class="fc" id="L98">    Check.that(properties, &quot;properties&quot;).is(deepNotNull());</span>
-<span class="fc" id="L99">    this.beanClass = beanClass;</span>
-<span class="fc" id="L100">    this.getters = getGetters(strictNaming, includeExclude, properties);</span>
-<span class="fc" id="L101">  }</span>
+<span class="nc" id="L95">      String... properties) {</span>
+<span class="nc" id="L96">    Check.notNull(beanClass, &quot;beanClass&quot;);</span>
+<span class="nc" id="L97">    Check.notNull(includeExclude, &quot;includeExclude&quot;);</span>
+<span class="nc" id="L98">    Check.that(properties, &quot;properties&quot;).is(deepNotNull());</span>
+<span class="nc" id="L99">    this.beanClass = beanClass;</span>
+<span class="nc" id="L100">    this.getters = getGetters(strictNaming, includeExclude, properties);</span>
+<span class="nc" id="L101">  }</span>
 
   /**
    * Returns the value of the specified property on the specified bean. If the
@@ -112,12 +112,12 @@ public final class BeanReader&lt;T&gt; {
    */
   @SuppressWarnings(&quot;unchecked&quot;)
   public &lt;U&gt; U read(T bean, String property) throws NoSuchPropertyException {
-<span class="fc" id="L115">    Check.notNull(bean, Param.BEAN);</span>
-<span class="fc" id="L116">    Check.notNull(property, Param.PROPERTY);</span>
-<span class="fc" id="L117">    Getter getter = getters.get(property);</span>
-<span class="fc" id="L118">    Check.that(getter).is(notNull(), () -&gt; noSuchProperty(bean, property));</span>
+<span class="nc" id="L115">    Check.notNull(bean, Param.BEAN);</span>
+<span class="nc" id="L116">    Check.notNull(property, Param.PROPERTY);</span>
+<span class="nc" id="L117">    Getter getter = getters.get(property);</span>
+<span class="nc" id="L118">    Check.that(getter).is(notNull(), () -&gt; noSuchProperty(bean, property));</span>
     try {
-<span class="fc" id="L120">      return (U) getter.read(bean);</span>
+<span class="nc" id="L120">      return (U) getter.read(bean);</span>
 <span class="nc" id="L121">    } catch (Throwable exc) {</span>
 <span class="nc" id="L122">      throw InvokeException.wrap(exc, bean, getter);</span>
     }
@@ -129,7 +129,7 @@ public final class BeanReader&lt;T&gt; {
    * @return the class of the objects {@code BeanReader} can read
    */
   public Class&lt;? super T&gt; getBeanClass() {
-<span class="fc" id="L132">    return beanClass;</span>
+<span class="nc" id="L132">    return beanClass;</span>
   }
 
   /**
@@ -156,7 +156,7 @@ public final class BeanReader&lt;T&gt; {
    * @return the properties that this {@code BeanReader} will read
    */
   public Set&lt;String&gt; getReadableProperties() {
-<span class="fc" id="L159">    return getters.keySet();</span>
+<span class="nc" id="L159">    return getters.keySet();</span>
   }
 
   /**
@@ -167,25 +167,25 @@ public final class BeanReader&lt;T&gt; {
    * @return all getters used to read bean properties.
    */
   public Map&lt;String, Getter&gt; getIncludedGetters() {
-<span class="fc" id="L170">    return getters;</span>
+<span class="nc" id="L170">    return getters;</span>
   }
 
   private Map&lt;String, Getter&gt; getGetters(boolean strictNaming,
       IncludeExclude ie,
       String[] props) {
-<span class="fc" id="L176">    Map&lt;String, Getter&gt; tmp = GetterFactory.INSTANCE.getGetters(beanClass,</span>
+<span class="nc" id="L176">    Map&lt;String, Getter&gt; tmp = GetterFactory.INSTANCE.getGetters(beanClass,</span>
         strictNaming);
-<span class="fc bfc" id="L178" title="All 2 branches covered.">    if (props.length != 0) {</span>
-<span class="fc" id="L179">      tmp = new HashMap&lt;&gt;(tmp);</span>
-<span class="fc bfc" id="L180" title="All 2 branches covered.">      if (ie.isExclude()) {</span>
-<span class="fc" id="L181">        tmp.keySet().removeAll(Set.of(props));</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">    if (props.length != 0) {</span>
+<span class="nc" id="L179">      tmp = new HashMap&lt;&gt;(tmp);</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">      if (ie.isExclude()) {</span>
+<span class="nc" id="L181">        tmp.keySet().removeAll(Set.of(props));</span>
       } else {
-<span class="fc" id="L183">        tmp.keySet().retainAll(Set.of(props));</span>
+<span class="nc" id="L183">        tmp.keySet().retainAll(Set.of(props));</span>
       }
-<span class="pc" id="L185">      Check.that(tmp).isNot(empty(), () -&gt; new NoPublicGettersException(beanClass));</span>
-<span class="fc" id="L186">      tmp = Map.copyOf(tmp);</span>
+<span class="nc" id="L185">      Check.that(tmp).isNot(empty(), () -&gt; new NoPublicGettersException(beanClass));</span>
+<span class="nc" id="L186">      tmp = Map.copyOf(tmp);</span>
     }
-<span class="fc" id="L188">    return tmp;</span>
+<span class="nc" id="L188">    return tmp;</span>
   }
 
 }

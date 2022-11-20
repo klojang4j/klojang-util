@@ -18,15 +18,15 @@ public final class Setter {
   private final MethodHandle mh;
   private final String property;
 
-<span class="fc" id="L21">  Setter(Method method, String property) {</span>
-<span class="fc" id="L22">    this.method = method;</span>
-<span class="fc" id="L23">    this.property = property;</span>
+<span class="nc" id="L21">  Setter(Method method, String property) {</span>
+<span class="nc" id="L22">    this.method = method;</span>
+<span class="nc" id="L23">    this.property = property;</span>
     try {
-<span class="fc" id="L25">      this.mh = MethodHandles.lookup().unreflect(method);</span>
+<span class="nc" id="L25">      this.mh = MethodHandles.lookup().unreflect(method);</span>
 <span class="nc" id="L26">    } catch (IllegalAccessException e) {</span>
 <span class="nc" id="L27">      throw ExceptionMethods.uncheck(e);</span>
-<span class="fc" id="L28">    }</span>
-<span class="fc" id="L29">  }</span>
+<span class="nc" id="L28">    }</span>
+<span class="nc" id="L29">  }</span>
 
   /**
    * Returns the name of the property.
@@ -34,7 +34,7 @@ public final class Setter {
    * @return the name of the property
    */
   public String getProperty() {
-<span class="fc" id="L37">    return property;</span>
+<span class="nc" id="L37">    return property;</span>
   }
 
   /**
@@ -43,7 +43,7 @@ public final class Setter {
    * @return the type of the property
    */
   public Class&lt;?&gt; getParamType() {
-<span class="fc" id="L46">    return method.getParameterTypes()[0];</span>
+<span class="nc" id="L46">    return method.getParameterTypes()[0];</span>
   }
 
   /**
@@ -60,17 +60,17 @@ public final class Setter {
    */
   public void write(Object bean, Object value)
       throws IllegalAssignmentException, Throwable {
-<span class="fc bfc" id="L63" title="All 2 branches covered.">    if (value == null) {</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">      if (getParamType().isPrimitive()) {</span>
-<span class="fc" id="L65">        throw illegalAssignment(null);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">    if (value == null) {</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">      if (getParamType().isPrimitive()) {</span>
+<span class="nc" id="L65">        throw illegalAssignment(null);</span>
       }
     }
     try {
-<span class="fc" id="L69">      mh.invoke(bean, value);</span>
-<span class="fc" id="L70">    } catch (ClassCastException e) {</span>
-<span class="fc" id="L71">      throw illegalAssignment(value);</span>
-<span class="fc" id="L72">    }</span>
-<span class="fc" id="L73">  }</span>
+<span class="nc" id="L69">      mh.invoke(bean, value);</span>
+<span class="nc" id="L70">    } catch (ClassCastException e) {</span>
+<span class="nc" id="L71">      throw illegalAssignment(value);</span>
+<span class="nc" id="L72">    }</span>
+<span class="nc" id="L73">  }</span>
 
   /**
    * Generates an {@link IllegalAssignmentException} indicating that the specified
@@ -80,10 +80,10 @@ public final class Setter {
    * @return An {@link IllegalAssignmentException} for the specified value
    */
   public IllegalAssignmentException illegalAssignment(Object value) {
-<span class="fc" id="L83">    return new IllegalAssignmentException(</span>
-<span class="fc" id="L84">        method.getDeclaringClass(),</span>
+<span class="nc" id="L83">    return new IllegalAssignmentException(</span>
+<span class="nc" id="L84">        method.getDeclaringClass(),</span>
         property,
-<span class="fc" id="L86">        getParamType(),</span>
+<span class="nc" id="L86">        getParamType(),</span>
         value);
   }
 

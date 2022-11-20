@@ -825,7 +825,7 @@ public final class NumberMethods {
 <span class="fc" id="L825">        BigDecimal bd = new BigDecimal(s);</span>
         long l;
 <span class="pc bpc" id="L827" title="2 of 6 branches missed.">        return isRound(bd) &amp;&amp; (l = bd.longValue()) &gt;= minVal &amp;&amp; l &lt;= maxVal;</span>
-<span class="fc" id="L828">      } catch (NumberFormatException ignored) {</span>
+<span class="nc" id="L828">      } catch (NumberFormatException ignored) {</span>
       }
     }
 <span class="fc" id="L831">    return false;</span>
