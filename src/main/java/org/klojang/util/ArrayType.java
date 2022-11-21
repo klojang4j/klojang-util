@@ -9,7 +9,7 @@ import org.klojang.check.Check;
 import org.klojang.util.ArrayType;
 import org.klojang.util.ClassMethods;
 import org.klojang.util.Tuple2;
-import org.klojang.util.x.invoke.InvokeUtils;
+import static org.klojang.util.InvokeMethods.*;
 
 /**
  * Provides metadata about an array type. An {@code ArrayType} consists of a base
@@ -44,7 +44,7 @@ public record ArrayType(Class<?> baseType, int dimensions) {
    */
   public static String describe(Object array) {
     ArrayType at = forArray(array);
-    int len = InvokeUtils.getArrayLength(array);
+    int len = getArrayLength(array);
     StringBuilder sb = new StringBuilder(at.baseType.getSimpleName())
         .append('[')
         .append(len)

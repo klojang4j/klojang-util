@@ -17,7 +17,7 @@ import static org.klojang.util.ArrayMethods.*;
 import static org.klojang.util.MathMethods.divUp;
 import static org.klojang.util.ObjectMethods.ifNull;
 import static org.klojang.util.ObjectMethods.isEmpty;
-import static org.klojang.util.x.invoke.InvokeUtils.getArrayLength;
+import static org.klojang.util.InvokeMethods.getArrayLength;
 
 /**
  * Methods for working with strings. Quite a few methods in this class are geared

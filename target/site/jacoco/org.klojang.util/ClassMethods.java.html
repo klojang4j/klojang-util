@@ -219,9 +219,9 @@ public final class ClassMethods {
    */
   public static boolean isAutoUnboxedAs(Class&lt;?&gt; classToTest,
       Class&lt;?&gt; primitiveClass) {
-<span class="fc" id="L222">    Check.notNull(classToTest);</span>
-<span class="fc" id="L223">    Check.notNull(primitiveClass);</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">    return P2W.get(primitiveClass) == classToTest;</span>
+<span class="nc" id="L222">    Check.notNull(classToTest);</span>
+<span class="nc" id="L223">    Check.notNull(primitiveClass);</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">    return P2W.get(primitiveClass) == classToTest;</span>
   }
 
   /**
@@ -252,7 +252,7 @@ public final class ClassMethods {
    */
   public static Class&lt;?&gt; box(Class&lt;?&gt; clazz) {
 <span class="fc" id="L254">    Check.notNull(clazz);</span>
-<span class="fc bfc" id="L255" title="All 2 branches covered.">    return clazz.isPrimitive() ? P2W.get(clazz) : clazz;</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">    return clazz.isPrimitive() ? P2W.get(clazz) : clazz;</span>
   }
 
   /**

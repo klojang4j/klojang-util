@@ -14,7 +14,5 @@ module org.klojang.util {
   exports org.klojang.util;
   exports org.klojang.util.collection;
   exports org.klojang.util.exception;
-  exports org.klojang.util.invoke;
-  exports org.klojang.util.path;
   exports org.klojang.util.util;
 }

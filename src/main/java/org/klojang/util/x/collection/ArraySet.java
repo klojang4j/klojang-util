@@ -5,7 +5,7 @@ import java.util.*;
 import org.klojang.check.Check;
 import org.klojang.check.aux.DuplicateValueException;
 import org.klojang.util.ArrayMethods;
-import org.klojang.util.x.invoke.InvokeUtils;
+import static org.klojang.util.InvokeMethods.*;
 
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.aux.DuplicateValueException.Usage.ELEMENT;
@@ -133,7 +133,7 @@ public final class ArraySet<E> extends ImmutableSet<E> {
     Check.notNull(a);
     int sz = elems.length;
     if (a.length < sz) {
-      a = (T[]) InvokeUtils.newArray(a.getClass(), sz);
+      a = (T[]) newArray(a.getClass(), sz);
     }
     int i = 0;
     Object[] result = a;

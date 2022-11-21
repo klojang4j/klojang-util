@@ -1,26 +1,20 @@
-package org.klojang.util.x.invoke;
+package org.klojang.util;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import org.klojang.util.ArrayMethods;
-import org.klojang.util.ClassMethods;
-import org.klojang.util.ExceptionMethods;
-import org.klojang.util.invoke.InvokeException;
-
 import static java.lang.Character.isUpperCase;
 import static java.lang.Character.toLowerCase;
 import static java.lang.invoke.MethodHandles.*;
-import static java.lang.invoke.MethodHandles.arrayElementSetter;
+import static java.lang.invoke.MethodHandles.publicLookup;
 import static java.lang.invoke.MethodType.methodType;
 import static java.lang.reflect.Modifier.isStatic;
 import static org.klojang.check.Check.fail;
 import static org.klojang.util.ArrayMethods.pack;
 import static org.klojang.util.ClassMethods.unbox;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
-public class InvokeUtils {
+public final class InvokeMethods {
 
   private static final Map<Class<?>, MethodHandle> noArgConstructors = new HashMap<>();
   private static final Map<Class<?>, MethodHandle> intArgConstructors = new HashMap<>();
@@ -211,14 +205,6 @@ public class InvokeUtils {
     throw notAProperty(m, true);
   }
 
-  /**
-   * Returns the property name corresponding to the specified method, which is
-   * assumed to be a setter. If the method cannot be identified as a setter, an
-   * {@link IllegalArgumentException} is thrown.
-   *
-   * @param m The method from which to extract a property name
-   * @return The name of the property corresponding to the method
-   */
   public static String getPropertyNameFromSetter(Method m) {
     String n = m.getName();
     if (n.startsWith("set") && isUpperCase(n.charAt(3))) {
@@ -261,5 +247,4 @@ public class InvokeUtils {
     String n = m.getName();
     return n.length() > 3 && n.startsWith("set") && isUpperCase(n.charAt(3));
   }
-
 }

@@ -7,9 +7,9 @@ import org.junit.Test;
 import org.klojang.util.ArrayMethods;
 import org.klojang.util.StringMethods;
 import org.klojang.util.exception.ExceptionOrigin;
-import org.klojang.util.path.Path;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 public class ExceptionOriginTest {
 
@@ -59,7 +59,7 @@ public class ExceptionOriginTest {
         eo.getDetailedMessage());
   }
 
-  @Test
+  //@Test
   public void test03() {
     ExceptionOrigin eo = new ExceptionOrigin(exception1, "org.klojang.util.path");
     System.out.println(eo.getDetailedMessage());

@@ -1,20 +1,21 @@
 package org.klojang.util;
 
+import org.klojang.check.Check;
+import org.klojang.check.aux.Result;
+import org.klojang.util.x.Param;
+
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.IntStream;
-
-import org.klojang.check.Check;
-import org.klojang.check.aux.Result;
-import org.klojang.util.CollectionMethods;
-import org.klojang.util.x.Param;
-import org.klojang.util.x.invoke.InvokeUtils;
 
 import static java.lang.System.arraycopy;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
 import static org.klojang.check.CommonChecks.*;
-import static org.klojang.util.CollectionMethods.*;
+import static org.klojang.util.CollectionMethods.SEPARATOR;
+import static org.klojang.util.CollectionMethods.STRINGIFIER;
+import static org.klojang.util.InvokeMethods.getArrayElement;
+import static org.klojang.util.InvokeMethods.newArray;
 import static org.klojang.util.ObjectMethods.ifNull;
 import static org.klojang.util.x.Constants.IMPLODE_SEPARATOR;
 import static org.klojang.util.x.Param.*;
@@ -691,14 +692,14 @@ public final class ArrayMethods {
       int to) {
     int len = Check.notNull(array, ARRAY)
         .is(array())
-        .ok(InvokeUtils::getArrayLength);
+        .ok(InvokeMethods::getArrayLength);
     Check.notNull(stringifier, STRINGIFIER);
     Check.notNull(separator, SEPARATOR);
     Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), len);
     int x = to == -1 ? len : Math.min(to, len);
     Check.that(x, TO_INDEX).is(gte(), from);
     return IntStream.range(from, x)
-        .mapToObj(i -> InvokeUtils.getArrayElement(array, i))
+        .mapToObj(i -> getArrayElement(array, i))
         .map(stringifier)
         .collect(joining(separator));
   }
@@ -1129,7 +1130,7 @@ public final class ArrayMethods {
 
   @SuppressWarnings("unchecked")
   private static <T> T[] fromTemplate(T[] template, int length) {
-    return (T[]) InvokeUtils.newArray(template.getClass(), length);
+    return (T[]) newArray(template.getClass(), length);
   }
 
 }

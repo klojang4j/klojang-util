@@ -1,24 +1,13 @@
-package org.klojang.util.invoke;
+package org.klojang.util;
 
 import static org.klojang.util.ArrayMethods.implode;
 import static org.klojang.util.ClassMethods.simpleClassName;
-import static org.klojang.util.ExceptionMethods.getRootCause;
-
-import org.klojang.util.ClassMethods;
-import org.klojang.util.invoke.Getter;
-import org.klojang.util.invoke.IllegalAssignmentException;
-import org.klojang.util.invoke.InvokeException;
-import org.klojang.util.invoke.NoPublicGettersException;
-import org.klojang.util.invoke.NoPublicSettersException;
-import org.klojang.util.invoke.NoSuchPropertyException;
 
 /**
  * A {@code RuntimeException} thrown in response to various dynamic invocation
  * errors.
  */
-public sealed class InvokeException extends RuntimeException permits
-    IllegalAssignmentException,
-    NoPublicGettersException, NoPublicSettersException, NoSuchPropertyException {
+public class InvokeException extends RuntimeException {
 
   /**
    * Returns an {@code InvokeException} informing the client that a class could not
@@ -67,15 +56,7 @@ public sealed class InvokeException extends RuntimeException permits
     return new InvokeException(msg);
   }
 
-  static InvokeException wrap(Throwable t, Object bean, Getter getter) {
-    String msg = String.format("Error while reading %s.%s: %s",
-        simpleClassName(bean),
-        getter.getProperty(),
-        getRootCause(t));
-    return new InvokeException(msg);
-  }
-
-  InvokeException(String message) {
+  public InvokeException(String message) {
     super(message);
   }
 

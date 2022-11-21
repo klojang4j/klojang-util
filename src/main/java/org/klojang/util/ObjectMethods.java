@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.klojang.check.CommonChecks.notNull;
 import static org.klojang.util.ArrayMethods.isElementOf;
 import static org.klojang.util.ClassMethods.isPrimitiveArray;
-import static org.klojang.util.x.invoke.InvokeUtils.getArrayLength;
+import static org.klojang.util.InvokeMethods.getArrayLength;
 
 /**
  * General methods applicable to objects of any type.
@@ -124,7 +124,6 @@ public class ObjectMethods {
   public static boolean isEmpty(Emptyable arg) {
     return arg == null || arg.isEmpty();
   }
-
 
   /**
    * Returns whether the specified argument is null or empty. This method is (and can
