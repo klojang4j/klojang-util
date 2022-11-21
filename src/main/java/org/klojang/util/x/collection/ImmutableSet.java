@@ -4,9 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.klojang.util.x.Generated;
 
-@Generated
 public abstract class ImmutableSet<E> implements Set<E> {
 
   @Override

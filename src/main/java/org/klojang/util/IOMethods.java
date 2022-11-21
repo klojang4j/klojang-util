@@ -1,5 +1,7 @@
 package org.klojang.util;
 
+import org.klojang.check.Check;
+
 import java.io.*;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -8,18 +10,13 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.klojang.check.Check;
-import org.klojang.util.ExceptionMethods;
-import org.klojang.util.IOMethods;
-import org.klojang.util.x.Param;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.*;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonExceptions.IO;
+import static org.klojang.check.Tag.*;
 import static org.klojang.util.ObjectMethods.isEmpty;
 import static org.klojang.util.StringMethods.*;
-import static org.klojang.util.x.Param.*;
 
 /**
  * I/O-related methods.
@@ -80,7 +77,7 @@ public class IOMethods {
    * @return the contents of the specified resource
    */
   public static String getContents(Class<?> clazz, String path, int chunkSize) {
-    Check.that(clazz, CLAZZ).is(notNull()).and(path, PATH).is(notNull());
+    Check.that(clazz, CLASS).is(notNull()).and(path, PATH).is(notNull());
     try (InputStream in = clazz.getResourceAsStream(path)) {
       Check.that(in).is(notNull(), INVALID_PATH, path);
       return getContents(in, chunkSize);
@@ -171,7 +168,7 @@ public class IOMethods {
    * @return the contents of the specified resource
    */
   public static byte[] readBytes(Class<?> clazz, String path, int chunkSize) {
-    Check.that(clazz, CLAZZ).is(notNull()).and(path, PATH).is(notNull());
+    Check.that(clazz, CLASS).is(notNull()).and(path, PATH).is(notNull());
     try (InputStream in = clazz.getResourceAsStream(path)) {
       Check.that(in).is(notNull(), INVALID_PATH, path);
       return readBytes(in, chunkSize);
@@ -346,7 +343,7 @@ public class IOMethods {
       Class<?> requester, String relativePath, String extension, boolean touch)
       throws IOException {
     Check.notNull(requester, REQUESTER);
-    Check.notNull(relativePath, Param.RELATIVE_PATH);
+    Check.notNull(relativePath, REL_PATH);
     return doCreateTempFile(requester, relativePath, extension, touch);
   }
 
@@ -455,7 +452,7 @@ public class IOMethods {
       Class<?> requester, String relativePath, String extension, boolean touch)
       throws IOException {
     Check.notNull(requester, REQUESTER);
-    Check.notNull(relativePath, Param.RELATIVE_PATH);
+    Check.notNull(relativePath, REL_PATH);
     return doCreateTempDir(requester, relativePath, extension, touch);
   }
 

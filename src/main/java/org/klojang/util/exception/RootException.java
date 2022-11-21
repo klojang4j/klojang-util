@@ -1,5 +1,6 @@
 package org.klojang.util.exception;
 
+import static org.klojang.check.Tag.MESSAGE;
 import static org.klojang.util.ExceptionMethods.getRootCause;
 import static org.klojang.util.exception.UncheckedException.peal;
 
@@ -10,7 +11,7 @@ import java.util.Optional;
 import org.klojang.check.Check;
 import org.klojang.util.ExceptionMethods;
 import org.klojang.util.exception.UncheckedException;
-import org.klojang.util.x.Param;
+import org.klojang.check.Tag;
 
 /**
  * A {@code RuntimeException} that behaves as though it is the root cause of the
@@ -49,7 +50,7 @@ public final class RootException extends RuntimeException {
    */
   public RootException(String message, Throwable cause) {
     super(rootOf(cause));
-    this.msg = Check.notNull(message, Param.MESSAGE).ok(Optional::of);
+    this.msg = Check.notNull(message, MESSAGE).ok(Optional::of);
   }
 
   private static Throwable rootOf(Throwable t) {

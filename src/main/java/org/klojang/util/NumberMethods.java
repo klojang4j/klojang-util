@@ -1,28 +1,15 @@
 package org.klojang.util;
 
+import org.klojang.check.Check;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
-
-import org.klojang.check.Check;
-import org.klojang.util.ClassMethods;
-import org.klojang.util.MathMethods;
-import org.klojang.util.NumberMethods;
-import org.klojang.util.ToBigDecimalConversion;
-import org.klojang.util.ToBigIntegerConversion;
-import org.klojang.util.ToByteConversion;
-import org.klojang.util.ToDoubleConversion;
-import org.klojang.util.ToFloatConversion;
-import org.klojang.util.ToIntConversion;
-import org.klojang.util.ToLongConversion;
-import org.klojang.util.ToShortConversion;
-import org.klojang.util.TypeConversionException;
-import org.klojang.util.x.Param;
 
 import static java.math.BigDecimal.ONE;
 import static org.klojang.util.ClassMethods.*;
@@ -660,7 +647,7 @@ public final class NumberMethods {
   @SuppressWarnings("unchecked")
   public static <T extends Number> T parse(String s, Class<T> targetType)
       throws TypeConversionException {
-    Check.notNull(targetType, Param.TARGET_TYPE);
+    Check.notNull(targetType, "target type");
     Function<String, Number> parser = parsers.get(targetType);
     if (parser != null) {
       return (T) parser.apply(s);
@@ -679,7 +666,7 @@ public final class NumberMethods {
    *     specified type
    */
   public static <T extends Number> boolean fitsInto(String s, Class<T> targetType) {
-    Check.notNull(targetType, Param.TARGET_TYPE);
+    Check.notNull(targetType, "target type");
     if (!isEmpty(s)) {
       Predicate<String> tester = stringFitsInto.get(targetType);
       if (tester != null) {
@@ -724,7 +711,7 @@ public final class NumberMethods {
   @SuppressWarnings({"unchecked"})
   public static <T extends Number, R extends Number> R convert(T number,
       Class<R> targetType) throws TypeConversionException {
-    Check.notNull(targetType, Param.TARGET_TYPE);
+    Check.notNull(targetType, "target type");
     if (number == null || number.getClass() == targetType) {
       return (R) number;
     }
@@ -747,7 +734,7 @@ public final class NumberMethods {
    */
   public static <T extends Number> boolean fitsInto(Number number,
       Class<T> targetType) {
-    Check.notNull(targetType, Param.TARGET_TYPE);
+    Check.notNull(targetType, "target type");
     if (number == null) {
       return true;
     }

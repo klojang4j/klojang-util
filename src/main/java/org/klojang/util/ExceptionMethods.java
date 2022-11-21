@@ -1,18 +1,20 @@
 package org.klojang.util;
 
+import org.klojang.check.Check;
+import org.klojang.util.exception.ExceptionOrigin;
+import org.klojang.util.exception.RootException;
+import org.klojang.util.exception.UncheckedException;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import org.klojang.check.Check;
-import org.klojang.util.exception.ExceptionOrigin;
-import org.klojang.util.exception.RootException;
-import org.klojang.util.exception.UncheckedException;
-import org.klojang.util.x.Param;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.klojang.check.Tag.*;
+
+;
 
 /**
  * Methods related to exception handling.
@@ -33,7 +35,7 @@ public final class ExceptionMethods {
    * @return the root cause of the exception
    */
   public static Throwable getRootCause(Throwable exc) {
-    Check.notNull(exc, Param.EXCEPTION);
+    Check.notNull(exc, EXCEPTION);
     while (exc.getCause() != null) {
       exc = exc.getCause();
     }
@@ -48,7 +50,7 @@ public final class ExceptionMethods {
    * @return the root stack trace as a string
    */
   public static String getRootStackTraceAsString(Throwable exc) {
-    Check.notNull(exc, Param.EXCEPTION);
+    Check.notNull(exc, EXCEPTION);
     ByteArrayOutputStream out = new ByteArrayOutputStream(2048);
     getRootCause(exc).printStackTrace(new PrintStream(out));
     return out.toString(UTF_8).strip();
@@ -67,8 +69,8 @@ public final class ExceptionMethods {
    * @return the root stack trace as a string
    */
   public static String getRootStackTraceAsString(Throwable exc, String... filter) {
-    Check.notNull(exc, Param.EXCEPTION);
-    Check.notNull(filter, Param.FILTER);
+    Check.notNull(exc, EXCEPTION);
+    Check.notNull(filter, FILTER);
     ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
     PrintStream pw = new PrintStream(out);
     Throwable t = getRootCause(exc);
@@ -97,8 +99,8 @@ public final class ExceptionMethods {
    */
   public static StackTraceElement[] getRootStackTrace(Throwable exc,
       String... filter) {
-    Check.notNull(exc, Param.EXCEPTION);
-    Check.notNull(filter, Param.FILTER);
+    Check.notNull(exc, EXCEPTION);
+    Check.notNull(filter, FILTER);
     if (filter.length == 0) {
       return getRootCause(exc).getStackTrace();
     }
@@ -141,7 +143,7 @@ public final class ExceptionMethods {
    * @see ExceptionOrigin#getDetailedMessage()
    */
   public static String getDetailedMessage(Throwable exc, String search) {
-    Check.notNull(exc, Param.EXCEPTION);
+    Check.notNull(exc, EXCEPTION);
     return new ExceptionOrigin(exc, search).getDetailedMessage();
   }
 
@@ -153,7 +155,7 @@ public final class ExceptionMethods {
    * @return the specified throwable or a {@code RuntimeException} wrapping it
    */
   public static RuntimeException wrap(Throwable exc) {
-    if (Check.notNull(exc, Param.EXCEPTION).ok() instanceof RuntimeException rte) {
+    if (Check.notNull(exc, EXCEPTION).ok() instanceof RuntimeException rte) {
       return rte;
     }
     return new RuntimeException(exc);
@@ -173,9 +175,9 @@ public final class ExceptionMethods {
   public static RuntimeException wrap(Throwable exc,
       String customMessage,
       Object... msgArgs) {
-    Check.notNull(exc, Param.EXCEPTION);
-    Check.notNull(customMessage, "customMessage");
-    Check.notNull(msgArgs, Param.MSG_ARGS);
+    Check.notNull(exc, EXCEPTION);
+    Check.notNull(customMessage, MESSAGE);
+    Check.notNull(msgArgs, "message arguments");
     if (exc instanceof RuntimeException rte) {
       return rte;
     }
@@ -199,7 +201,7 @@ public final class ExceptionMethods {
    */
   public static <T extends RuntimeException> RuntimeException wrap(
       Throwable exc, Function<Throwable, T> exceptionFactory) {
-    Check.notNull(exc, Param.EXCEPTION);
+    Check.notNull(exc, EXCEPTION);
     Check.notNull(exceptionFactory, "exceptionFactory");
     if (exc instanceof RuntimeException rte) {
       return rte;
@@ -237,7 +239,7 @@ public final class ExceptionMethods {
       BiFunction<String, Throwable, T> exceptionFactory,
       String customMessage,
       Object... msgArgs) {
-    Check.notNull(exception, Param.EXCEPTION);
+    Check.notNull(exception, EXCEPTION);
     if (exception instanceof RuntimeException rte) {
       return rte;
     }

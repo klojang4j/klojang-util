@@ -1,23 +1,19 @@
 package org.klojang.util;
 
-import java.util.*;
-
 import org.klojang.check.Check;
-import org.klojang.util.ArrayMethods;
-import org.klojang.util.ClassMethods;
-import org.klojang.util.CollectionMethods;
-import org.klojang.util.ObjectMethods;
 import org.klojang.util.collection.IntList;
-import org.klojang.util.x.Param;
+
+import java.util.*;
 
 import static java.lang.Character.toLowerCase;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonExceptions.indexOutOfBounds;
-import static org.klojang.util.ArrayMethods.*;
+import static org.klojang.check.Tag.*;
+import static org.klojang.util.InvokeMethods.getArrayLength;
 import static org.klojang.util.MathMethods.divUp;
 import static org.klojang.util.ObjectMethods.ifNull;
 import static org.klojang.util.ObjectMethods.isEmpty;
-import static org.klojang.util.InvokeMethods.getArrayLength;
+
 
 /**
  * Methods for working with strings. Quite a few methods in this class are geared
@@ -1205,12 +1201,12 @@ public final class StringMethods {
    * @return the substring
    */
   public static String substr(String str, int from) {
-    Check.notNull(str, Param.STR);
+    Check.notNull(str, STR);
     int sz = str.length();
     if (from < 0) {
       from = sz + from;
     }
-    Check.that(from, Param.FROM_INDEX).is(gte(), 0).is(lte(), sz);
+    Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), sz);
     return str.substring(from);
   }
 
@@ -1230,15 +1226,15 @@ public final class StringMethods {
    * @see CollectionMethods#sublist(List, int, int)
    */
   public static String substr(String str, int from, int length) {
-    Check.notNull(str, Param.STR);
+    Check.notNull(str, STR);
     int sz = str.length();
     int start;
     if (from < 0) {
       start = from + sz;
-      Check.that(start, Param.FROM_INDEX).is(gte(), 0);
+      Check.that(start, FROM_INDEX).is(gte(), 0);
     } else {
       start = from;
-      Check.that(start, Param.FROM_INDEX).is(lte(), sz);
+      Check.that(start, FROM_INDEX).is(lte(), sz);
     }
     int end;
     if (length >= 0) {
@@ -1246,9 +1242,9 @@ public final class StringMethods {
     } else {
       end = start + 1;
       start = end + length;
-      Check.that(start, Param.FROM_INDEX).is(gte(), 0);
+      Check.that(start, FROM_INDEX).is(gte(), 0);
     }
-    Check.that(end, Param.TO_INDEX).is(lte(), sz);
+    Check.that(end, TO_INDEX).is(lte(), sz);
     return str.substring(start, end);
   }
 
@@ -1447,7 +1443,7 @@ public final class StringMethods {
    *     character at the specified index
    */
   public static int[] getLineAndColumn(String str, int index, String lineSep) {
-    Check.that(str, Param.STR).is(notNull())
+    Check.that(str, STR).is(notNull())
         .and(index).is(indexInclusiveOf(), str, indexOutOfBounds(index))
         .and(lineSep, "lineSep").isNot(empty());
     if (index == 0) {

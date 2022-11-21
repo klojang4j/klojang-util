@@ -1,7 +1,6 @@
 package org.klojang.util;
 
 import org.klojang.check.Check;
-import org.klojang.util.x.Param;
 
 import java.io.File;
 import java.time.temporal.Temporal;
@@ -127,7 +126,7 @@ public final class TypeConversionException extends RuntimeException {
   }
 
   private static String defaultMessage(Object obj, Class<?> type) {
-    Check.notNull(type, Param.TARGET_TYPE);
+    Check.notNull(type, "target type");
     if (obj == null) {
       return format("cannot convert null to %s", className(type));
     } else if (obj instanceof String s) {

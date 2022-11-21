@@ -1,6 +1,5 @@
 org/klojang/util/ToDoubleConversionTest.class
 org/klojang/util/x/collection/ArraySetTest.class
-org/klojang/util/MorphToNumberTest.class
 org/klojang/util/IOMethodsTest.class
 org/klojang/util/util/EnumParserTest$TestEnum.class
 org/klojang/util/Tuple2Test.class
@@ -13,21 +12,17 @@ org/klojang/util/StringMethodsTest.class
 org/klojang/util/ClassMethodsTest.class
 org/klojang/util/collection/EnumToIntMapTest$TestEnum.class
 org/klojang/util/collection/IntListTest.class
-org/klojang/util/MorphToArrayTest.class
 org/klojang/util/util/ResizeMethodTest.class
-org/klojang/util/MorphToEnumTest.class
 org/klojang/util/CollectionMethodsTest.class
 org/klojang/util/ToShortConversionTest.class
 org/klojang/util/ExceptionMethodsTest.class
 org/klojang/util/collection/UnmodifiableIntListTest.class
 org/klojang/util/MathMethodsTest.class
 org/klojang/util/ArrayTypeTest.class
-org/klojang/util/MorphToCollectionTest.class
 org/klojang/util/BoolTest.class
 org/klojang/util/exception/ExceptionOriginTest.class
 org/klojang/util/util/EnumParserTest.class
 org/klojang/util/ObjectMethodsTest.class
-org/klojang/util/MorphTest.class
 org/klojang/util/ToFloatConversionTest.class
 org/klojang/util/LaxTuple2Test.class
 org/klojang/util/collection/EnumToIntMapTest.class
@@ -35,3 +30,4 @@ org/klojang/util/ToLongConversionTest.class
 org/klojang/util/collection/MyArrayList2.class
 org/klojang/util/collection/MyArrayList.class
 org/klojang/util/ToBigIntegerConversionTest.class
+org/klojang/util/InvokeExceptionTest.class

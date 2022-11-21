@@ -1,2 +1,4 @@
-/** Classes extending the functionality of the Java Collection framework. */
+/**
+ * Garden-variety extensions to the Collections Framework
+ */
 package org.klojang.util.collection;

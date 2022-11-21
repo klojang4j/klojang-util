@@ -11,7 +11,7 @@ import org.klojang.util.NumberMethods;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonProperties.type;
 import static org.klojang.util.CollectionMethods.swapAndFreeze;
-import static org.klojang.util.x.Param.TYPE;
+import static org.klojang.check.Tag.TYPE;
 
 /**
  * Methods for inspecting types.

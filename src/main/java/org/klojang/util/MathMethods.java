@@ -11,7 +11,7 @@ import java.util.function.UnaryOperator;
 import org.klojang.check.Check;
 
 import static org.klojang.check.CommonChecks.*;
-import static org.klojang.util.x.Param.ARRAY;
+import static org.klojang.check.Tag.ARRAY;
 
 /**
  * Math-related methods. Quite a few methods in this class are about laying out a

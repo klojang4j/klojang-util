@@ -3,7 +3,6 @@ package org.klojang.util;
 import org.klojang.check.Check;
 import org.klojang.check.aux.DuplicateValueException;
 import org.klojang.check.fallible.FallibleFunction;
-import org.klojang.util.x.Param;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -17,10 +16,10 @@ import static java.util.stream.Collectors.*;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonExceptions.duplicateKey;
 import static org.klojang.check.CommonProperties.*;
+import static org.klojang.check.Tag.*;
 import static org.klojang.util.ArrayMethods.END_INDEX;
 import static org.klojang.util.ArrayMethods.START_INDEX;
-import static org.klojang.util.x.Constants.IMPLODE_SEPARATOR;
-import static org.klojang.util.x.Param.*;
+import static org.klojang.util.ArrayMethods.IMPLODE_SEPARATOR;
 
 /**
  * Methods extending the Java Collection framework.
@@ -252,7 +251,7 @@ public final class CollectionMethods {
    * @return a sublist of the provided list
    */
   public static <T> List<T> sublist(List<T> list, int from, int length) {
-    Check.notNull(list, Param.LIST);
+    Check.notNull(list, LIST);
     int sz = list.size();
     int start;
     if (from < 0) {
@@ -349,7 +348,7 @@ public final class CollectionMethods {
    */
   public static <K, V0, V1> Map<K, V1> freeze(
       Map<K, V0> src, Function<? super V0, ? extends V1> valueConverter) {
-    Check.notNull(src, Param.MAP);
+    Check.notNull(src, MAP);
     Check.notNull(valueConverter, "value converter");
     return src.entrySet().stream()
         .peek(checkEntry())
@@ -376,7 +375,7 @@ public final class CollectionMethods {
   public static <K, V0, V1> Map<K, V1> freeze(
       Map<K, V0> src,
       BiFunction<? super K, ? super V0, ? extends V1> valueConverter) {
-    Check.notNull(src, Param.MAP);
+    Check.notNull(src, MAP);
     Check.notNull(valueConverter, "value converter");
     return src.entrySet().stream()
         .peek(checkEntry())
@@ -402,7 +401,7 @@ public final class CollectionMethods {
    */
   public static <K0, V0, K1, V1> Map<K1, V1> deepFreeze(
       Map<K0, V0> src, Function<Entry<K0, V0>, Entry<K1, V1>> entryConverter) {
-    Check.notNull(src, Param.MAP);
+    Check.notNull(src, MAP);
     Check.notNull(entryConverter, "entry converter");
     Map<K1, V1> out = new HashMap<>(1 + src.size() * 4 / 3);
     src.entrySet().stream()

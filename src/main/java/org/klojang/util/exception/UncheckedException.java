@@ -8,7 +8,9 @@ import org.klojang.check.Check;
 import org.klojang.util.ExceptionMethods;
 import org.klojang.util.exception.RootException;
 import org.klojang.util.exception.UncheckedException;
-import org.klojang.util.x.Param;
+import org.klojang.check.Tag;
+
+import static org.klojang.check.Tag.MESSAGE;
 
 /**
  * A {@code RuntimeException} that behaves just like {@link Exception} it wraps. it
@@ -76,7 +78,7 @@ public final class UncheckedException extends RuntimeException {
    */
   public UncheckedException(String message, Throwable cause) {
     super(Check.notNull(cause, "cause").ok(UncheckedException::peal));
-    this.msg = Check.notNull(message, Param.MESSAGE).ok();
+    this.msg = Check.notNull(message, MESSAGE).ok();
   }
 
   /**

@@ -1,5 +1,11 @@
 package org.klojang.util.collection;
 
+import org.klojang.check.Check;
+import org.klojang.check.CommonChecks;
+import org.klojang.check.aux.Emptyable;
+import org.klojang.util.CollectionMethods;
+import org.klojang.util.x.collection.ArraySet;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -9,15 +15,6 @@ import java.util.function.ObjIntConsumer;
 import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
-import org.klojang.check.Check;
-import org.klojang.check.CommonChecks;
-import org.klojang.check.aux.Emptyable;
-import org.klojang.util.CollectionMethods;
-import org.klojang.util.collection.EnumToIntMap;
-import org.klojang.util.collection.IntArrayList;
-import org.klojang.util.collection.IntList;
-import org.klojang.util.x.collection.ArraySet;
-
 import static java.util.AbstractMap.SimpleImmutableEntry;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -26,12 +23,12 @@ import static org.klojang.check.CommonChecks.*;
 import static org.klojang.util.ObjectMethods.replaceIf;
 
 /**
- * A fast enum-to-int map. The map is backed by a simple int array with the same
- * length as the number of constants in the {@code enum} class. One integer must be
- * designated to signify the <b>absence</b> of a key. By default, this is
+ * A fast enum-to-int map. The map is backed by an int array with the same length as
+ * the number of constants in the {@code enum} class. One integer must be designated
+ * to signify the <b>absence</b> of a key. By default, this is
  * {@link Integer#MIN_VALUE} and, by default, all elements in the {@code int} array
- * are set to this value (meaning the map is empty). It is not allowed to add a key
- * with this value to the map, as is would in effect amount to
+ * are initialized to this value &#8212; meaning the map is empty. It is not allowed
+ * to {@code put} a key with this value to the map, as is would in effect amount to
  * <i>removing</i> that key from the map. It is also not allowed to pass this value
  * to {@link #containsValue(int) containsValue}. In both cases an
  * {@code IllegalArgumentException} is thrown. Empty enum classes (i.e. enum classes

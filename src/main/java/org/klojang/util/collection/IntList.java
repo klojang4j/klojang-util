@@ -1,6 +1,8 @@
 package org.klojang.util.collection;
 
-import static org.klojang.check.CommonChecks.notNull;
+import org.klojang.check.Check;
+import org.klojang.check.aux.Emptyable;
+import org.klojang.check.fallible.FallibleIntConsumer;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,19 +11,13 @@ import java.util.OptionalInt;
 import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 
-import org.klojang.check.Check;
-import org.klojang.check.aux.Emptyable;
-import org.klojang.check.fallible.FallibleIntConsumer;
-import org.klojang.util.collection.IntArrayList;
-import org.klojang.util.collection.IntList;
-import org.klojang.util.collection.UnmodifiableIntList;
+import static org.klojang.check.CommonChecks.notNull;
 
 /**
- * The ubiquitous list-of-int class, while we await Valhalla. Note that
- * {@code IntList} is a sealed interface with just two implementations: one
- * ({@link IntArrayList}) allows mutations on the list and the other is immutable.
- * Instances of the immutable variant can only be obtained through the static factory
- * methods on this interface.
+ * The ubiquitous list-of-int class. Note that {@code IntList} is a sealed interface
+ * with just two implementations: one ({@link IntArrayList}) allows mutations on the
+ * list and the other is immutable. Instances of the immutable variant can only be
+ * obtained through static factory methods on the {@code IntList} interface.
  */
 public sealed interface IntList extends Emptyable permits IntArrayList,
     UnmodifiableIntList {

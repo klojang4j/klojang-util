@@ -2,7 +2,6 @@ package org.klojang.util;
 
 import org.klojang.check.Check;
 import org.klojang.check.aux.Result;
-import org.klojang.util.x.Param;
 
 import java.util.*;
 import java.util.function.*;
@@ -12,13 +11,12 @@ import static java.lang.System.arraycopy;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
 import static org.klojang.check.CommonChecks.*;
+import static org.klojang.check.Tag.*;
 import static org.klojang.util.CollectionMethods.SEPARATOR;
 import static org.klojang.util.CollectionMethods.STRINGIFIER;
 import static org.klojang.util.InvokeMethods.getArrayElement;
 import static org.klojang.util.InvokeMethods.newArray;
 import static org.klojang.util.ObjectMethods.ifNull;
-import static org.klojang.util.x.Constants.IMPLODE_SEPARATOR;
-import static org.klojang.util.x.Param.*;
 
 /**
  * Methods for working with arrays.
@@ -46,6 +44,14 @@ public final class ArrayMethods {
 
   static final String START_INDEX = "Start index";
   static final String END_INDEX = "End index";
+
+
+  /**
+   * Default separator for {@code ArrayMethods.implode} and
+   * {@code CollectionMethods.implode}.
+   */
+  static final String IMPLODE_SEPARATOR = ", ";
+
 
   private static final Long MAX_ARR_LEN = (long) Integer.MAX_VALUE;
 
@@ -78,7 +84,7 @@ public final class ArrayMethods {
   @SafeVarargs
   public static <T> T[] append(T[] array, T obj0, T obj1, T... moreObjs) {
     Check.notNull(array, ARRAY);
-    Check.notNull(moreObjs, Param.MORE_OBJS);
+    Check.notNull(moreObjs, VARARGS);
     int sz = array.length + 2 + moreObjs.length;
     T[] arr = fromTemplate(array, sz);
     arraycopy(array, 0, arr, 0, array.length);
@@ -350,8 +356,8 @@ public final class ArrayMethods {
       Predicate<T> test,
       Function<T, R> property) {
     Check.notNull(array, ARRAY);
-    Check.notNull(test, Param.TEST);
-    Check.notNull(property, Param.PROPERTY);
+    Check.notNull(test, TEST);
+    Check.notNull(property, PROPERTY);
     return Arrays.stream(array)
         .filter(test)
         .map(property)
@@ -914,7 +920,7 @@ public final class ArrayMethods {
   @SafeVarargs
   public static <T> T[] prefix(T[] array, T obj0, T obj1, T... moreObjs) {
     Check.notNull(array, ARRAY);
-    Check.notNull(moreObjs, MORE_OBJS);
+    Check.notNull(moreObjs, VARARGS);
     int sz = array.length + 2 + moreObjs.length;
     T[] res = fromTemplate(array, sz);
     res[0] = obj0;

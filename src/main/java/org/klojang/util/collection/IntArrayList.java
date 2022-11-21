@@ -21,6 +21,7 @@ import static org.klojang.util.util.ResizeMethod.*;
  * A mutable list of {@code int} values.
  *
  * @author Ayco Holleman
+ * @see IntList
  */
 public final class IntArrayList implements IntList {
 
