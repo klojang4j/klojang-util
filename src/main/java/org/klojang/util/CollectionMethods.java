@@ -12,14 +12,13 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static java.util.Map.Entry;
+import static java.util.Map.entry;
 import static java.util.stream.Collectors.*;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonExceptions.duplicateKey;
 import static org.klojang.check.CommonProperties.*;
 import static org.klojang.check.Tag.*;
-import static org.klojang.util.ArrayMethods.END_INDEX;
-import static org.klojang.util.ArrayMethods.START_INDEX;
-import static org.klojang.util.ArrayMethods.IMPLODE_SEPARATOR;
+import static org.klojang.util.ArrayMethods.*;
 
 /**
  * Methods extending the Java Collection framework.
@@ -34,7 +33,7 @@ public final class CollectionMethods {
     throw new UnsupportedOperationException();
   }
 
-  private static final Map<Class<?>, Function<Object, List<?>>> xxx = Map.of(
+  private static final Map<Class<?>, Function<Object, List<?>>> listifiers = Map.of(
       int[].class, o -> ArrayMethods.asList((int[]) o),
       double[].class, o -> ArrayMethods.asList((double[]) o),
       long[].class, o -> ArrayMethods.asList((long[]) o),
@@ -46,7 +45,8 @@ public final class CollectionMethods {
   );
 
   /**
-   * <p>Converts the specified value to a {@code
+   * <p>Converts the specified value to a {@code List}.
+   *
    * <ul>
    *   <li>if the value already is a {@code List}, it is returned as-is.
    *   <li>if the value is a {@code Collection}, it is
@@ -61,7 +61,7 @@ public final class CollectionMethods {
    *      {@link Collections#singletonList(Object) Collections.singletonList}
    * </ul>
    *
-   * <p>In other words, this method takes the shortest path to turn the value into
+   * <p>In other words, this method takes the shortest route to turn the value into
    * a {@code List} and there is no guarantee about what type of {@code List}
    * you get.
    *
@@ -71,7 +71,7 @@ public final class CollectionMethods {
    * @see ArrayMethods#asList(int[])
    */
   @SuppressWarnings({"unchecked"})
-  public static List<?> asList(Object value) {
+  public static List<?> listify(Object value) {
     if (value != null) {
       if (value instanceof List<?> l) {
         return l;
@@ -80,7 +80,7 @@ public final class CollectionMethods {
       } else if (value instanceof Object[] o) {
         return Arrays.asList(o);
       }
-      Function<Object, List<?>> fnc = xxx.get(value.getClass());
+      Function<Object, List<?>> fnc = listifiers.get(value.getClass());
       if (fnc != null) {
         return fnc.apply(value);
       }
@@ -163,8 +163,8 @@ public final class CollectionMethods {
    *     until that number is reached. If you specify a number less than the number
    *     of key-value pairs (half the length of the varargs array), it will be taken
    *     as a multiplier. For example, 2 would mean that you expect the map to grow
-   *     to about twice its original size.
-   * @param keyClass The class of the keys.
+   *     to about twice the specified number of key-value pairs.
+   * @param keyClass The class of the keys
    * @param valueClass The class of the values
    * @param kvPairs An array alternating between keys and values
    * @return a {@code HashMap} initialized with the specified key-value pairs
@@ -237,46 +237,45 @@ public final class CollectionMethods {
    * Returns a sublist of the provided list starting with element {@code from} and
    * containing at most {@code length} elements. The returned list is backed by the
    * original list, so changing its elements will affect the original list as well.
-   *
-   * <ol>
-   *   <li>If {@code from} is negative, it is taken relative to the end of the list.
-   *   <li>If {@code length} is negative, the sublist is taken in the opposite direction, with the
-   *       element at {@code from} now becoming the <i>last</i> element of the sublist
-   * </ol>
+   * If {@code offset} is negative, it is taken relative to the end of the list. If
+   * {@code length} is negative, the sublist is taken in the opposite direction
+   * &#8212; that is, the element at {@code offset} now becomes the <i>last</i>
+   * element of the sublist.
    *
    * @param list the {@code List} to extract a sublist from
-   * @param from the start index if the sublist (however, see above)
+   * @param offset the start index if the sublist (however, see above)
    * @param length the length of the sublist
    * @param <T> the type of the elements
    * @return a sublist of the provided list
    */
-  public static <T> List<T> sublist(List<T> list, int from, int length) {
+  public static <T> List<T> sublist(List<T> list, int offset, int length) {
     Check.notNull(list, LIST);
     int sz = list.size();
-    int start;
-    if (from < 0) {
-      start = from + sz;
-      Check.that(start, START_INDEX).is(gte(), 0);
+    int from;
+    if (offset < 0) {
+      from = offset + sz;
+      Check.that(from, OFFSET).is(gte(), 0);
     } else {
-      start = from;
-      Check.that(start, START_INDEX).is(lte(), sz);
+      from = offset;
+      Check.that(from, OFFSET).is(lte(), sz);
     }
-    int end;
+    int to;
     if (length >= 0) {
-      end = start + length;
+      to = from + length;
     } else {
-      end = start + 1;
-      start = end + length;
-      Check.that(start, START_INDEX).is(gte(), 0);
+      to = from + 1;
+      from = to + length;
+      Check.that(from, "effective from-index").is(gte(), 0);
     }
-    Check.that(end, END_INDEX).is(lte(), sz);
-    return list.subList(start, end);
+    Check.that(to, "effective to-index").is(lte(), sz);
+    return list.subList(from, to);
   }
 
   /**
    * Returns a new {@code Map} where keys and values of the input map have traded
    * places. The specified {@code Map} must not contain duplicate values. An
-   * {@link IllegalArgumentException} is thrown if it does.
+   * {@link IllegalArgumentException} is thrown if it does. The returned map is
+   * tightly sized, but modifiable.
    *
    * @param <K> the type of the keys in the original map, and of the values in
    *     the returned map
@@ -327,7 +326,7 @@ public final class CollectionMethods {
    * @return a new {@code Map} where keys and values are swapped
    */
   public static <K, V> Map<V, K> swapAndFreeze(Map<K, V> map) {
-    Map<V, K> out = deepFreeze(map, e -> Map.entry(e.getValue(), e.getKey()));
+    Map<V, K> out = deepFreeze(map, e -> entry(e.getValue(), e.getKey()));
     return Check.that(out).has(mapSize(), eq(), map.size(), duplicateKey()).ok();
   }
 
@@ -384,10 +383,10 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns an unmodifiable {@code Map} where the entries of the input {@code Map}
-   * have been converted using the specified {@code Function}. The output map may be
-   * smaller than the input map if the conversion function does not generate unique
-   * keys.
+   * Returns an unmodifiable {@code Map} where both keys and values of the input
+   * {@code Map} have been converted using the specified {@code Function}. The output
+   * map may be smaller than the input map if the conversion function does not
+   * generate unique keys.
    *
    * @param src the input {@code Map}
    * @param entryConverter a {@code Function} that produces a new entry from the
@@ -412,20 +411,20 @@ public final class CollectionMethods {
   }
 
   private static <K, V0, V1> Function<Entry<K, V0>, Entry<K, V1>> toEntryConverter(
-      BiFunction<? super K, ? super V0, ? extends V1> f) {
-    return e -> Map.entry(e.getKey(), f.apply(e.getKey(), e.getValue()));
+      BiFunction<? super K, ? super V0, ? extends V1> fnc) {
+    return e -> entry(e.getKey(), fnc.apply(e.getKey(), e.getValue()));
   }
 
   private static <K, V0, V1> Function<Entry<K, V0>, Entry<K, V1>> toEntryConverter(
-      Function<? super V0, ? extends V1> f) {
-    return e -> Map.entry(e.getKey(), f.apply(e.getValue()));
+      Function<? super V0, ? extends V1> fnc) {
+    return e -> entry(e.getKey(), fnc.apply(e.getValue()));
   }
 
   private static <K, V> Consumer<Entry<K, V>> checkEntry() {
     return e ->
         Check.that(e)
-            .has(key(), notNull(), "Illegal null key in source map")
-            .has(value(), notNull(), "Illegal null value in source map");
+            .has(key(), notNull(), "Illegal null key for value ${0}", e.getValue())
+            .has(value(), notNull(), "Illegal null value for key ${0}", e.getKey());
   }
 
   /**
@@ -536,7 +535,8 @@ public final class CollectionMethods {
   }
 
   /**
-   * Shortcut method. Returns an unmodifiable map using:
+   * Shortcut method. Returns an unmodifiable map from the specified collection
+   * using:
    *
    * <blockquote> <pre>{@code
    * src.stream().collect(toUnmodifiableMap(keyExtractor, Function.identity()))

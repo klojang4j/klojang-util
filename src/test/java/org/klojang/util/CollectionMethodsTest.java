@@ -37,33 +37,33 @@ public class CollectionMethodsTest {
   }
 
   @Test
-  public void asList00() {
-    assertEquals(Collections.singletonList(null), asList(null));
-    assertEquals(List.of("Hello World"), asList("Hello World"));
-    assertEquals(List.of("Hello", "World"), asList(new String[] {"Hello", "World"}));
+  public void listity00() {
+    assertEquals(Collections.singletonList(null), listify(null));
+    assertEquals(List.of("Hello World"), listify("Hello World"));
+    assertEquals(List.of("Hello", "World"), listify(new String[] {"Hello", "World"}));
     Object obj = new Object();
-    assertEquals(Collections.singletonList(obj), asList(obj));
-    assertEquals(List.of(1, 2, 3, 4, 5), asList(new int[] {1, 2, 3, 4, 5}));
-    assertEquals(List.of(1D, 2D, 3D, 4D, 5D), asList(new double[] {1, 2, 3, 4, 5}));
-    assertEquals(List.of(1L, 2L, 3L, 4L, 5L), asList(new long[] {1, 2, 3, 4, 5}));
-    assertEquals(List.of(1F, 2F, 3F, 4F, 5F), asList(new float[] {1, 2, 3, 4, 5}));
+    assertEquals(Collections.singletonList(obj), listify(obj));
+    assertEquals(List.of(1, 2, 3, 4, 5), listify(new int[] {1, 2, 3, 4, 5}));
+    assertEquals(List.of(1D, 2D, 3D, 4D, 5D), listify(new double[] {1, 2, 3, 4, 5}));
+    assertEquals(List.of(1L, 2L, 3L, 4L, 5L), listify(new long[] {1, 2, 3, 4, 5}));
+    assertEquals(List.of(1F, 2F, 3F, 4F, 5F), listify(new float[] {1, 2, 3, 4, 5}));
     assertEquals(List.of((short) 1, (short) 2, (short) 3),
-        asList(new short[] {1, 2, 3}));
+        listify(new short[] {1, 2, 3}));
     assertEquals(List.of((byte) 1, (byte) 2, (byte) 3),
-        asList(new byte[] {1, 2, 3}));
+        listify(new byte[] {1, 2, 3}));
     assertEquals(List.of((char) 1, (char) 2, (char) 3),
-        asList(new char[] {1, 2, 3}));
+        listify(new char[] {1, 2, 3}));
     Set<Integer> s = new LinkedHashSet<>();
     s.add(1);
     s.add(2);
     s.add(3);
-    assertEquals(List.of(1, 2, 3), asList(s));
+    assertEquals(List.of(1, 2, 3), listify(s));
     assertEquals(
         List.of(Boolean.TRUE, Boolean.FALSE, Boolean.TRUE),
-        asList(new boolean[] {true, false, true}));
+        listify(new boolean[] {true, false, true}));
     List l = new ArrayList();
     l.add(10);
-    assertSame(l, asList(l));
+    assertSame(l, listify(l));
   }
 
   @Test

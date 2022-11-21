@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: org.klojang.util.StringMethodsTest
--------------------------------------------------------------------------------
-Tests run: 62, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s - in org.klojang.util.StringMethodsTest

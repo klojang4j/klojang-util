@@ -42,16 +42,11 @@ public final class ArrayMethods {
    */
   public static final int[] EMPTY_INT_ARRAY = new int[0];
 
-  static final String START_INDEX = "Start index";
-  static final String END_INDEX = "End index";
-
-
   /**
    * Default separator for {@code ArrayMethods.implode} and
    * {@code CollectionMethods.implode}.
    */
   static final String IMPLODE_SEPARATOR = ", ";
-
 
   private static final Long MAX_ARR_LEN = (long) Integer.MAX_VALUE;
 

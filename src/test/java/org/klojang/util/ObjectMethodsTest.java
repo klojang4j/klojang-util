@@ -13,7 +13,7 @@ import static java.util.Collections.emptyList;
 import static org.junit.Assert.*;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.util.ArrayMethods.*;
-import static org.klojang.util.CollectionMethods.asList;
+import static org.klojang.util.CollectionMethods.listify;
 import static org.klojang.util.ObjectMethods.*;
 
 @SuppressWarnings("rawtypes")
@@ -192,7 +192,7 @@ public class ObjectMethodsTest {
     assertEquals("Hi There", ifEmpty(null, () -> "Hi There"));
     assertEquals("World", ifEmpty("World", () -> "Hi There"));
     List list0 = List.of("Hi There");
-    assertEquals(list0, ifEmpty(emptyList(), () -> asList("Hi There")));
+    assertEquals(list0, ifEmpty(emptyList(), () -> listify("Hi There")));
   }
 
   @Test
