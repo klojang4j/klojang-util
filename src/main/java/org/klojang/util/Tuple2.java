@@ -1,11 +1,9 @@
 package org.klojang.util;
 
+import org.klojang.check.Check;
+
 import java.util.AbstractMap;
 import java.util.Map;
-
-import org.klojang.check.Check;
-import org.klojang.util.LaxTuple2;
-import org.klojang.util.Tuple2;
 
 /**
  * Generic 2-tuple of arbitrarily typed, non-null objects.
@@ -14,7 +12,6 @@ import org.klojang.util.Tuple2;
  * @param second The second component of the 2-tuple
  * @param <T> The type of the first component
  * @param <U> The type of the second component
- * @see LaxTuple2
  */
 public record Tuple2<T, U>(T first, U second) {
 
