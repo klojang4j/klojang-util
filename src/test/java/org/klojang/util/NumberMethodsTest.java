@@ -1,7 +1,6 @@
 package org.klojang.util;
 
 import org.junit.Test;
-import org.klojang.util.TypeConversionException;
 
 import java.io.OutputStream;
 import java.math.BigDecimal;
@@ -15,7 +14,7 @@ import java.util.concurrent.atomic.LongAdder;
 
 import static org.junit.Assert.*;
 import static org.klojang.util.NumberMethods.*;
-import static org.klojang.util.ObjectMethods.bruteCast;
+import static org.klojang.util.ObjectMethods.hardCast;
 
 public class NumberMethodsTest {
 
@@ -357,7 +356,7 @@ public class NumberMethodsTest {
 
   @Test(expected = TypeConversionException.class)
   public void convert26() { // not a Number
-    Short s = convert(223D, (Class<Short>) bruteCast(OutputStream.class));
+    Short s = convert(223D, (Class<Short>) hardCast(OutputStream.class));
   }
 
   @Test(expected = TypeConversionException.class)
@@ -435,7 +434,7 @@ public class NumberMethodsTest {
 
   @Test(expected = TypeConversionException.class)
   public void parse14() { // not a Number
-    parse("223", (Class<Short>) bruteCast(OutputStream.class));
+    parse("223", (Class<Short>) hardCast(OutputStream.class));
   }
 
   @Test(expected = TypeConversionException.class)

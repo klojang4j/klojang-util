@@ -28,8 +28,6 @@ import static org.klojang.util.InvokeMethods.getArrayLength;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ObjectMethods {
 
-  private static final String ERR_NULL_OPTIONAL = "Optional must not be null";
-
   private ObjectMethods() {
     throw new UnsupportedOperationException();
   }
@@ -57,12 +55,12 @@ public class ObjectMethods {
    * @param <R> The output type
    * @return the cast value
    */
-  public static <T, R> R bruteCast(T input) {
+  public static <T, R> R hardCast(T input) {
     return (R) input;
   }
 
   /**
-   * Returns whether the specified {@code CharSequence} is null or empty.
+   * Returns {@code true} if the specified {@code CharSequence} is null or empty.
    *
    * @param arg the {@code CharSequence} to check
    * @return whether it is null or empty
@@ -72,7 +70,7 @@ public class ObjectMethods {
   }
 
   /**
-   * Returns whether the specified array is null or empty.
+   * Returns {@code true} if the specified array is null or empty.
    *
    * @param arg the array to check
    * @return whether it is null or empty
@@ -82,7 +80,7 @@ public class ObjectMethods {
   }
 
   /**
-   * Returns whether the specified {@code Collection} is null or empty.
+   * Returns {@code true} if the specified {@code Collection} is null or empty.
    *
    * @param arg the {@code Collection} to check
    * @return whether it is null or empty
@@ -102,8 +100,8 @@ public class ObjectMethods {
   }
 
   /**
-   * Returns whether the specified {@code Optional} is empty or contains an empty
-   * object. This is the only {@code isEmpty} method that will throw an
+   * Returns {@code true} if the specified {@code Optional} is empty or contains an
+   * empty object. This is the only {@code isEmpty} method that will throw an
    * {@code IllegalArgumentException} if the argument is null as {@code Optional}
    * objects should never be null.
    *
@@ -111,12 +109,12 @@ public class ObjectMethods {
    * @return whether it is empty or contains an empty object
    */
   public static boolean isEmpty(Optional<?> arg) {
-    Check.that(arg).is(notNull(), ERR_NULL_OPTIONAL);
+    Check.that(arg, "Optional").is(notNull());
     return arg.isEmpty() || isEmpty(arg.get());
   }
 
   /**
-   * Returns whether the specified array is null or empty.
+   * Returns {@code true} if the specified array is null or empty.
    *
    * @param arg the array to check
    * @return whether it is null or empty
@@ -126,11 +124,8 @@ public class ObjectMethods {
   }
 
   /**
-   * Returns whether the specified argument is null or empty. This method is (and can
-   * be) used for broad-stroke methods like {@link #ifEmpty(Object, Object)} and
-   * {@link CommonChecks#empty()}, where you don't know the exact type of the
-   * argument. More precisely, the method returns {@code true} if any of the
-   * following applies:
+   * Returns {@code true} if the specified argument is null or empty. More precisely,
+   * this method returns {@code true} if any of the following applies:
    *
    * <p>
    *

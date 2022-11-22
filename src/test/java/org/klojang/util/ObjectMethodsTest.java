@@ -380,14 +380,14 @@ public class ObjectMethodsTest {
 
   @Test(expected = ClassCastException.class)
   public void bruteCast00() {
-    String s = bruteCast(new File("/tmp/foo.txt"));
+    String s = hardCast(new File("/tmp/foo.txt"));
   }
 
   @Test
   public void bruteCast01() {
     List<CharSequence> l0 = List.of("Hello", "world");
     // WON'T COMPILE: List<String> l2 = l0;
-    List<String> l2 = bruteCast(l0);
+    List<String> l2 = hardCast(l0);
     assertEquals(Arrays.asList("Hello", "world"), l2);
   }
 

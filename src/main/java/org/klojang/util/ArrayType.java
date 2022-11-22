@@ -9,6 +9,7 @@ import org.klojang.check.Check;
 import org.klojang.util.ArrayType;
 import org.klojang.util.ClassMethods;
 import org.klojang.util.Tuple2;
+
 import static org.klojang.util.InvokeMethods.*;
 
 /**
@@ -34,6 +35,10 @@ public record ArrayType(Class<?> baseType, int dimensions) {
    */
   public static final ArrayType INT_ARRAY = new ArrayType(int.class, 1);
 
+  // Let's just arbitrarily start with byte[]
+  private static final AtomicReference<Tuple2<Class<?>, ArrayType>> cache =
+      new AtomicReference<>(Tuple2.of(byte[].class, BYTE_ARRAY));
+
   /**
    * Returns a description of the provided array. It contains the base type's simple
    * class name and the length of the outermost array. For example, for an array
@@ -54,10 +59,6 @@ public record ArrayType(Class<?> baseType, int dimensions) {
     }
     return sb.toString();
   }
-
-  // Let's just arbitrarily start with byte[]
-  private static final AtomicReference<Tuple2<Class<?>, ArrayType>> cache =
-      new AtomicReference<>(Tuple2.of(byte[].class, BYTE_ARRAY));
 
   /**
    * Returns the {@code ArrayType} corresponding to the specified array class. An
@@ -101,16 +102,16 @@ public record ArrayType(Class<?> baseType, int dimensions) {
   }
 
   /**
-   * Creates a new {@code ArrayType} instance. The {@code baseType} argument is, in
-   * fact, allowed to be an array type, but the base type recorded by the instance
+   * Creates a new {@code ArrayType} instance. The {@code baseType} argument is
+   * itself allowed to be an array type, but the base type recorded by the instance
    * will then be the base type of <i>that</i> array type, and the number of
-   * dimensions of the array type will be added to the provided number of dimensions.
-   * The provided number of dimensions may then even be zero or negative (as long as
-   * the sum of the dimensions remains positive):
+   * dimensions of the array type will then be added to the specified number of
+   * dimensions. The specified number of dimensions may then even be zero or
+   * negative, as long as the sum of the dimensions remains positive:
    *
    * <blockquote><pre>{@code
-   * ArrayType at1 = new ArrayType(float[][].class, 1); // float[][][].class
-   * ArrayType at2 = new ArrayType(float[][].class, -1); // float[].class
+   * ArrayType threeD = new ArrayType(float[][].class, 1); // float[][][].class
+   * ArrayType oneD = new ArrayType(float[][].class, -1); // float[].class
    * }</pre></blockquote>
    *
    * @param baseType The base type of the array
