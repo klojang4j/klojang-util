@@ -2,13 +2,13 @@ package org.klojang.util.collection;
 
 import static org.junit.Assert.*;
 import static org.klojang.util.ArrayMethods.ints;
-import static org.klojang.util.util.ResizeMethod.ADD;
-import static org.klojang.util.util.ResizeMethod.PERCENTAGE;
+import static org.klojang.util.ResizeMethod.ADD;
+import static org.klojang.util.ResizeMethod.PERCENTAGE;
 
 import org.junit.Test;
 import org.klojang.util.collection.IntArrayList;
 import org.klojang.util.collection.IntList;
-import org.klojang.util.util.MutableInt;
+import org.klojang.util.MutableInt;
 
 import java.util.List;
 import java.util.OptionalInt;

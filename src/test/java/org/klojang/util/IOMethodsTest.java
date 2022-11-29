@@ -12,26 +12,31 @@ public class IOMethodsTest {
 
   @Test
   public void getContents00() throws IOException {
-    String s = getContents(getClass(), "/IOMethodsTest.foo.txt");
+    String s = getContents(getClass(), "/foo.txt");
     assertEquals("This is a test.", s);
     // Bad, but not forbidden:
-    s = getContents(getClass(), "/IOMethodsTest.foo.txt", 1);
+    s = getContents(getClass(), "/foo.txt", 1);
     assertEquals("This is a test.", s);
-    s = getContents(getClass(), "/IOMethodsTest.foo.txt", 2048);
+    s = getContents(getClass(), "/foo.txt", 2048);
     assertEquals("This is a test.", s);
-    try (InputStream is = getClass().getResourceAsStream("/IOMethodsTest.foo.txt")) {
+    try (InputStream is = getClass().getResourceAsStream(
+        "/foo.txt")) {
       assertEquals("This is a test.", getContents(is));
     }
-    try (InputStream is = getClass().getResourceAsStream("/IOMethodsTest.foo.txt")) {
+    try (InputStream is = getClass().getResourceAsStream(
+        "/foo.txt")) {
       assertEquals("This is a test.", getContents(is, 13));
     }
-    try (InputStream is = getClass().getResourceAsStream("/IOMethodsTest.foo.txt")) {
+    try (InputStream is = getClass().getResourceAsStream(
+        "/foo.txt")) {
       assertEquals("This is a test.", getContents(is, 1));
     }
-    try (InputStream is = getClass().getResourceAsStream("/IOMethodsTest.foo.txt")) {
+    try (InputStream is = getClass().getResourceAsStream(
+        "/foo.txt")) {
       assertEquals("This is a test.", getContents(is, 2));
     }
-    try (InputStream is = getClass().getResourceAsStream("/IOMethodsTest.foo.txt")) {
+    try (InputStream is = getClass().getResourceAsStream(
+        "/foo.txt")) {
       assertEquals("This is a test.", getContents(is, "This is a test.".length()));
     }
 
@@ -71,26 +76,31 @@ public class IOMethodsTest {
   @Test
   public void read00() throws IOException {
     byte[] expected = "This is a test.".getBytes(StandardCharsets.UTF_8);
-    byte[] bytes = readBytes(getClass(), "/IOMethodsTest.foo.txt");
+    byte[] bytes = readBytes(getClass(), "/foo.txt");
     assertArrayEquals(expected, bytes);
     // Bad, but not forbidden:
-    bytes = readBytes(getClass(), "/IOMethodsTest.foo.txt", 1);
+    bytes = readBytes(getClass(), "/foo.txt", 1);
     assertArrayEquals(expected, bytes);
-    bytes = readBytes(getClass(), "/IOMethodsTest.foo.txt", 2048);
+    bytes = readBytes(getClass(), "/foo.txt", 2048);
     assertArrayEquals(expected, bytes);
-    try (InputStream is = getClass().getResourceAsStream("/IOMethodsTest.foo.txt")) {
+    try (InputStream is = getClass().getResourceAsStream(
+        "/foo.txt")) {
       assertArrayEquals(expected, readBytes(is));
     }
-    try (InputStream is = getClass().getResourceAsStream("/IOMethodsTest.foo.txt")) {
+    try (InputStream is = getClass().getResourceAsStream(
+        "/foo.txt")) {
       assertArrayEquals(expected, readBytes(is, 13));
     }
-    try (InputStream is = getClass().getResourceAsStream("/IOMethodsTest.foo.txt")) {
+    try (InputStream is = getClass().getResourceAsStream(
+        "/foo.txt")) {
       assertArrayEquals(expected, readBytes(is, 1));
     }
-    try (InputStream is = getClass().getResourceAsStream("/IOMethodsTest.foo.txt")) {
+    try (InputStream is = getClass().getResourceAsStream(
+        "/foo.txt")) {
       assertArrayEquals(expected, readBytes(is, 2));
     }
-    try (InputStream is = getClass().getResourceAsStream("/IOMethodsTest.foo.txt")) {
+    try (InputStream is = getClass().getResourceAsStream(
+        "/foo.txt")) {
       assertArrayEquals(expected, readBytes(is, expected.length));
     }
 

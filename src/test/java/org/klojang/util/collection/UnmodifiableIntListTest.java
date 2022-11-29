@@ -3,7 +3,7 @@ package org.klojang.util.collection;
 import org.junit.Test;
 import org.klojang.util.collection.IntArrayList;
 import org.klojang.util.collection.IntList;
-import org.klojang.util.util.MutableInt;
+import org.klojang.util.MutableInt;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,6 +1,7 @@
 package org.klojang.util;
 
 import java.lang.invoke.MethodHandle;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,21 +122,6 @@ public final class InvokeMethods {
     }
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  public static void copyArrayElements(Object fromArray,
-      Collection<?> toCollection) {
-    try {
-      int len = (int) arrayLength(fromArray.getClass()).invoke(fromArray);
-      if (len != 0) {
-        MethodHandle mh = arrayElementGetter(fromArray.getClass());
-        for (int i = 0; i < len; ++i) {
-          ((Collection) toCollection).add(mh.invoke(fromArray, i));
-        }
-      }
-    } catch (Throwable t) {
-      throw InvokeException.arrayOperationFailed(fromArray, t);
-    }
-  }
 
   private static <T> MethodHandle getNoArgConstructor(Class<T> clazz)
       throws NoSuchMethodException, IllegalAccessException {

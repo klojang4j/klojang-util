@@ -19,7 +19,7 @@ import java.util.*;
 import org.junit.Test;
 import org.klojang.util.collection.EnumToIntMap;
 import org.klojang.util.collection.IntList;
-import org.klojang.util.util.MutableInt;
+import org.klojang.util.MutableInt;
 
 public class EnumToIntMapTest {
 

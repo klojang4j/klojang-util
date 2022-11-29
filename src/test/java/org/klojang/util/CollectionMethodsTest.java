@@ -2,7 +2,7 @@ package org.klojang.util;
 
 import org.junit.Test;
 import org.klojang.check.aux.DuplicateValueException;
-import org.klojang.util.util.MutableInt;
+import org.klojang.util.MutableInt;
 
 import java.io.File;
 import java.io.FileNotFoundException;

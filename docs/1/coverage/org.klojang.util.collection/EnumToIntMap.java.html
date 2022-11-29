@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EnumToIntMap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Check</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util.collection</a> &gt; <span class="el_source">EnumToIntMap.java</span></div><h1>EnumToIntMap.java</h1><pre class="source lang-java linenums">package org.klojang.util.collection;
+
+import org.klojang.check.Check;
+import org.klojang.check.CommonChecks;
+import org.klojang.check.aux.Emptyable;
+import org.klojang.util.CollectionMethods;
+import org.klojang.util.x.collection.ArraySet;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.ObjIntConsumer;
+import java.util.function.ToIntFunction;
+import java.util.stream.Stream;
+
+import static java.util.AbstractMap.SimpleImmutableEntry;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+import static org.klojang.check.Check.fail;
+import static org.klojang.check.CommonChecks.*;
+import static org.klojang.util.ObjectMethods.replaceIf;
+
+/**
+ * A fast enum-to-int map. The map is backed by an int array with the same length as
+ * the number of constants in the {@code enum} class. One integer must be designated
+ * to signify the &lt;b&gt;absence&lt;/b&gt; of a key. By default, this is
+ * {@link Integer#MIN_VALUE} and, by default, all elements in the {@code int} array
+ * are initialized to this value &amp;#8212; meaning the map is empty. It is not allowed
+ * to {@code put} a key with this value to the map, as is would in effect amount to
+ * &lt;i&gt;removing&lt;/i&gt; that key from the map. It is also not allowed to pass this value
+ * to {@link #containsValue(int) containsValue}. In both cases an
+ * {@code IllegalArgumentException} is thrown. Empty enum classes (i.e. enum classes
+ * without enum constants) are not supported.
+ *
+ * @param &lt;K&gt; The type of the enum class
+ * @author Ayco Holleman
+ */
+public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptyable {
+
+  private final K[] keys;
+  private final int[] data;
+  private final int kav; // the key-absent-value
+
+  /**
+   * Creates a new empty {@code EnumToIntMap} for the specified enum class using
+   * {@code Integer.MIN_VALUE} as the &lt;i&gt;key-absent-value&lt;/i&gt; value. All elements in
+   * the backing array will be initialized to this value (meaning that the map is
+   * empty).
+   *
+   * @param enumClass The type of the enum class
+   */
+  public EnumToIntMap(Class&lt;K&gt; enumClass) {
+<span class="fc" id="L55">    this(enumClass, Integer.MIN_VALUE);</span>
+<span class="fc" id="L56">  }</span>
+
+  /**
+   * Creates a new {@code EnumToIntMap} for the specified enum class with the
+   * specified integer as the &lt;i&gt;key-absent-value&lt;/i&gt; value. All elements in the
+   * backing array will be initialized to this value (meaning that the map is
+   * empty).
+   *
+   * @param enumClass The type of the enum class
+   * @param keyAbsentValue The value used to signify the absence of a key
+   */
+  public EnumToIntMap(Class&lt;K&gt; enumClass, int keyAbsentValue) {
+<span class="fc" id="L68">    this(enumClass, keyAbsentValue, k -&gt; keyAbsentValue);</span>
+<span class="fc" id="L69">  }</span>
+
+  /**
+   * Creates a new {@code EnumToIntMap} using {@code Integer.MIN_VALUE} as the
+   * &lt;i&gt;key-absent-value&lt;/i&gt; value and with its keys initialized using the specified
+   * initializer function. For example:
+   *
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * EnumToIntMap&lt;DayOfWeek&gt; map = new EnumToIntMap&lt;&gt;(DayOfWeek.class, k -&gt; k.ordinal() + 1);
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   *
+   * @param enumClass The type of the enum class
+   * @param initializer A function called to initialize the array elements
+   */
+  public EnumToIntMap(Class&lt;K&gt; enumClass, ToIntFunction&lt;K&gt; initializer) {
+<span class="fc" id="L84">    this(enumClass, Integer.MIN_VALUE, initializer);</span>
+<span class="fc" id="L85">  }</span>
+
+  /**
+   * Creates a new {@code EnumToIntMap} with the specified &lt;i&gt;key-absent-value&lt;/i&gt;
+   * value and the specified initializer function.
+   *
+   * @param enumClass The type of the enum class
+   * @param keyAbsentValue The value used to signify the absence of a key
+   * @param initializer A function called to initialize the array elements
+   */
+  public EnumToIntMap(Class&lt;K&gt; enumClass,
+      int keyAbsentValue,
+<span class="fc" id="L97">      ToIntFunction&lt;K&gt; initializer) {</span>
+<span class="fc" id="L98">    Check.notNull(enumClass, &quot;enumClass&quot;);</span>
+<span class="fc" id="L99">    Check.notNull(initializer, &quot;initializer&quot;);</span>
+<span class="fc" id="L100">    this.keys = Check.that(enumClass.getEnumConstants())</span>
+<span class="fc" id="L101">        .isNot(empty(), &quot;enum class without enum constants&quot;).ok();</span>
+<span class="fc" id="L102">    this.data = new int[keys.length];</span>
+<span class="fc" id="L103">    this.kav = keyAbsentValue;</span>
+<span class="fc" id="L104">    Arrays.stream(keys).forEach(k -&gt; assign(k, initializer.applyAsInt(k)));</span>
+<span class="fc" id="L105">  }</span>
+
+  /**
+   * Instantiates a new {@code EnumToIntMap} with the same key-value mappings as the
+   * specified {@code EnumToIntMap} and with the same &lt;i&gt;key-absent-value&lt;/i&gt; value.
+   *
+   * @param other The {@code EnumToIntMap} whose key-value mappings to copy
+   */
+<span class="fc" id="L113">  public EnumToIntMap(EnumToIntMap&lt;K&gt; other) {</span>
+<span class="fc" id="L114">    Check.notNull(other, &quot;other&quot;);</span>
+<span class="fc" id="L115">    this.keys = other.keys;</span>
+<span class="fc" id="L116">    this.data = new int[keys.length];</span>
+<span class="fc" id="L117">    this.kav = other.kav;</span>
+<span class="fc" id="L118">    System.arraycopy(other.data, 0, this.data, 0, keys.length);</span>
+<span class="fc" id="L119">  }</span>
+
+  /**
+   * Instantiates a new {@code EnumToIntMap} with the same key-value mappings as the
+   * specified {@code EnumToIntMap}, but (potentially) with a new
+   * &lt;i&gt;key-absent-value&lt;/i&gt;.
+   *
+   * @param other The {@code EnumToIntMap} whose key-value mappings to copy
+   * @param keyAbsentValue The value used to signify the absence of a key
+   */
+<span class="fc" id="L129">  public EnumToIntMap(EnumToIntMap&lt;K&gt; other, int keyAbsentValue) {</span>
+<span class="fc" id="L130">    Check.notNull(other, &quot;other&quot;);</span>
+<span class="fc" id="L131">    this.keys = other.keys;</span>
+<span class="fc" id="L132">    this.data = new int[keys.length];</span>
+<span class="fc" id="L133">    this.kav = keyAbsentValue;</span>
+<span class="fc" id="L134">    copyEntries(other);</span>
+<span class="fc" id="L135">  }</span>
+
+  /**
+   * Returns {@code true} if this map contains a mapping for the specified key.
+   *
+   * @param key The enum constant
+   * @return Whether the map contains an entry for the enum constant
+   * @see Map#containsKey(Object)
+   */
+  public boolean containsKey(K key) {
+<span class="fc bfc" id="L145" title="All 2 branches covered.">    return Check.notNull(key).ok(k -&gt; data[k.ordinal()] != kav);</span>
+  }
+
+  /**
+   * Returns {@code true} if this map maps one or more keys to the specified value.
+   * It is not permitted to search for the &lt;i&gt;key-absent-value&lt;/i&gt; value. An
+   * {@code IllegalArgumentException} is thrown if you do.
+   *
+   * @param val The value
+   * @return Whether the map contains the value
+   * @see Map#containsValue(Object)
+   */
+  public boolean containsValue(int val) {
+<span class="fc" id="L158">    Check.that(val).is(ne(), kav);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">    return Arrays.stream(data).filter(x -&gt; x == val).findFirst().isPresent();</span>
+  }
+
+  /**
+   * Returns the value to which the specified enum constant is mapped, or the
+   * &lt;i&gt;key-absent-value&lt;/i&gt; if this map contains no mapping for the key. (A regular
+   * {@code Map} would return {@code null} in the latter case.)
+   *
+   * @param key The key whose associated value is to be returned
+   * @return the value to which the specified key is mapped, or the
+   *     &lt;i&gt;key-absent-value&lt;/i&gt; if this map contains no mapping for the key
+   * @see Map#get(Object)
+   */
+  public int get(K key) {
+<span class="fc" id="L173">    return valueOf(Check.notNull(key).ok());</span>
+  }
+
+  /**
+   * Returns the value associated with the specified enum constant or {@code dfault}
+   * if the map did not contain an entry for the specified enum constant.
+   *
+   * @param key The key to retrieve the value of.
+   * @param dfault The integer to return if the map did not contain the key
+   * @return the value associated with the key or {@code dfault}
+   * @see Map#getOrDefault(Object, Object)
+   */
+  public int getOrDefault(K key, int dfault) {
+<span class="fc bfc" id="L186" title="All 2 branches covered.">    return containsKey(key) ? valueOf(key) : dfault;</span>
+  }
+
+  /**
+   * Associates the specified value with the specified key in this map.
+   *
+   * @param key The key
+   * @param val The value
+   * @return the previous value associated with the specified enum constant or the
+   *     &lt;i&gt;key-absent-value&lt;/i&gt; value if the map did not contain an entry for the
+   *     enum constant yet.
+   * @see Map#put(Object, Object)
+   */
+  public int put(K key, int val) {
+<span class="fc" id="L200">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc" id="L201">    Check.that(val, &quot;val&quot;).is(ne(), kav);</span>
+<span class="fc" id="L202">    int orig = valueOf(key);</span>
+<span class="fc" id="L203">    assign(key, val);</span>
+<span class="fc" id="L204">    return orig;</span>
+  }
+
+  /**
+   * Much like {@code put}, but provides a fluent API for adding entries to the map.
+   *
+   * @param key The key
+   * @param val The value
+   * @return This instance
+   */
+  public EnumToIntMap&lt;K&gt; set(K key, int val) {
+<span class="fc" id="L215">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc" id="L216">    Check.that(val, &quot;val&quot;).is(ne(), kav);</span>
+<span class="fc" id="L217">    assign(key, val);</span>
+<span class="fc" id="L218">    return this;</span>
+  }
+
+  /**
+   * Adds all entries of the specified map to this map, overwriting any previous
+   * values. The source map must not contain the &lt;i&gt;key-absent-value&lt;/i&gt; of this map.
+   * An {@link IllegalArgumentException} is thrown if it does.
+   *
+   * @param other The {@code EnumToIntMap} whose key-value mappings to copy
+   */
+  public void putAll(EnumToIntMap&lt;K&gt; other) {
+<span class="fc" id="L229">    Check.notNull(other, &quot;other&quot;);</span>
+<span class="fc" id="L230">    copyEntries(other);</span>
+<span class="fc" id="L231">  }</span>
+
+  /**
+   * Adds all entries of the specified map to this map. This method acts as a bridge
+   * to fully-generic map implementations. The source map must not contain the
+   * &lt;i&gt;key-absent-value&lt;/i&gt; of this map. An {@link IllegalArgumentException} is
+   * thrown if it does.
+   *
+   * @param other The {@code Map} whose key-value mappings to copy
+   */
+  public void putAll(Map&lt;K, Integer&gt; other) {
+<span class="fc" id="L242">    Check.notNull(other, &quot;other&quot;)</span>
+<span class="fc" id="L243">        .isNot(CommonChecks.containsValue(), kav)</span>
+<span class="fc" id="L244">        .then(m -&gt; m.forEach(this::assign));</span>
+<span class="fc" id="L245">  }</span>
+
+  /**
+   * Returns an immutable, fully-generic version of this map.
+   *
+   * @return an immutable, fully-generic version of this map
+   */
+  public Map&lt;K, Integer&gt; toGenericMap() {
+<span class="fc" id="L253">    return Map.ofEntries(entrySet().toArray(SimpleImmutableEntry[]::new));</span>
+  }
+
+  /**
+   * Removes the mapping for a key from this map if it is present.
+   *
+   * @param key The key
+   * @return the previous value associated with key, or the &lt;i&gt;key-absent-value&lt;/i&gt;
+   *     value if there was no mapping for key.
+   * @see Map#remove(Object)
+   */
+  public int remove(K key) {
+<span class="fc" id="L265">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc" id="L266">    int v = valueOf(key);</span>
+<span class="fc" id="L267">    assign(key, kav);</span>
+<span class="fc" id="L268">    return v;</span>
+  }
+
+  /**
+   * Returns a {@link Set} view of the keys contained in this map.
+   *
+   * @return a Set view of the keys contained in this map
+   * @see Map#keySet()
+   */
+  public Set&lt;K&gt; keySet() {
+<span class="fc" id="L278">    return streamKeys().collect(toSet());</span>
+  }
+
+  /**
+   * Returns a {@code Collection} view of the values contained in this map.
+   *
+   * @return a {@code Collection} view of the values contained in this map
+   * @see Map#values()
+   */
+  public Collection&lt;Integer&gt; values() {
+<span class="fc" id="L288">    return streamKeys().map(this::valueOf).collect(toList());</span>
+  }
+
+  /**
+   * Returns an {@code IntList} containing the values of this map.
+   *
+   * @return an {@code IntList} containing the values of this map
+   */
+  public IntList intValues() {
+<span class="fc" id="L297">    IntArrayList ial = new IntArrayList(data.length);</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">    for (int i : data) {</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">      if (i != kav) {</span>
+<span class="fc" id="L300">        ial.add(i);</span>
+      }
+    }
+<span class="fc" id="L303">    return ial;</span>
+  }
+
+  /**
+   * Returns a Set view of the mappings contained in this map.
+   *
+   * @return a set view of the mappings contained in this map
+   * @see Map#entrySet()
+   */
+  public Set&lt;Map.Entry&lt;K, Integer&gt;&gt; entrySet() {
+<span class="fc" id="L313">    SimpleImmutableEntry[] entries = streamKeys()</span>
+<span class="fc" id="L314">        .map(k -&gt; new SimpleImmutableEntry(k, valueOf(k)))</span>
+<span class="fc" id="L315">        .toArray(SimpleImmutableEntry[]::new);</span>
+<span class="fc" id="L316">    return ArraySet.of(entries, true);</span>
+  }
+
+  /**
+   * Returns {@code true} if this map contains no key-value mappings, {@code false}
+   * otherwise.
+   *
+   * @return {@code true} if this map contains no key-value mappings, {@code false}
+   *     otherwise
+   * @see Map#isEmpty()
+   */
+  public boolean isEmpty() {
+<span class="fc bfc" id="L328" title="All 2 branches covered.">    return size() == 0;</span>
+  }
+
+  /**
+   * Performs the given action for each entry in this map until all entries have been
+   * processed or the action throws an exception.
+   *
+   * @param action The action to be performed for each entry
+   * @see Map#forEach(BiConsumer)
+   */
+  public void forEach(ObjIntConsumer&lt;K&gt; action) {
+<span class="fc" id="L339">    streamKeys().forEach(k -&gt; action.accept(k, valueOf(k)));</span>
+<span class="fc" id="L340">  }</span>
+
+  /**
+   * Removes all mappings from this map.
+   *
+   * @see Map#clear()
+   */
+  public void clear() {
+<span class="fc" id="L348">    Arrays.fill(data, kav);</span>
+<span class="fc" id="L349">  }</span>
+
+  /**
+   * Returns the number of key-value mappings in this map.
+   *
+   * @return the number of key-value mappings in this map
+   * @see Map#size()
+   */
+  public int size() {
+<span class="fc" id="L358">    return (int) streamKeys().count();</span>
+  }
+
+  /**
+   * Returns the type of the enum keys in this map.
+   *
+   * @return the type of the enum keys
+   */
+  @SuppressWarnings(&quot;unchecked&quot;)
+  public Class&lt;K&gt; enumClass() {
+<span class="fc" id="L368">    return (Class&lt;K&gt;) keys[0].getClass();</span>
+  }
+
+  /**
+   * Returns the integer used to signify the absence of a key within this map.
+   *
+   * @return the integer used to signify the absence of a key
+   */
+  public int keyAbsentValue() {
+<span class="fc" id="L377">    return kav;</span>
+  }
+
+  /**
+   * Returns {@code true} if the argument is an {@code EnumToIntMap} for the same
+   * enum class and if it contains the same key-value mappings. The two maps need not
+   * have the same &lt;i&gt;key-absent-value&lt;/i&gt; value.
+   */
+  @Override
+  public boolean equals(Object obj) {
+<span class="fc bfc" id="L387" title="All 2 branches covered.">    if (this == obj) {</span>
+<span class="fc" id="L388">      return true;</span>
+    }
+<span class="pc bpc" id="L390" title="2 of 4 branches missed.">    if (obj instanceof EnumToIntMap&lt;?&gt; that &amp;&amp; enumClass() == that.enumClass()) {</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">      if (this.kav == that.kav) {</span>
+<span class="fc" id="L392">        return Arrays.equals(data, that.data);</span>
+      }
+<span class="fc bfc" id="L394" title="All 2 branches covered.">      for (int i = 0; i &lt; keys.length; i++) {</span>
+<span class="pc bpc" id="L395" title="1 of 2 branches missed.">        if (replaceIf(this.data[i], eq(), this.kav, that.kav) != that.data[i]) {</span>
+<span class="nc" id="L396">          return false;</span>
+        }
+      }
+<span class="fc" id="L399">      return true;</span>
+    }
+<span class="nc" id="L401">    return false;</span>
+  }
+
+  public int hashCode() {
+<span class="fc" id="L405">    return entrySet().hashCode();</span>
+  }
+
+  @Override
+  public String toString() {
+<span class="fc" id="L410">    return '[' + CollectionMethods.implode(entrySet()) + ']';</span>
+  }
+
+  private void copyEntries(EnumToIntMap&lt;K&gt; other) {
+<span class="fc" id="L414">    Check.that(other.enumClass()).is(sameAs(),</span>
+<span class="fc" id="L415">        enumClass(),</span>
+        &quot;enum type mismatch: {arg} vs. {obj}&quot;);
+<span class="fc bfc" id="L417" title="All 2 branches covered.">    if (kav == other.kav) {</span>
+<span class="fc" id="L418">      System.arraycopy(other.data, 0, data, 0, data.length);</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">    } else if (other.containsValue(kav)) {</span>
+<span class="nc" id="L420">      fail(&quot;source map must not contain key-absent-value ({0})&quot;, kav);</span>
+    } else {
+<span class="fc bfc" id="L422" title="All 2 branches covered.">      for (int i = 0; i &lt; data.length; ++i) {</span>
+<span class="fc" id="L423">        data[i] = replaceIf(other.data[i], eq(), other.kav, kav);</span>
+      }
+    }
+<span class="fc" id="L426">  }</span>
+
+  private Stream&lt;K&gt; streamKeys() {
+<span class="fc bfc" id="L429" title="All 2 branches covered.">    return Arrays.stream(keys).filter(k -&gt; data[k.ordinal()] != kav);</span>
+  }
+
+  private void assign(K key, int val) {
+<span class="fc" id="L433">    data[key.ordinal()] = val;</span>
+<span class="fc" id="L434">  }</span>
+
+  private int valueOf(K key) {
+<span class="fc" id="L437">    return data[key.ordinal()];</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

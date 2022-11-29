@@ -1,17 +1,14 @@
 package org.klojang.util;
 
-import java.util.*;
-import java.util.stream.IntStream;
-
 import org.klojang.check.Check;
 import org.klojang.check.CommonChecks;
-import org.klojang.util.ArrayType;
-import org.klojang.util.NumberMethods;
 
-import static org.klojang.check.CommonChecks.*;
-import static org.klojang.check.CommonProperties.type;
-import static org.klojang.util.CollectionMethods.swapAndFreeze;
+import java.util.*;
+
+import static org.klojang.check.CommonChecks.notNull;
+import static org.klojang.check.CommonChecks.sameAs;
 import static org.klojang.check.Tag.TYPE;
+import static org.klojang.util.CollectionMethods.swapAndFreeze;
 
 /**
  * Methods for inspecting types.
@@ -141,7 +138,6 @@ public final class ClassMethods {
    *
    * @param clazz the class to test
    * @return whether the specified class is one of the primitive number classes
-   * @see NumberMethods#isWrapper(Class)
    */
   public static boolean isPrimitiveNumber(Class<?> clazz) {
     return Check.notNull(clazz).ok(PRIMITIVE_NUMBER_TYPES::contains);
@@ -193,8 +189,7 @@ public final class ClassMethods {
 
   /**
    * Returns {@code true} if the specified class is one of the primitive wrapper
-   * classes. Use {@link NumberMethods#isWrapper(Class)} to establish whether the
-   * class is a primitive <i>number</i> wrapper.
+   * classes.
    *
    * @param clazz the class to test
    * @return {@code true} if the specified class is one of the primitive wrapper

@@ -2,7 +2,7 @@ package org.klojang.util.x.collection;
 
 import org.junit.Test;
 import org.klojang.check.aux.DuplicateValueException;
-import org.klojang.util.util.MutableInt;
+import org.klojang.util.MutableInt;
 import org.klojang.util.x.collection.ArraySet;
 
 import java.util.*;

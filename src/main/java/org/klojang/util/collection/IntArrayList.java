@@ -4,7 +4,7 @@ import org.klojang.check.Check;
 import org.klojang.check.CommonChecks;
 import org.klojang.check.fallible.FallibleIntConsumer;
 import org.klojang.util.ArrayMethods;
-import org.klojang.util.util.ResizeMethod;
+import org.klojang.util.ResizeMethod;
 
 import java.util.*;
 import java.util.function.IntConsumer;
@@ -15,7 +15,7 @@ import static org.klojang.check.Check.fail;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonExceptions.indexOutOfBounds;
 import static org.klojang.util.ArrayMethods.*;
-import static org.klojang.util.util.ResizeMethod.*;
+import static org.klojang.util.ResizeMethod.*;
 
 /**
  * A mutable list of {@code int} values.
