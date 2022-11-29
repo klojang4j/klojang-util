@@ -491,7 +491,7 @@ public final class ArrayMethods {
 
   /**
    * PHP-style implode method, concatenating the array elements using &quot;, &quot;
-   * (comma-space) as separator. Optimized for {@code int[]} arrays.
+   * (comma+space) as separator. Optimized for {@code int[]} arrays.
    *
    * @param array the array to implode
    * @return a concatenation of the elements in the array.
@@ -514,7 +514,7 @@ public final class ArrayMethods {
 
   /**
    * PHP-style implode method, concatenating at most {@code limit} array elements
-   * using &quot;, &quot; (comma-space) as separator.
+   * using &quot;, &quot; (comma+space) as separator.
    *
    * @param array the array to implode
    * @param limit The maximum number of elements to collect. The specified number
@@ -529,7 +529,7 @@ public final class ArrayMethods {
 
   /**
    * PHP-style implode method, concatenating at most {@code limit} array elements
-   * using &quot;, &quot; (comma-space) as separator.
+   * using &quot;, &quot; (comma+space) as separator.
    *
    * @param array the array to implode
    * @param stringifier A {@code Function} that converts the array elements to
@@ -589,7 +589,7 @@ public final class ArrayMethods {
 
   /**
    * PHP-style implode method, concatenating the array elements using &quot;, &quot;
-   * (comma-space) as separator. This method is primarily meant to implode primitive
+   * (comma+space) as separator. This method is primarily meant to implode primitive
    * arrays, but you &lt;i&gt;can&lt;/i&gt; use it to implode any type of array. An
    * {@link IllegalArgumentException} is thrown if {@code array} is not an array.
    *
@@ -618,7 +618,7 @@ public final class ArrayMethods {
 
   /**
    * PHP-style implode method, concatenating the array elements using &quot;, &quot;
-   * (comma-space) as separator. This method is primarily meant to implode primitive
+   * (comma+space) as separator. This method is primarily meant to implode primitive
    * arrays, but you &lt;i&gt;can&lt;/i&gt; use it to implode any type of array. An
    * {@link IllegalArgumentException} is thrown if {@code array} is not an array.
    *
@@ -635,7 +635,7 @@ public final class ArrayMethods {
 
   /**
    * PHP-style implode method, concatenating at most {@code limit} array elements
-   * using &quot;, &quot; (comma-space) as separator. This method is primarily meant to implode
+   * using &quot;, &quot; (comma+space) as separator. This method is primarily meant to implode
    * primitive arrays, but you &lt;i&gt;can&lt;/i&gt; use it to implode any type of array. An
    * {@link IllegalArgumentException} is thrown if {@code array} is not an array.
    *
@@ -707,7 +707,7 @@ public final class ArrayMethods {
 
   /**
    * PHP-style implode method, concatenating the array elements using &quot;, &quot;
-   * (comma-space) as separator.
+   * (comma+space) as separator.
    *
    * @param array the collection to implode
    * @param &lt;T&gt; the type of the array elements

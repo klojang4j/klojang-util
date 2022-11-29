@@ -364,6 +364,7 @@
                         <id>attach-javadocs</id>
                         <configuration>
                             <windowtitle>Klojang Util</windowtitle>
+                            <author>false</author>
                             <excludePackageNames>org.klojang.util.x</excludePackageNames>
                         </configuration>
                         <goals>

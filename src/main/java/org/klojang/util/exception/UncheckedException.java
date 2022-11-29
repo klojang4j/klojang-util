@@ -17,9 +17,9 @@ import static org.klojang.check.Tag.MESSAGE;
  * overrides <i>all</i> methods from {@code Exception} by delegating to the same
  * method on the wrapped exception. For example, {@link #getCause()} does not return
  * the wrapped exception but the cause of the wrapped exception. You <i>can</i>
- * provide a custom message, specific to the {@code UncheckedException} itself.
- * However, it must be retrieved via {@link #getCustomMessage()} (as
- * {@link #getMessage()} would return the message of the wrapped exception).
+ * provide a custom message that pertains to {@code UncheckedException} itself, but
+ * it must be retrieved via {@link #getCustomMessage()} as {@link #getMessage()}
+ * would return the message of the wrapped exception.
  *
  * <p>This behaviour can be useful when wrapping checked exceptions that in
  * practice cannot sensibly be dealt with. This is often the case with, for example,
@@ -172,6 +172,14 @@ public final class UncheckedException extends RuntimeException {
   }
 
   /**
+   * Throws an {@code UnsupportedOperationException}.
+   */
+  @Override
+  public void setStackTrace(StackTraceElement[] stackTrace) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
    * Calls {@code toString()} on the wrapped exception.
    *
    * @return the result of calling {@code toString()} on the wrapped exception
@@ -186,14 +194,6 @@ public final class UncheckedException extends RuntimeException {
    */
   @Override
   public synchronized Throwable initCause(Throwable cause) {
-    throw new UnsupportedOperationException();
-  }
-
-  /**
-   * Throws an {@code UnsupportedOperationException}.
-   */
-  @Override
-  public void setStackTrace(StackTraceElement[] stackTrace) {
     throw new UnsupportedOperationException();
   }
 

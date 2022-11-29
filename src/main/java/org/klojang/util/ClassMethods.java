@@ -85,22 +85,22 @@ public final class ClassMethods {
   }
 
   /**
-   * Alias for {@link Class#isInstance(Object)}.
+   * Alias for {@link Class#isInstance(Object) type.isInstance(obj)}.
    *
-   * @param instance The object to test
+   * @param obj The object to test
    * @param type The class or interface to test the object against
    * @return whether the 1st argument is an instance of the 2nd argument
    */
-  public static boolean isA(Object instance, Class<?> type) {
-    Check.that(instance, "instance").is(notNull()).and(type, TYPE).is(notNull());
-    return type.isInstance(instance);
+  public static boolean isA(Object obj, Class<?> type) {
+    Check.that(obj, "instance").is(notNull()).and(type, TYPE).is(notNull());
+    return type.isInstance(obj);
   }
 
   /**
    * Tests whether the first class is the same as, or a subtype of the second class.
-   * In other words, whether it extends or implements the second class. In case you
-   * keep forgetting what "assignable from" even means. Equivalent to
-   * <code>class1.isAssignableFrom(class0)</code>.
+   * In other words, whether {@code class0} extends or implements {@code class1}. In
+   * case you keep forgetting what "assignable from" means. Equivalent to
+   * {@code class1.isAssignableFrom(class0)}.
    *
    * @param class0 The class or interface you are interested in
    * @param class1 The class or interface to compare it against
@@ -116,8 +116,8 @@ public final class ClassMethods {
 
   /**
    * Tests whether the first class is the same as, or a supertype of the second
-   * class. In other words, whether it is extended or implemented by the second
-   * class. Equivalent to <code>class0.isAssignableFrom(class1)</code>.
+   * class. In other words, whether {@code class0} is extended or implemented by
+   * {@code class1}. Equivalent to {@code class0.isAssignableFrom(class1)}.
    *
    * @param class0 The class or interface you are interested in
    * @param class1 The class or interface to compare it against
@@ -132,9 +132,9 @@ public final class ClassMethods {
   }
 
   /**
-   * Returns whether the specified class is one of the primitive number classes. Note
-   * that this does not include {@code char.class}, just like {@link Character} does
-   * not extend {@link Number}.
+   * Returns {@code true} if the specified class is one of the primitive number
+   * classes. Note that this does not include {@code char.class} &#8212; just like
+   * {@link Character} does not extend {@link Number}.
    *
    * @param clazz the class to test
    * @return whether the specified class is one of the primitive number classes
@@ -144,27 +144,27 @@ public final class ClassMethods {
   }
 
   /**
-   * Returns {@code true} if the specified object is an array of a primitive type, or
-   * a {@code Class} object representing an array of a primitive type.
+   * Returns {@code true} if the specified object is an array of a primitive type
+   * <i>or</i> a {@code Class} object representing an array of a primitive type.
    *
    * @param obj The object to test
    * @return {@code true} if the specified object is an array of a primitive type, or
    *     a {@code Class} object representing an array of a primitive type
    */
   public static boolean isPrimitiveArray(Object obj) {
-    if (obj instanceof Class c) {
+    if (obj instanceof Class<?> c) {
       return isPrimitiveArray(c);
     }
     return obj != null && isPrimitiveArray(obj.getClass());
   }
 
   /**
-   * Returns {@code true} if the specified type represents an array of a primitive
-   * type.
+   * Returns {@code true} if the specified {@code Class} object represents an array
+   * of a primitive type.
    *
    * @param clazz the class to test
-   * @return {@code true} if the specified type represents an array of a primitive
-   *     type
+   * @return {@code true} if the specified {@code Class} object represents an array
+   *     of a primitive type
    */
   public static boolean isPrimitiveArray(Class<?> clazz) {
     Check.notNull(clazz);
@@ -393,18 +393,17 @@ public final class ClassMethods {
    * <ul>
    * <li>If the argument is {@code null}, the string "null" is returned.
    * <li>If the argument is a {@link Collection}, the returned string will contain
-   * the collection's simple class name and its size. For example:
-   * <b>ArrayList[113]</b>.
+   * the collection's simple class name and its size. For example: "{@code ArrayList[113]}"
    * <li>If the argument is a {@link Map}, the returned string will contain the map's
-   * simple class name and its size. For example: <b>TreeMap[97]</b>.
+   * simple class name and its size. For example: "{@code TreeMap[97]}"
    * <li>If the argument is an array, the returned string will contain the simple
    * class name of the array's innermost
    * {@linkplain Class#getComponentType() component type} and its length. For
-   * example: <b>String[42][][]</b>.
+   * example: "{@code String[42][][]}"
    * <li>If the argument is a {@code Class} object, the returned string will look
-   * like this: <b>FileOutputStream.class</b> (".class" appended to the simple class
-   * name).
-   * <li>Otherwise, the plain simple class name of the argument is returned.
+   * like this: "{@code FileOutputStream.class}" (with ".class" appended to the simple class
+   * name)
+   * <li>Otherwise, the simple class name of the argument is returned.
    * </ul>
    *
    * @param obj the object to describe

@@ -26,11 +26,11 @@ import static org.klojang.util.ObjectMethods.replaceIf;
  * A fast enum-to-int map. The map is backed by an int array with the same length as
  * the number of constants in the {@code enum} class. One integer must be designated
  * to signify the &lt;b&gt;absence&lt;/b&gt; of a key. By default, this is
- * {@link Integer#MIN_VALUE} and, by default, all elements in the {@code int} array
- * are initialized to this value &amp;#8212; meaning the map is empty. It is not allowed
- * to {@code put} a key with this value to the map, as is would in effect amount to
+ * {@link Integer#MIN_VALUE}. All elements in the {@code int} array are initialized
+ * to this value &amp;#8212; meaning the map is empty. It is not allowed to {@code put} a
+ * key with this value to the map, as is would in effect amount to
  * &lt;i&gt;removing&lt;/i&gt; that key from the map. It is also not allowed to pass this value
- * to {@link #containsValue(int) containsValue}. In both cases an
+ * to {@link #containsValue(int) containsValue()}. In both cases an
  * {@code IllegalArgumentException} is thrown. Empty enum classes (i.e. enum classes
  * without enum constants) are not supported.
  *
@@ -249,8 +249,9 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    *
    * @return an immutable, fully-generic version of this map
    */
+  @SuppressWarnings(&quot;unchecked&quot;)
   public Map&lt;K, Integer&gt; toGenericMap() {
-<span class="fc" id="L253">    return Map.ofEntries(entrySet().toArray(SimpleImmutableEntry[]::new));</span>
+<span class="fc" id="L254">    return Map.ofEntries(entrySet().toArray(Map.Entry[]::new));</span>
   }
 
   /**
@@ -262,10 +263,10 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#remove(Object)
    */
   public int remove(K key) {
-<span class="fc" id="L265">    Check.notNull(key, &quot;key&quot;);</span>
-<span class="fc" id="L266">    int v = valueOf(key);</span>
-<span class="fc" id="L267">    assign(key, kav);</span>
-<span class="fc" id="L268">    return v;</span>
+<span class="fc" id="L266">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc" id="L267">    int v = valueOf(key);</span>
+<span class="fc" id="L268">    assign(key, kav);</span>
+<span class="fc" id="L269">    return v;</span>
   }
 
   /**
@@ -275,7 +276,7 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#keySet()
    */
   public Set&lt;K&gt; keySet() {
-<span class="fc" id="L278">    return streamKeys().collect(toSet());</span>
+<span class="fc" id="L279">    return streamKeys().collect(toSet());</span>
   }
 
   /**
@@ -285,7 +286,7 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#values()
    */
   public Collection&lt;Integer&gt; values() {
-<span class="fc" id="L288">    return streamKeys().map(this::valueOf).collect(toList());</span>
+<span class="fc" id="L289">    return streamKeys().map(this::valueOf).collect(toList());</span>
   }
 
   /**
@@ -294,13 +295,13 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @return an {@code IntList} containing the values of this map
    */
   public IntList intValues() {
-<span class="fc" id="L297">    IntArrayList ial = new IntArrayList(data.length);</span>
-<span class="fc bfc" id="L298" title="All 2 branches covered.">    for (int i : data) {</span>
-<span class="fc bfc" id="L299" title="All 2 branches covered.">      if (i != kav) {</span>
-<span class="fc" id="L300">        ial.add(i);</span>
+<span class="fc" id="L298">    IntArrayList ial = new IntArrayList(data.length);</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">    for (int i : data) {</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">      if (i != kav) {</span>
+<span class="fc" id="L301">        ial.add(i);</span>
       }
     }
-<span class="fc" id="L303">    return ial;</span>
+<span class="fc" id="L304">    return ial;</span>
   }
 
   /**
@@ -309,11 +310,12 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @return a set view of the mappings contained in this map
    * @see Map#entrySet()
    */
+  @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
   public Set&lt;Map.Entry&lt;K, Integer&gt;&gt; entrySet() {
-<span class="fc" id="L313">    SimpleImmutableEntry[] entries = streamKeys()</span>
-<span class="fc" id="L314">        .map(k -&gt; new SimpleImmutableEntry(k, valueOf(k)))</span>
-<span class="fc" id="L315">        .toArray(SimpleImmutableEntry[]::new);</span>
-<span class="fc" id="L316">    return ArraySet.of(entries, true);</span>
+<span class="fc" id="L315">    SimpleImmutableEntry[] entries = streamKeys()</span>
+<span class="fc" id="L316">        .map(k -&gt; new SimpleImmutableEntry(k, valueOf(k)))</span>
+<span class="fc" id="L317">        .toArray(SimpleImmutableEntry[]::new);</span>
+<span class="fc" id="L318">    return ArraySet.of(entries, true);</span>
   }
 
   /**
@@ -325,7 +327,7 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#isEmpty()
    */
   public boolean isEmpty() {
-<span class="fc bfc" id="L328" title="All 2 branches covered.">    return size() == 0;</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">    return size() == 0;</span>
   }
 
   /**
@@ -336,8 +338,8 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#forEach(BiConsumer)
    */
   public void forEach(ObjIntConsumer&lt;K&gt; action) {
-<span class="fc" id="L339">    streamKeys().forEach(k -&gt; action.accept(k, valueOf(k)));</span>
-<span class="fc" id="L340">  }</span>
+<span class="fc" id="L341">    streamKeys().forEach(k -&gt; action.accept(k, valueOf(k)));</span>
+<span class="fc" id="L342">  }</span>
 
   /**
    * Removes all mappings from this map.
@@ -345,8 +347,8 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#clear()
    */
   public void clear() {
-<span class="fc" id="L348">    Arrays.fill(data, kav);</span>
-<span class="fc" id="L349">  }</span>
+<span class="fc" id="L350">    Arrays.fill(data, kav);</span>
+<span class="fc" id="L351">  }</span>
 
   /**
    * Returns the number of key-value mappings in this map.
@@ -355,7 +357,7 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#size()
    */
   public int size() {
-<span class="fc" id="L358">    return (int) streamKeys().count();</span>
+<span class="fc" id="L360">    return (int) streamKeys().count();</span>
   }
 
   /**
@@ -365,76 +367,76 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    */
   @SuppressWarnings(&quot;unchecked&quot;)
   public Class&lt;K&gt; enumClass() {
-<span class="fc" id="L368">    return (Class&lt;K&gt;) keys[0].getClass();</span>
+<span class="fc" id="L370">    return (Class&lt;K&gt;) keys[0].getClass();</span>
   }
 
   /**
-   * Returns the integer used to signify the absence of a key within this map.
+   * Returns the integer used to signify the absence of a key.
    *
    * @return the integer used to signify the absence of a key
    */
   public int keyAbsentValue() {
-<span class="fc" id="L377">    return kav;</span>
+<span class="fc" id="L379">    return kav;</span>
   }
 
   /**
    * Returns {@code true} if the argument is an {@code EnumToIntMap} for the same
-   * enum class and if it contains the same key-value mappings. The two maps need not
-   * have the same &lt;i&gt;key-absent-value&lt;/i&gt; value.
+   * enum class and if it contains the same key-value mappings. The two maps need
+   * &lt;i&gt;not&lt;/i&gt; have the same &lt;i&gt;key-absent-value&lt;/i&gt; value.
    */
   @Override
   public boolean equals(Object obj) {
-<span class="fc bfc" id="L387" title="All 2 branches covered.">    if (this == obj) {</span>
-<span class="fc" id="L388">      return true;</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">    if (this == obj) {</span>
+<span class="fc" id="L390">      return true;</span>
     }
-<span class="pc bpc" id="L390" title="2 of 4 branches missed.">    if (obj instanceof EnumToIntMap&lt;?&gt; that &amp;&amp; enumClass() == that.enumClass()) {</span>
-<span class="fc bfc" id="L391" title="All 2 branches covered.">      if (this.kav == that.kav) {</span>
-<span class="fc" id="L392">        return Arrays.equals(data, that.data);</span>
+<span class="pc bpc" id="L392" title="2 of 4 branches missed.">    if (obj instanceof EnumToIntMap&lt;?&gt; that &amp;&amp; enumClass() == that.enumClass()) {</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">      if (this.kav == that.kav) {</span>
+<span class="fc" id="L394">        return Arrays.equals(data, that.data);</span>
       }
-<span class="fc bfc" id="L394" title="All 2 branches covered.">      for (int i = 0; i &lt; keys.length; i++) {</span>
-<span class="pc bpc" id="L395" title="1 of 2 branches missed.">        if (replaceIf(this.data[i], eq(), this.kav, that.kav) != that.data[i]) {</span>
-<span class="nc" id="L396">          return false;</span>
+<span class="fc bfc" id="L396" title="All 2 branches covered.">      for (int i = 0; i &lt; keys.length; i++) {</span>
+<span class="pc bpc" id="L397" title="1 of 2 branches missed.">        if (replaceIf(this.data[i], eq(), this.kav, that.kav) != that.data[i]) {</span>
+<span class="nc" id="L398">          return false;</span>
         }
       }
-<span class="fc" id="L399">      return true;</span>
+<span class="fc" id="L401">      return true;</span>
     }
-<span class="nc" id="L401">    return false;</span>
+<span class="nc" id="L403">    return false;</span>
   }
 
   public int hashCode() {
-<span class="fc" id="L405">    return entrySet().hashCode();</span>
+<span class="fc" id="L407">    return entrySet().hashCode();</span>
   }
 
   @Override
   public String toString() {
-<span class="fc" id="L410">    return '[' + CollectionMethods.implode(entrySet()) + ']';</span>
+<span class="fc" id="L412">    return '[' + CollectionMethods.implode(entrySet()) + ']';</span>
   }
 
   private void copyEntries(EnumToIntMap&lt;K&gt; other) {
-<span class="fc" id="L414">    Check.that(other.enumClass()).is(sameAs(),</span>
-<span class="fc" id="L415">        enumClass(),</span>
+<span class="fc" id="L416">    Check.that(other.enumClass()).is(sameAs(),</span>
+<span class="fc" id="L417">        enumClass(),</span>
         &quot;enum type mismatch: {arg} vs. {obj}&quot;);
-<span class="fc bfc" id="L417" title="All 2 branches covered.">    if (kav == other.kav) {</span>
-<span class="fc" id="L418">      System.arraycopy(other.data, 0, data, 0, data.length);</span>
-<span class="fc bfc" id="L419" title="All 2 branches covered.">    } else if (other.containsValue(kav)) {</span>
-<span class="nc" id="L420">      fail(&quot;source map must not contain key-absent-value ({0})&quot;, kav);</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">    if (kav == other.kav) {</span>
+<span class="fc" id="L420">      System.arraycopy(other.data, 0, data, 0, data.length);</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">    } else if (other.containsValue(kav)) {</span>
+<span class="nc" id="L422">      fail(&quot;source map must not contain key-absent-value ({0})&quot;, kav);</span>
     } else {
-<span class="fc bfc" id="L422" title="All 2 branches covered.">      for (int i = 0; i &lt; data.length; ++i) {</span>
-<span class="fc" id="L423">        data[i] = replaceIf(other.data[i], eq(), other.kav, kav);</span>
+<span class="fc bfc" id="L424" title="All 2 branches covered.">      for (int i = 0; i &lt; data.length; ++i) {</span>
+<span class="fc" id="L425">        data[i] = replaceIf(other.data[i], eq(), other.kav, kav);</span>
       }
     }
-<span class="fc" id="L426">  }</span>
+<span class="fc" id="L428">  }</span>
 
   private Stream&lt;K&gt; streamKeys() {
-<span class="fc bfc" id="L429" title="All 2 branches covered.">    return Arrays.stream(keys).filter(k -&gt; data[k.ordinal()] != kav);</span>
+<span class="fc bfc" id="L431" title="All 2 branches covered.">    return Arrays.stream(keys).filter(k -&gt; data[k.ordinal()] != kav);</span>
   }
 
   private void assign(K key, int val) {
-<span class="fc" id="L433">    data[key.ordinal()] = val;</span>
-<span class="fc" id="L434">  }</span>
+<span class="fc" id="L435">    data[key.ordinal()] = val;</span>
+<span class="fc" id="L436">  }</span>
 
   private int valueOf(K key) {
-<span class="fc" id="L437">    return data[key.ordinal()];</span>
+<span class="fc" id="L439">    return data[key.ordinal()];</span>
   }
 
 }

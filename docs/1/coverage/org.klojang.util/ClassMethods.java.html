@@ -85,22 +85,22 @@ public final class ClassMethods {
   }
 
   /**
-   * Alias for {@link Class#isInstance(Object)}.
+   * Alias for {@link Class#isInstance(Object) type.isInstance(obj)}.
    *
-   * @param instance The object to test
+   * @param obj The object to test
    * @param type The class or interface to test the object against
    * @return whether the 1st argument is an instance of the 2nd argument
    */
-  public static boolean isA(Object instance, Class&lt;?&gt; type) {
-<span class="nc" id="L95">    Check.that(instance, &quot;instance&quot;).is(notNull()).and(type, TYPE).is(notNull());</span>
-<span class="nc" id="L96">    return type.isInstance(instance);</span>
+  public static boolean isA(Object obj, Class&lt;?&gt; type) {
+<span class="nc" id="L95">    Check.that(obj, &quot;instance&quot;).is(notNull()).and(type, TYPE).is(notNull());</span>
+<span class="nc" id="L96">    return type.isInstance(obj);</span>
   }
 
   /**
    * Tests whether the first class is the same as, or a subtype of the second class.
-   * In other words, whether it extends or implements the second class. In case you
-   * keep forgetting what &quot;assignable from&quot; even means. Equivalent to
-   * &lt;code&gt;class1.isAssignableFrom(class0)&lt;/code&gt;.
+   * In other words, whether {@code class0} extends or implements {@code class1}. In
+   * case you keep forgetting what &quot;assignable from&quot; means. Equivalent to
+   * {@code class1.isAssignableFrom(class0)}.
    *
    * @param class0 The class or interface you are interested in
    * @param class1 The class or interface to compare it against
@@ -116,8 +116,8 @@ public final class ClassMethods {
 
   /**
    * Tests whether the first class is the same as, or a supertype of the second
-   * class. In other words, whether it is extended or implemented by the second
-   * class. Equivalent to &lt;code&gt;class0.isAssignableFrom(class1)&lt;/code&gt;.
+   * class. In other words, whether {@code class0} is extended or implemented by
+   * {@code class1}. Equivalent to {@code class0.isAssignableFrom(class1)}.
    *
    * @param class0 The class or interface you are interested in
    * @param class1 The class or interface to compare it against
@@ -132,9 +132,9 @@ public final class ClassMethods {
   }
 
   /**
-   * Returns whether the specified class is one of the primitive number classes. Note
-   * that this does not include {@code char.class}, just like {@link Character} does
-   * not extend {@link Number}.
+   * Returns {@code true} if the specified class is one of the primitive number
+   * classes. Note that this does not include {@code char.class} &amp;#8212; just like
+   * {@link Character} does not extend {@link Number}.
    *
    * @param clazz the class to test
    * @return whether the specified class is one of the primitive number classes
@@ -144,27 +144,27 @@ public final class ClassMethods {
   }
 
   /**
-   * Returns {@code true} if the specified object is an array of a primitive type, or
-   * a {@code Class} object representing an array of a primitive type.
+   * Returns {@code true} if the specified object is an array of a primitive type
+   * &lt;i&gt;or&lt;/i&gt; a {@code Class} object representing an array of a primitive type.
    *
    * @param obj The object to test
    * @return {@code true} if the specified object is an array of a primitive type, or
    *     a {@code Class} object representing an array of a primitive type
    */
   public static boolean isPrimitiveArray(Object obj) {
-<span class="pc bpc" id="L155" title="1 of 2 branches missed.">    if (obj instanceof Class c) {</span>
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">    if (obj instanceof Class&lt;?&gt; c) {</span>
 <span class="nc" id="L156">      return isPrimitiveArray(c);</span>
     }
 <span class="pc bpc" id="L158" title="1 of 4 branches missed.">    return obj != null &amp;&amp; isPrimitiveArray(obj.getClass());</span>
   }
 
   /**
-   * Returns {@code true} if the specified type represents an array of a primitive
-   * type.
+   * Returns {@code true} if the specified {@code Class} object represents an array
+   * of a primitive type.
    *
    * @param clazz the class to test
-   * @return {@code true} if the specified type represents an array of a primitive
-   *     type
+   * @return {@code true} if the specified {@code Class} object represents an array
+   *     of a primitive type
    */
   public static boolean isPrimitiveArray(Class&lt;?&gt; clazz) {
 <span class="fc" id="L170">    Check.notNull(clazz);</span>
@@ -393,18 +393,17 @@ public final class ClassMethods {
    * &lt;ul&gt;
    * &lt;li&gt;If the argument is {@code null}, the string &quot;null&quot; is returned.
    * &lt;li&gt;If the argument is a {@link Collection}, the returned string will contain
-   * the collection's simple class name and its size. For example:
-   * &lt;b&gt;ArrayList[113]&lt;/b&gt;.
+   * the collection's simple class name and its size. For example: &quot;{@code ArrayList[113]}&quot;
    * &lt;li&gt;If the argument is a {@link Map}, the returned string will contain the map's
-   * simple class name and its size. For example: &lt;b&gt;TreeMap[97]&lt;/b&gt;.
+   * simple class name and its size. For example: &quot;{@code TreeMap[97]}&quot;
    * &lt;li&gt;If the argument is an array, the returned string will contain the simple
    * class name of the array's innermost
    * {@linkplain Class#getComponentType() component type} and its length. For
-   * example: &lt;b&gt;String[42][][]&lt;/b&gt;.
+   * example: &quot;{@code String[42][][]}&quot;
    * &lt;li&gt;If the argument is a {@code Class} object, the returned string will look
-   * like this: &lt;b&gt;FileOutputStream.class&lt;/b&gt; (&quot;.class&quot; appended to the simple class
-   * name).
-   * &lt;li&gt;Otherwise, the plain simple class name of the argument is returned.
+   * like this: &quot;{@code FileOutputStream.class}&quot; (with &quot;.class&quot; appended to the simple class
+   * name)
+   * &lt;li&gt;Otherwise, the simple class name of the argument is returned.
    * &lt;/ul&gt;
    *
    * @param obj the object to describe
@@ -412,18 +411,18 @@ public final class ClassMethods {
    * @see ArrayType#describe(Object)
    */
   public static String describe(Object obj) {
-<span class="fc bfc" id="L415" title="All 2 branches covered.">    if (obj == null) {</span>
-<span class="fc" id="L416">      return &quot;null&quot;;</span>
-<span class="fc bfc" id="L417" title="All 2 branches covered.">    } else if (obj.getClass() == Class.class) {</span>
-<span class="fc" id="L418">      return ((Class&lt;?&gt;) obj).getSimpleName() + &quot;.class&quot;;</span>
-<span class="fc bfc" id="L419" title="All 2 branches covered.">    } else if (obj instanceof Collection&lt;?&gt; c) {</span>
-<span class="fc" id="L420">      return c.getClass().getSimpleName() + '[' + c.size() + ']';</span>
-<span class="fc bfc" id="L421" title="All 2 branches covered.">    } else if (obj instanceof Map&lt;?, ?&gt; m) {</span>
-<span class="fc" id="L422">      return m.getClass().getSimpleName() + '[' + m.size() + ']';</span>
-<span class="fc bfc" id="L423" title="All 2 branches covered.">    } else if (obj.getClass().isArray()) {</span>
-<span class="fc" id="L424">      return ArrayType.describe(obj);</span>
+<span class="fc bfc" id="L414" title="All 2 branches covered.">    if (obj == null) {</span>
+<span class="fc" id="L415">      return &quot;null&quot;;</span>
+<span class="fc bfc" id="L416" title="All 2 branches covered.">    } else if (obj.getClass() == Class.class) {</span>
+<span class="fc" id="L417">      return ((Class&lt;?&gt;) obj).getSimpleName() + &quot;.class&quot;;</span>
+<span class="fc bfc" id="L418" title="All 2 branches covered.">    } else if (obj instanceof Collection&lt;?&gt; c) {</span>
+<span class="fc" id="L419">      return c.getClass().getSimpleName() + '[' + c.size() + ']';</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">    } else if (obj instanceof Map&lt;?, ?&gt; m) {</span>
+<span class="fc" id="L421">      return m.getClass().getSimpleName() + '[' + m.size() + ']';</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">    } else if (obj.getClass().isArray()) {</span>
+<span class="fc" id="L423">      return ArrayType.describe(obj);</span>
     }
-<span class="fc" id="L426">    return obj.getClass().getSimpleName();</span>
+<span class="fc" id="L425">    return obj.getClass().getSimpleName();</span>
   }
 
   /**
@@ -436,9 +435,9 @@ public final class ClassMethods {
    */
   @SuppressWarnings(&quot;unchecked&quot;)
   public static &lt;T&gt; T getTypeDefault(Class&lt;T&gt; type) {
-<span class="fc bfc" id="L439" title="All 2 branches covered.">    return Check.notNull(type, &quot;type&quot;).isNot(sameAs(), void.class).ok().isPrimitive()</span>
-<span class="fc" id="L440">        ? (T) PRIMITIVE_DEFAULTS.get(type)</span>
-<span class="fc" id="L441">        : null;</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">    return Check.notNull(type, &quot;type&quot;).isNot(sameAs(), void.class).ok().isPrimitive()</span>
+<span class="fc" id="L439">        ? (T) PRIMITIVE_DEFAULTS.get(type)</span>
+<span class="fc" id="L440">        : null;</span>
   }
 
 }

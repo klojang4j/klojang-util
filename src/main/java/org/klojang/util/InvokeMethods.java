@@ -1,8 +1,6 @@
 package org.klojang.util;
 
 import java.lang.invoke.MethodHandle;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,9 +9,9 @@ import static java.lang.invoke.MethodType.methodType;
 
 /**
  * Dynamic invocation utility methods. <i>These methods are not meant to be used in
- * application-level software.</i> They very thinly wrap methods from
- * {@code java.lang.invoke} and don't perform any null checks, type checks, range
- * checks, etc.
+ * application-level software.</i> They very thinly wrap methods from the
+ * {@code java.lang.invoke} package and don't perform any null checks, type checks,
+ * range checks, etc.
  */
 public final class InvokeMethods {
 
@@ -21,7 +19,9 @@ public final class InvokeMethods {
   private static final Map<Class<?>, MethodHandle> intArgConstructors = new HashMap<>();
 
   /**
-   * Returns a new instance of the specified class using its no-arg constructor.
+   * Returns a new instance of the specified class using its no-arg constructor. The
+   * {@link NoSuchMethodException} thrown if there is no such constructor is
+   * converted to an {@link InvokeException}.
    *
    * @param clazz the class to instantiate
    * @param <T> the type of the returned instance
@@ -41,7 +41,8 @@ public final class InvokeMethods {
 
   /**
    * Returns a new instance of the specified class using the constructor that takes a
-   * single {@code int} argument.
+   * single {@code int} argument. The {@link NoSuchMethodException} thrown if there
+   * is no such constructor is converted to an {@link InvokeException}.
    *
    * @param clazz the class
    * @param arg0 the constructor argument
@@ -86,7 +87,7 @@ public final class InvokeMethods {
     try {
       return (int) arrayLength(array.getClass()).invoke(array);
     } catch (Throwable t) {
-      throw InvokeException.arrayOperationFailed(array, t);
+      throw ExceptionMethods.uncheck(t);
     }
   }
 
@@ -94,16 +95,16 @@ public final class InvokeMethods {
    * Returns the array element at the specified index.
    *
    * @param array the array
-   * @param idx the array index
+   * @param index the array index
    * @param <T> the type of the array elements
    * @return the array element
    */
   @SuppressWarnings("unchecked")
-  public static <T> T getArrayElement(Object array, int idx) {
+  public static <T> T getArrayElement(Object array, int index) {
     try {
-      return (T) arrayElementGetter(array.getClass()).invoke(array, idx);
+      return (T) arrayElementGetter(array.getClass()).invoke(array, index);
     } catch (Throwable t) {
-      throw InvokeException.arrayOperationFailed(array, t);
+      throw ExceptionMethods.uncheck(t);
     }
   }
 
@@ -118,10 +119,9 @@ public final class InvokeMethods {
     try {
       arrayElementSetter(array.getClass()).invoke(array, idx, value);
     } catch (Throwable t) {
-      throw InvokeException.arrayOperationFailed(array, t);
+      throw ExceptionMethods.uncheck(t);
     }
   }
-
 
   private static <T> MethodHandle getNoArgConstructor(Class<T> clazz)
       throws NoSuchMethodException, IllegalAccessException {

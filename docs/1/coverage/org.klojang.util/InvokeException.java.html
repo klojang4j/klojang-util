@@ -17,7 +17,7 @@ public class InvokeException extends RuntimeException {
    * @return an {@code InvokeException} informing the client that a class could not
    *     be instantiated because it has a no-arg constructor
    */
-  public static InvokeException missingNoArgConstructor(Class&lt;?&gt; clazz) {
+  static InvokeException missingNoArgConstructor(Class&lt;?&gt; clazz) {
 <span class="fc" id="L21">    return new InvokeException(&quot;missing no-arg constructor for &quot; + clazz);</span>
   }
 
@@ -30,35 +30,16 @@ public class InvokeException extends RuntimeException {
    * @return an {@code InvokeException} informing the client that a class could not
    *     be instantiated because it has constructor with the provided parameter list
    */
-  public static InvokeException noSuchConstructor(Class&lt;?&gt; clazz,
-      Class&lt;?&gt;... params) {
-<span class="fc" id="L35">    String msg = String.format(&quot;no such constructor: %s(%s)&quot;,</span>
-<span class="fc" id="L36">        simpleClassName(clazz),</span>
-<span class="fc" id="L37">        implode(params, ClassMethods::simpleClassName, &quot;, &quot;, 0, -1));</span>
-<span class="fc" id="L38">    return new InvokeException(msg);</span>
-  }
-
-  /**
-   * Returns an {@code InvokeException} informing the client that an operation failed
-   * because of some {@code Throwable} thrown from the {@code java.lang.invoke}
-   * package.
-   *
-   * @param array the array to be operated upon
-   * @param throwable the throwable thrown from {@code java.lang.invoke}
-   * @return an {@code InvokeException} informing the client that an operation failed
-   *     because of some {@code Throwable} thrown from the {@code java.lang.invoke}
-   */
-  public static InvokeException arrayOperationFailed(Object array,
-      Throwable throwable) {
-<span class="nc" id="L53">    String msg = String.format(&quot;array operation failed for %s: %s&quot;,</span>
-<span class="nc" id="L54">        simpleClassName(array),</span>
-        throwable);
-<span class="nc" id="L56">    return new InvokeException(msg);</span>
+  static InvokeException noSuchConstructor(Class&lt;?&gt; clazz, Class&lt;?&gt;... params) {
+<span class="fc" id="L34">    String msg = String.format(&quot;no such constructor: %s(%s)&quot;,</span>
+<span class="fc" id="L35">        simpleClassName(clazz),</span>
+<span class="fc" id="L36">        implode(params, ClassMethods::simpleClassName, &quot;, &quot;, 0, -1));</span>
+<span class="fc" id="L37">    return new InvokeException(msg);</span>
   }
 
   public InvokeException(String message) {
-<span class="fc" id="L60">    super(message);</span>
-<span class="fc" id="L61">  }</span>
+<span class="fc" id="L41">    super(message);</span>
+<span class="fc" id="L42">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

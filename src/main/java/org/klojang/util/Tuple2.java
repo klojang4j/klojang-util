@@ -20,11 +20,11 @@ public record Tuple2<T, U>(T first, U second) {
    *
    * @param first The first component of the 2-tuple
    * @param second The second component of the 2-tuple
-   * @param <ONE> The type of the first component
-   * @param <TWO> The type of the second component
+   * @param <T> The type of the first component
+   * @param <U> The type of the second component
    * @return A {@code Tuple2} instance containing the specified values
    */
-  public static <ONE, TWO> Tuple2<ONE, TWO> of(ONE first, TWO second) {
+  public static <T, U> Tuple2<T, U> of(T first, U second) {
     return new Tuple2(first, second);
   }
 

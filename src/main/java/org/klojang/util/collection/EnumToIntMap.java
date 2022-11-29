@@ -26,11 +26,11 @@ import static org.klojang.util.ObjectMethods.replaceIf;
  * A fast enum-to-int map. The map is backed by an int array with the same length as
  * the number of constants in the {@code enum} class. One integer must be designated
  * to signify the <b>absence</b> of a key. By default, this is
- * {@link Integer#MIN_VALUE} and, by default, all elements in the {@code int} array
- * are initialized to this value &#8212; meaning the map is empty. It is not allowed
- * to {@code put} a key with this value to the map, as is would in effect amount to
+ * {@link Integer#MIN_VALUE}. All elements in the {@code int} array are initialized
+ * to this value &#8212; meaning the map is empty. It is not allowed to {@code put} a
+ * key with this value to the map, as is would in effect amount to
  * <i>removing</i> that key from the map. It is also not allowed to pass this value
- * to {@link #containsValue(int) containsValue}. In both cases an
+ * to {@link #containsValue(int) containsValue()}. In both cases an
  * {@code IllegalArgumentException} is thrown. Empty enum classes (i.e. enum classes
  * without enum constants) are not supported.
  *
@@ -249,8 +249,9 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
    *
    * @return an immutable, fully-generic version of this map
    */
+  @SuppressWarnings("unchecked")
   public Map<K, Integer> toGenericMap() {
-    return Map.ofEntries(entrySet().toArray(SimpleImmutableEntry[]::new));
+    return Map.ofEntries(entrySet().toArray(Map.Entry[]::new));
   }
 
   /**
@@ -309,6 +310,7 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
    * @return a set view of the mappings contained in this map
    * @see Map#entrySet()
    */
+  @SuppressWarnings({"rawtypes", "unchecked"})
   public Set<Map.Entry<K, Integer>> entrySet() {
     SimpleImmutableEntry[] entries = streamKeys()
         .map(k -> new SimpleImmutableEntry(k, valueOf(k)))
@@ -369,7 +371,7 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
   }
 
   /**
-   * Returns the integer used to signify the absence of a key within this map.
+   * Returns the integer used to signify the absence of a key.
    *
    * @return the integer used to signify the absence of a key
    */
@@ -379,8 +381,8 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
 
   /**
    * Returns {@code true} if the argument is an {@code EnumToIntMap} for the same
-   * enum class and if it contains the same key-value mappings. The two maps need not
-   * have the same <i>key-absent-value</i> value.
+   * enum class and if it contains the same key-value mappings. The two maps need
+   * <i>not</i> have the same <i>key-absent-value</i> value.
    */
   @Override
   public boolean equals(Object obj) {

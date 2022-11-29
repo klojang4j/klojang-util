@@ -14,17 +14,17 @@ import java.util.stream.IntStream;
 import static org.klojang.check.CommonChecks.notNull;
 
 /**
- * The ubiquitous list-of-int class. Note that {@code IntList} is a sealed interface
- * with just two implementations: one ({@link IntArrayList}) allows mutations on the
- * list and the other is immutable. Instances of the immutable variant can only be
- * obtained through static factory methods on the {@code IntList} interface.
+ * The {@code list-of-int} interface. {@code IntList} is a sealed interface with just
+ * two implementations: one ({@link IntArrayList}) allows mutations on the list and
+ * the other is immutable. Instances of the immutable variant can only be obtained
+ * through static factory methods on the {@code IntList} interface.
  */
 public sealed interface IntList extends Emptyable permits IntArrayList,
     UnmodifiableIntList {
 
   /**
-   * Returns an unmodifiable {@code IntList} containing the integers in the specified
-   * collection.
+   * Converts the provided collection of {@code Integer} objects to an unmodifiable
+   * {@code IntList}. The collection must not contain {@code null} values.
    *
    * @param c the {@code Integer} collection to extract the integers from
    * @return an unmodifiable {@code IntList}
@@ -286,7 +286,7 @@ public sealed interface IntList extends Emptyable permits IntArrayList,
    * Removes the values contained in the specified {@code Collection} from this
    * {@code IntList}.
    *
-   * @param c the {@code Collection IntList} containing the values to remove
+   * @param c the {@code Collection} of values to remove
    * @return whether the list changed
    */
   boolean removeAll(Collection&lt;?&gt; c);
@@ -354,8 +354,8 @@ public sealed interface IntList extends Emptyable permits IntArrayList,
 
   /**
    * Resizes the backing array. the new capacity is allowed to be less than the
-   * current capacity, and even less than the size of the list. So this method can
-   * also be used as a truncate or a trim-to-size method.
+   * current capacity, and even less than the current size of the list. So this
+   * method can be used as a truncate or a trim-to-size method.
    *
    * @param newCapacity the desired length of the backing array
    * @see #trim(int)
