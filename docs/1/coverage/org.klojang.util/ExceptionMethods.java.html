@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExceptionMethods.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Check</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util</a> &gt; <span class="el_source">ExceptionMethods.java</span></div><h1>ExceptionMethods.java</h1><pre class="source lang-java linenums">package org.klojang.util;
+
+import org.klojang.check.Check;
+import org.klojang.util.exception.ExceptionOrigin;
+import org.klojang.util.exception.RootException;
+import org.klojang.util.exception.UncheckedException;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.klojang.check.Tag.*;
+
+;
+
+/**
+ * Methods related to exception handling.
+ *
+ * @author Ayco Holleman
+ */
+public final class ExceptionMethods {
+
+<span class="nc" id="L26">  private ExceptionMethods() {</span>
+<span class="nc" id="L27">    throw new UnsupportedOperationException();</span>
+  }
+
+  /**
+   * Returns the root cause of the specified {@code Throwable}, or the
+   * {@code Throwable} itself if it has no cause.
+   *
+   * @param exc the exception whose root cause to retrieve
+   * @return the root cause of the exception
+   */
+  public static Throwable getRootCause(Throwable exc) {
+<span class="fc" id="L38">    Check.notNull(exc, EXCEPTION);</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">    while (exc.getCause() != null) {</span>
+<span class="fc" id="L40">      exc = exc.getCause();</span>
+    }
+<span class="fc" id="L42">    return exc;</span>
+  }
+
+  /**
+   * Returns the stack trace of the root cause of the specified {@code Throwable} as
+   * a {@code String}.
+   *
+   * @param exc the exception
+   * @return the root stack trace as a string
+   */
+  public static String getRootStackTraceAsString(Throwable exc) {
+<span class="fc" id="L53">    Check.notNull(exc, EXCEPTION);</span>
+<span class="fc" id="L54">    ByteArrayOutputStream out = new ByteArrayOutputStream(2048);</span>
+<span class="fc" id="L55">    getRootCause(exc).printStackTrace(new PrintStream(out));</span>
+<span class="fc" id="L56">    return out.toString(UTF_8).strip();</span>
+  }
+
+  /**
+   * Returns the exception message and stack trace of the root cause of the specified
+   * {@code Throwable}, using the specified string(s) to filter stack trace elements.
+   * The stack trace is filtered using a simple
+   * {@link String#contains(CharSequence) String.contains} on the
+   * {@link StackTraceElement#getClassName() className} property of the
+   * {@code StackTraceElement}.
+   *
+   * @param exc the exception
+   * @param filter one or more filters on stack trace elements
+   * @return the root stack trace as a string
+   */
+  public static String getRootStackTraceAsString(Throwable exc, String... filter) {
+<span class="fc" id="L72">    Check.notNull(exc, EXCEPTION);</span>
+<span class="fc" id="L73">    Check.notNull(filter, FILTER);</span>
+<span class="fc" id="L74">    ByteArrayOutputStream out = new ByteArrayOutputStream(1024);</span>
+<span class="fc" id="L75">    PrintStream pw = new PrintStream(out);</span>
+<span class="fc" id="L76">    Throwable t = getRootCause(exc);</span>
+<span class="fc" id="L77">    pw.println(t);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">    for (StackTraceElement ste : t.getStackTrace()) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">      for (String f : filter) {</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (ste.getClassName().contains(f)) {</span>
+<span class="nc" id="L81">          pw.println(&quot;\tat &quot; + ste);</span>
+<span class="nc" id="L82">          break;</span>
+        }
+      }
+    }
+<span class="fc" id="L86">    return out.toString(UTF_8).strip();</span>
+  }
+
+  /**
+   * Returns the stack trace of the root cause of the specified exception, using the
+   * specified string(s) to filter stack trace elements. If the
+   * {@link StackTraceElement#getClassName() class name} of the stack trace element
+   * {@link String#contains(CharSequence) contains} the filter string, the stack
+   * trace element will be included in the returned array.
+   *
+   * @param exc the exception
+   * @param filter One or more filters on stack trace elements
+   * @return the root stack trace
+   */
+  public static StackTraceElement[] getRootStackTrace(Throwable exc,
+      String... filter) {
+<span class="fc" id="L102">    Check.notNull(exc, EXCEPTION);</span>
+<span class="fc" id="L103">    Check.notNull(filter, FILTER);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">    if (filter.length == 0) {</span>
+<span class="fc" id="L105">      return getRootCause(exc).getStackTrace();</span>
+    }
+<span class="fc" id="L107">    var trace = new ArrayList&lt;StackTraceElement&gt;();</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">    for (StackTraceElement ste : getRootCause(exc).getStackTrace()) {</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">      for (String f : filter) {</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        if (ste.getClassName().contains(f)) {</span>
+<span class="fc" id="L111">          trace.add(ste);</span>
+<span class="fc" id="L112">          break;</span>
+        }
+      }
+    }
+<span class="fc" id="L116">    return trace.toArray(StackTraceElement[]::new);</span>
+  }
+
+  /**
+   * Provides a detailed exception message that includes the class, method and line
+   * number of the first statement in the specified exception's stack trace that
+   * matches the search string. Note that this may not be the &lt;i&gt;absolute&lt;/i&gt; origin
+   * of the exception - the statement from which the exception was thrown. If the
+   * search term does happen to hit upon the absolute origin of the exception, the
+   * detailed exception message will include a notification to that effect. Otherwise
+   * the class, method and line number of the statement that did throw the exception
+   * is also included in the detailed exception message.
+   *
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * try {
+   *   // stuff ...
+   * } catch (Exception e) {
+   *   // Log exception message plus class and line number within the
+   *   // com.mycompany code base where things flew off the rails
+   *   logger.error(new ExceptionOrigin(e, &quot;com.mycompany&quot;).getDetailedMessage());
+   * }
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   *
+   * @param exc the exception to extract the extra information from
+   * @param search The (partial) name of the package or class you want to zoom in
+   *     on
+   * @return A detailed exception message
+   * @see ExceptionOrigin#getDetailedMessage()
+   */
+  public static String getDetailedMessage(Throwable exc, String search) {
+<span class="fc" id="L146">    Check.notNull(exc, EXCEPTION);</span>
+<span class="fc" id="L147">    return new ExceptionOrigin(exc, search).getDetailedMessage();</span>
+  }
+
+  /**
+   * Returns the specified throwable if it already is a {@code RuntimeException},
+   * else a {@code RuntimeException} wrapping the throwable.
+   *
+   * @param exc a checked or unchecked exception
+   * @return the specified throwable or a {@code RuntimeException} wrapping it
+   */
+  public static RuntimeException wrap(Throwable exc) {
+<span class="fc bfc" id="L158" title="All 2 branches covered.">    if (Check.notNull(exc, EXCEPTION).ok() instanceof RuntimeException rte) {</span>
+<span class="fc" id="L159">      return rte;</span>
+    }
+<span class="fc" id="L161">    return new RuntimeException(exc);</span>
+  }
+
+  /**
+   * Returns the specified throwable if it already is a {@code RuntimeException},
+   * else a {@code RuntimeException} wrapping the throwable.
+   *
+   * @param exc a checked or unchecked exception
+   * @param customMessage a custom message passed on to the
+   *     {@code RuntimeException} wrapping the original exception
+   * @param msgArgs the {@code String.format} message arguments to the custom
+   *     message
+   * @return the specified throwable or a {@code RuntimeException} wrapping it
+   */
+  public static RuntimeException wrap(Throwable exc,
+      String customMessage,
+      Object... msgArgs) {
+<span class="fc" id="L178">    Check.notNull(exc, EXCEPTION);</span>
+<span class="fc" id="L179">    Check.notNull(customMessage, MESSAGE);</span>
+<span class="fc" id="L180">    Check.notNull(msgArgs, &quot;message arguments&quot;);</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">    if (exc instanceof RuntimeException rte) {</span>
+<span class="nc" id="L182">      return rte;</span>
+    }
+<span class="fc bfc" id="L184" title="All 2 branches covered.">    if (msgArgs.length == 0) {</span>
+<span class="fc" id="L185">      return new RuntimeException(customMessage, exc);</span>
+    }
+<span class="fc" id="L187">    return new RuntimeException(String.format(customMessage, msgArgs), exc);</span>
+  }
+
+  /**
+   * Returns the specified throwable if it already is a {@code RuntimeException},
+   * else a {@code RuntimeException} produced by the specified function.
+   *
+   * @param &lt;T&gt; The type of the {@code RuntimeException}
+   * @param exc the exception to be wrapped if it is not a
+   *     {@code RuntimeException}
+   * @param exceptionFactory the producer of the {@code RuntimeException},
+   *     typically the one-arg constructor of an {@code Exception} that takes a
+   *     {@code Throwable} argument (&quot;cause&quot;)
+   * @return the specified throwable or a {@code RuntimeException} wrapping it
+   */
+  public static &lt;T extends RuntimeException&gt; RuntimeException wrap(
+      Throwable exc, Function&lt;Throwable, T&gt; exceptionFactory) {
+<span class="fc" id="L204">    Check.notNull(exc, EXCEPTION);</span>
+<span class="fc" id="L205">    Check.notNull(exceptionFactory, &quot;exceptionFactory&quot;);</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">    if (exc instanceof RuntimeException rte) {</span>
+<span class="fc" id="L207">      return rte;</span>
+    }
+<span class="fc" id="L209">    return exceptionFactory.apply(exc);</span>
+  }
+
+  /**
+   * Returns the specified throwable if it already is a {@code RuntimeException},
+   * else a {@code RuntimeException} produced by the specified function. For
+   * example:
+   *
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * try {
+   *  // stuff ...
+   * } catch(Throwable t) {
+   *  throw ExceptionMethods.wrap(t, &quot;Bad stuff happening&quot;, IllegalStateException::new);
+   * }
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   *
+   * @param &lt;T&gt; The type of the {@code RuntimeException}
+   * @param exception the exception to be wrapped if it is not a
+   *     {@code RuntimeException}
+   * @param exceptionFactory the producer of the {@code RuntimeException},
+   *     typically the two-argument constructor of an {@code Exception} that takes a
+   *     {@code String} argument and a {@code Throwable} argument
+   * @param customMessage a custom message passed on to the
+   *     {@code RuntimeException} wrapping the original exception
+   * @param msgArgs the {@code String.format} message arguments to the custom
+   *     message
+   * @return the specified throwable or a {@code RuntimeException} wrapping it
+   */
+  public static &lt;T extends RuntimeException&gt; RuntimeException wrap(
+      Throwable exception,
+      BiFunction&lt;String, Throwable, T&gt; exceptionFactory,
+      String customMessage,
+      Object... msgArgs) {
+<span class="fc" id="L242">    Check.notNull(exception, EXCEPTION);</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">    if (exception instanceof RuntimeException rte) {</span>
+<span class="nc" id="L244">      return rte;</span>
+    }
+<span class="fc" id="L246">    Check.notNull(customMessage, &quot;customMessage&quot;);</span>
+<span class="fc" id="L247">    Check.notNull(exceptionFactory, &quot;exceptionFactory&quot;);</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">    if (msgArgs.length == 0) {</span>
+<span class="fc" id="L249">      return exceptionFactory.apply(customMessage, exception);</span>
+    }
+<span class="fc" id="L251">    return exceptionFactory.apply(String.format(customMessage, msgArgs), exception);</span>
+  }
+
+  /**
+   * Returns the specified throwable if it already is a {@code RuntimeException},
+   * else an {@link UncheckedException} wrapping the throwable. This method is
+   * primarily meant to &quot;uncheck&quot; checked exceptions that you cannot in practice
+   * properly deal with, and are therefore, for all practical purposes, a runtime
+   * exception. For example an {@code IOException} which is documented as being
+   * thrown &quot;if an I/O error occurs&quot;.
+   *
+   * @param exc a checked or unchecked exception
+   * @return the provided {@code Throwable} or an {@code UncheckedException} wrapping
+   *     it
+   * @see UncheckedException
+   */
+  public static RuntimeException uncheck(Throwable exc) {
+<span class="fc" id="L268">    return wrap(exc, UncheckedException::new);</span>
+  }
+
+  /**
+   * Returns the specified throwable if it already is a {@code RuntimeException},
+   * else an {@link UncheckedException} wrapping the throwable. This method is
+   * primarily meant to &quot;uncheck&quot; checked exceptions that you cannot in practice
+   * properly deal with, and are therefore, for all practical purposes, a runtime
+   * exception. For example an {@code IOException} which is documented as being
+   * thrown &quot;if an I/O error occurs&quot;.
+   *
+   * @param exc a checked or unchecked exception
+   * @param customMessage a custom message to pass to the constructor of
+   *     {@code UncheckedException}
+   * @return the provided {@code Throwable} or an {@code UncheckedException} wrapping
+   *     it
+   * @see UncheckedException
+   */
+  public static RuntimeException uncheck(Throwable exc, String customMessage) {
+<span class="fc" id="L287">    return wrap(exc, UncheckedException::new, customMessage);</span>
+  }
+
+  /**
+   * Returns the specified throwable if it already is a {@code RuntimeException},
+   * else an {@link RootException} exception wrapping the &lt;i&gt;root cause&lt;/i&gt;  of the
+   * provided exception.
+   *
+   * @param exc a checked or unchecked exception
+   * @return the provided {@code Throwable} or an {@code UncheckedException} wrapping
+   *     it
+   * @see RootException
+   */
+  public static RuntimeException rootCause(Throwable exc) {
+<span class="fc" id="L301">    return wrap(exc, RootException::new);</span>
+  }
+
+  /**
+   * Returns the specified throwable if it already is a {@code RuntimeException},
+   * else an {@link RootException} exception wrapping the &lt;i&gt;root cause&lt;/i&gt; of the
+   * provided exception.
+   *
+   * @param exc a checked or unchecked exception
+   * @param customMessage a custom message to pass to the constructor of
+   *     {@code UncheckedException}
+   * @return the provided {@code Throwable} or a {@code RootException} wrapping its
+   *     root cause
+   * @see RootException
+   */
+  public static RuntimeException rootCause(Throwable exc, String customMessage) {
+<span class="fc" id="L317">    return wrap(exc, RootException::new, customMessage);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

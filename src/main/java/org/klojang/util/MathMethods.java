@@ -122,6 +122,30 @@ public final class MathMethods {
   }
 
   /**
+   * <p>Returns the value that is closest to the reference value. More precisely:
+   *
+   * <ul>
+   *   <li>if {@code value1} is closer to {@code reference}, then {@code value1} is
+   *   returned
+   *   <li>if {@code value2} is closer to {@code reference}, then {@code value2} is
+   *   returned
+   *   <li>if they are equally close to {@code reference} (but possibly on opposite
+   *   sides of it!), then {@code value1} is returned
+   * </ul>
+   *
+   * @param reference the reference value
+   * @param value1 the first value to compare to the reference value
+   * @param value2 then second value to compare to the reference value
+   * @return the second value if it is closer to the reference value, else the first
+   *     value
+   */
+  public static int nearest(int reference, int value1, int value2) {
+    int d1 = value1 > reference ? value1 - reference : reference - value1;
+    int d2 = value2 > reference ? value2 - reference : reference - value2;
+    return Math.abs(d1) <= Math.abs(d2) ? value1 : value2;
+  }
+
+  /**
    * Returns the number of {@code rows x cols} stack needed to contain the specified
    * number of items.
    *

@@ -1,7 +1,6 @@
 package org.klojang.util;
 
 import org.junit.Test;
-import org.klojang.util.MathMethods;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -233,6 +232,76 @@ public class MathMethodsTest {
     int x = -10;
     int y = -6;
     assertEquals(2, MathMethods.divHalfDown(x, y));
+  }
+
+  @Test
+  public void closest00() {
+    assertEquals(0, MathMethods.nearest(0, 0, 0));
+  }
+
+  @Test
+  public void closest01() {
+    assertEquals(0, MathMethods.nearest(0, 0, 0));
+  }
+
+  @Test
+  public void closest02() {
+    assertEquals(0, MathMethods.nearest(0, -1, 0));
+  }
+
+  @Test
+  public void closest03() {
+    assertEquals(-1, MathMethods.nearest(0, -1, 1));
+  }
+
+  @Test
+  public void closest04() {
+    assertEquals(1, MathMethods.nearest(0, 1, -1));
+  }
+
+  @Test
+  public void closest05() {
+    assertEquals(-120, MathMethods.nearest(-100, -120, 110));
+  }
+
+  @Test
+  public void closest06() {
+    assertEquals(-120, MathMethods.nearest(-100, -120, 130));
+  }
+
+  @Test
+  public void closest07() {
+    assertEquals(-120, MathMethods.nearest(-100, -120, 110));
+  }
+
+  @Test
+  public void closest08() {
+    assertEquals(-110, MathMethods.nearest(-100, -120, -110));
+  }
+
+  @Test
+  public void closest09() {
+    assertEquals(-120, MathMethods.nearest(-100, -120, 120));
+  }
+
+  @Test
+  public void closest10() {
+    assertEquals(-120, MathMethods.nearest(-100, -120, -120));
+  }
+
+  @Test
+  public void closest11() {
+    assertEquals(120, MathMethods.nearest(100, 120, 80));
+  }
+
+  @Test
+  public void closest12() {
+    assertEquals(81, MathMethods.nearest(100, 120, 81));
+  }
+
+  @Test
+  public void closest13() {
+    assertEquals(-110, MathMethods.nearest(100, -120, -110));
   }
 
   @Test
