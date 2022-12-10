@@ -139,7 +139,7 @@ public final class MathMethods {
    * @return the second value if it is closer to the reference value, else the first
    *     value
    */
-  public static int closest(int reference, int value1, int value2) {
+  public static int nearest(int reference, int value1, int value2) {
 <span class="fc bfc" id="L143" title="All 2 branches covered.">    int d1 = value1 &gt; reference ? value1 - reference : reference - value1;</span>
 <span class="fc bfc" id="L144" title="All 2 branches covered.">    int d2 = value2 &gt; reference ? value2 - reference : reference - value2;</span>
 <span class="fc bfc" id="L145" title="All 2 branches covered.">    return Math.abs(d1) &lt;= Math.abs(d2) ? value1 : value2;</span>
