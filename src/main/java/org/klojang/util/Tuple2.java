@@ -25,7 +25,7 @@ public record Tuple2<T, U>(T first, U second) {
    * @return A {@code Tuple2} instance containing the specified values
    */
   public static <T, U> Tuple2<T, U> of(T first, U second) {
-    return new Tuple2(first, second);
+    return new Tuple2<>(first, second);
   }
 
   /**
