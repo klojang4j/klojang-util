@@ -10,7 +10,7 @@ public class LaxTuple2Test {
 
   @Test
   public void toEntry00() {
-    var tuple = LaxTuple2.of("John", 42);
+    var tuple = AnyTuple2.of("John", 42);
     var entry = tuple.toEntry();
     assertEquals("John", entry.getKey());
     assertEquals(42, (int) entry.getValue());
@@ -18,33 +18,33 @@ public class LaxTuple2Test {
 
   @Test
   public void isEmpty00() {
-    var tuple = LaxTuple2.of("John", null);
+    var tuple = AnyTuple2.of("John", null);
     assertFalse(tuple.isEmpty());
   }
 
   @Test
   public void isEmpty01() {
-    var tuple = LaxTuple2.of(null, null);
+    var tuple = AnyTuple2.of(null, null);
     assertTrue(tuple.isEmpty());
   }
 
 
   @Test
   public void isEmpty02() {
-    var tuple = LaxTuple2.of("", null);
+    var tuple = AnyTuple2.of("", null);
     assertFalse(tuple.isEmpty());
   }
 
 
   @Test
   public void isDeepNotEmpty00() {
-    var tuple = LaxTuple2.of("John", Collections.emptyList());
+    var tuple = AnyTuple2.of("John", Collections.emptyList());
     assertFalse(tuple.isDeepNotEmpty());
   }
 
   @Test
   public void isDeepNotEmpty01() {
-    var tuple = LaxTuple2.of("John", 42);
+    var tuple = AnyTuple2.of("John", 42);
     assertTrue(tuple.isDeepNotEmpty());
   }
 

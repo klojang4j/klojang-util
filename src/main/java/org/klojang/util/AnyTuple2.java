@@ -14,10 +14,10 @@ import java.util.Map;
  * @param <U> The type of the second component
  * @see Tuple2
  */
-public record LaxTuple2<T, U>(T first, U second) implements Emptyable {
+public record AnyTuple2<T, U>(T first, U second) implements Emptyable {
 
   /**
-   * Returns a {@code Tuple2} consisting of the specified components.
+   * Returns a {@code AnyTuple2} consisting of the specified components.
    *
    * @param first The first component of the 2-tuple
    * @param second The second component of the 2-tuple
@@ -25,8 +25,8 @@ public record LaxTuple2<T, U>(T first, U second) implements Emptyable {
    * @param <U> The type of the second component
    * @return A {@code Tuple2} instance containing the specified values
    */
-  public static <T, U> LaxTuple2<T, U> of(T first, U second) {
-    return new LaxTuple2<>(first, second);
+  public static <T, U> AnyTuple2<T, U> of(T first, U second) {
+    return new AnyTuple2<>(first, second);
   }
 
   /**

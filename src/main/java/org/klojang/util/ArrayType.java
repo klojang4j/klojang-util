@@ -1,16 +1,12 @@
 package org.klojang.util;
 
-import static org.klojang.check.CommonChecks.*;
-import static org.klojang.check.CommonProperties.type;
+import org.klojang.check.Check;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.klojang.check.Check;
-import org.klojang.util.ArrayType;
-import org.klojang.util.ClassMethods;
-import org.klojang.util.Tuple2;
-
-import static org.klojang.util.InvokeMethods.*;
+import static org.klojang.check.CommonChecks.array;
+import static org.klojang.check.CommonChecks.positive;
+import static org.klojang.util.InvokeMethods.getArrayLength;
 
 /**
  * Provides metadata about an array type. An {@code ArrayType} consists of a base
@@ -42,10 +38,10 @@ public record ArrayType(Class<?> baseType, int dimensions) {
   /**
    * Returns a description of the provided array. It contains the base type's simple
    * class name and the length of the outermost array. For example, for an array
-   * defined as {@code new Double[4][12]}, it would return "Double[4][]".
+   * defined as {@code new Double[4][12]}, this method would return "Double[4][]".
    *
-   * @param array The array to describe
-   * @return A description of the array
+   * @param array the array to describe
+   * @return a description of the array
    */
   public static String describe(Object array) {
     ArrayType at = forArray(array);
@@ -54,9 +50,7 @@ public record ArrayType(Class<?> baseType, int dimensions) {
         .append('[')
         .append(len)
         .append(']');
-    for (int i = 1; i < at.dimensions; ++i) {
-      sb.append("[]");
-    }
+    sb.append("[]".repeat(Math.max(0, at.dimensions - 1)));
     return sb.toString();
   }
 
@@ -66,7 +60,7 @@ public record ArrayType(Class<?> baseType, int dimensions) {
    * array type.
    *
    * @param arrayClass The array class
-   * @return The {@code ArrayType} instance
+   * @return the {@code ArrayType} instance
    */
   public static ArrayType forClass(Class<?> arrayClass) {
     Check.notNull(arrayClass).is(array());
@@ -78,8 +72,8 @@ public record ArrayType(Class<?> baseType, int dimensions) {
    * {@link IllegalArgumentException} is thrown if the provided object is not an
    * array.
    *
-   * @param array The array
-   * @return The {@code ArrayType} instance
+   * @param array the array
+   * @return the {@code ArrayType} instance
    */
   public static ArrayType forArray(Object array) {
     Check.notNull(array).is(array());
@@ -90,7 +84,7 @@ public record ArrayType(Class<?> baseType, int dimensions) {
    * Returns zero for non-array types, and the number of dimensions for array types.
    *
    * @param c The type for which to get the number of dimensions
-   * @return The dimensionality of the type.
+   * @return the dimensionality of the type.
    */
   public static int dimensions(Class<?> c) {
     Check.notNull(c);
@@ -103,11 +97,11 @@ public record ArrayType(Class<?> baseType, int dimensions) {
 
   /**
    * Creates a new {@code ArrayType} instance. The {@code baseType} argument is
-   * itself allowed to be an array type, but the base type recorded by the instance
-   * will then be the base type of <i>that</i> array type, and the number of
-   * dimensions of the array type will then be added to the specified number of
-   * dimensions. The specified number of dimensions may then even be zero or
-   * negative, as long as the sum of the dimensions remains positive:
+   * allowed to be an array class, but the base type recorded by the instance will
+   * then be the base type of the array class and the number of dimensions of the
+   * array class will be added to the specified number of dimensions. The specified
+   * number of dimensions may be zero or negative, as long as the sum of the
+   * dimensions remains positive:
    *
    * <blockquote><pre>{@code
    * ArrayType threeD = new ArrayType(float[][].class, 1); // float[][][].class
@@ -134,7 +128,7 @@ public record ArrayType(Class<?> baseType, int dimensions) {
   /**
    * Returns the {@code Class} object corresponding to this {@code ArrayType}.
    *
-   * @return A {@code Class} object
+   * @return a {@code Class} object
    */
   public Class<?> toClass() {
     return toClass(baseType, dimensions);
@@ -142,22 +136,23 @@ public record ArrayType(Class<?> baseType, int dimensions) {
 
   /**
    * Returns the {@code Class} object corresponding to an {@code ArrayType} with the
-   * specified base type and with the same number of dimensions as this instance.
+   * specified base type and with the same number of dimensions as this
+   * {@code ArrayType}.
    *
-   * @return A {@code Class} object
+   * @param baseType the base type of the returned array class
+   * @return an array class
    */
   public Class<?> toClass(Class<?> baseType) {
-    Class<?> c = Check.notNull(baseType).ok();
-    return toClass(baseType, dimensions);
+    return toClass(Check.notNull(baseType).ok(), dimensions);
   }
 
   /**
    * Returns the {@code Class} object corresponding to an {@code ArrayType} equal to
-   * this one, but with the boxed version of the base type. So for
+   * this {@code ArrayType}, but with the boxed version of the base type. So for
    * {@code int[][].class} it would return {@code Integer[][].class}. If the base
    * type is not a primitive type, this method is equivalent to {@link #toClass()}.
    *
-   * @return A {@code Class} object
+   * @return an array class
    * @see ClassMethods#box(Class)
    */
   public Class<?> box() {
@@ -166,11 +161,11 @@ public record ArrayType(Class<?> baseType, int dimensions) {
 
   /**
    * Returns the {@code Class} object corresponding to an {@code ArrayType} equal to
-   * this one, but with the unboxed version of the base type. So for
+   * this {@code ArrayType}, but with the unboxed version of the base type. So for
    * {@code Float[][].class} it would return {@code float[][].class}. If the base
    * type is not a primitive type, this method is equivalent to {@link #toClass()}.
    *
-   * @return A {@code Class} object
+   * @return an array class
    * @see ClassMethods#unbox(Class)
    */
   public Class<?> unbox() {
@@ -179,9 +174,11 @@ public record ArrayType(Class<?> baseType, int dimensions) {
 
   /**
    * Returns the {@code Class} object corresponding to an {@code ArrayType} with the
-   * specified number of dimensions and with the same base type as this instance.
+   * specified number of dimensions and with the same base type as this
+   * {@code ArrayType}.
    *
-   * @return A {@code Class} object
+   * @param dimensions the number of dimension of the returned array class
+   * @return an array class
    */
   public Class<?> toClass(int dimensions) {
     Check.that(dimensions, "dimensions").is(positive());
@@ -191,7 +188,7 @@ public record ArrayType(Class<?> baseType, int dimensions) {
   /**
    * Returns the {@code ArrayType} for the boxed version of the base type.
    *
-   * @return The {@code ArrayType} for the boxed version of the base type
+   * @return the {@code ArrayType} for the boxed version of the base type
    */
   public ArrayType boxed() {
     return new ArrayType(ClassMethods.box(baseType), dimensions);
@@ -200,7 +197,7 @@ public record ArrayType(Class<?> baseType, int dimensions) {
   /**
    * Returns the {@code ArrayType} for the unboxed version of the base type.
    *
-   * @return The {@code ArrayType} for the unboxed version of the base type
+   * @return the {@code ArrayType} for the unboxed version of the base type
    */
   public ArrayType unboxed() {
     return new ArrayType(ClassMethods.unbox(baseType), dimensions);
@@ -212,7 +209,7 @@ public record ArrayType(Class<?> baseType, int dimensions) {
    * {@link Class#getSimpleName()}. For example the returned value for
    * {@code int[][].class} would be "int[][]".
    *
-   * @return The simple class name of the array type encoded by this
+   * @return the simple class name of the array type encoded by this
    *     {@code ArrayType}
    */
   @Override
@@ -223,9 +220,7 @@ public record ArrayType(Class<?> baseType, int dimensions) {
     String s = baseType().getSimpleName();
     StringBuilder sb = new StringBuilder(s.length() + dimensions * 2);
     sb.append(s);
-    for (int i = 0; i < dimensions; ++i) {
-      sb.append("[]");
-    }
+    sb.append("[]".repeat(Math.max(0, dimensions)));
     return sb.toString();
   }
 
@@ -235,14 +230,12 @@ public record ArrayType(Class<?> baseType, int dimensions) {
    * {@link Class#getName()}. For example, the returned value for
    * {@code String[][].class} would be "java.lang.String[][]".
    *
-   * @return The fully-qualified class name of the array type encoded by this
+   * @return the fully-qualified class name of the array type encoded by this
    *     {@code ArrayType}
    */
   public String arrayClassName() {
     StringBuilder sb = new StringBuilder(baseType().getName());
-    for (int i = 0; i < dimensions; ++i) {
-      sb.append("[]");
-    }
+    sb.append("[]".repeat(Math.max(0, dimensions)));
     return sb.toString();
   }
 

@@ -12,6 +12,7 @@ import java.util.Map;
  * @param second The second component of the 2-tuple
  * @param <T> The type of the first component
  * @param <U> The type of the second component
+ * @see AnyTuple2
  */
 public record Tuple2<T, U>(T first, U second) {
 
