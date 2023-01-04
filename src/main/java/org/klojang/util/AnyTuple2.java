@@ -12,6 +12,7 @@ import java.util.Map;
  * @param second The second component of the 2-tuple
  * @param <T> The type of the first component
  * @param <U> The type of the second component
+ * @see Tuple2
  */
 public record LaxTuple2<T, U>(T first, U second) implements Emptyable {
 
