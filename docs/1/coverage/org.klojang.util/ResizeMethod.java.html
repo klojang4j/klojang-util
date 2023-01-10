@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResizeMethod.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Check</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util</a> &gt; <span class="el_source">ResizeMethod.java</span></div><h1>ResizeMethod.java</h1><pre class="source lang-java linenums">package org.klojang.util;
+
+import java.nio.BufferOverflowException;
+
+import org.klojang.check.Check;
+import org.klojang.util.collection.IntArrayList;
+
+import static java.lang.Math.*;
+import static org.klojang.check.Check.fail;
+import static org.klojang.check.CommonChecks.*;
+
+/**
+ * Defines ways to increase the capacity of backing arrays and other types of
+ * internally managed buffers and caches. Can be used if you want to leave it to
+ * clients of your class to decide upon a proper resizing strategy. If you use the
+ * {@link #resize(int, double, int) resize} methods to calculate a new size for the
+ * cache, buffer or backing array, the increase in size will max out at {@link
+ * #MAX_INCREASE} for the {@link #MULTIPLY} and {@link #PERCENTAGE} resize methods.
+ * After that, they will behave like the {@code ADD} method, adding {@code
+ * MAX_INCREASE} to the backing array's current capacity each time it needs to be
+ * resized. In addition, the {@code resize} method will also take care of trapping
+ * buffer overflows (the backing array's length reaching or exceeding {@link
+ * Integer#MAX_VALUE}).
+ *
+ * &lt;p&gt;The following example illustrates how to use {@code ResizeMethod}:
+ *
+ * &lt;blockquote&gt;&lt;pre&gt;{@code
+ * public class DIYArrayList&lt;E&gt; extends AbstractList&lt;E&gt; {
+ *
+ *  private final ResizeMethod resizeMethod;
+ *  private final double resizeAmount;
+ *
+ *  private Object[] buf;
+ *  private int size;
+ *
+ *  public DIYArrayList(int initialCapacity, ResizeMethod resizeMethod, double resizeAmount) {
+ *    this.buf = new Object[initialCapacity];
+ *    this.resizeMethod = resizeMethod;
+ *    this.resizeAmount = resizeAmount;
+ *  }
+ *
+ *  @Override
+ *  public boolean addAll(Collection&lt;?&gt; c) {
+ *    int minIncrease = ResizeMethod.getMinIncrease(buf.length, size, c.size());
+ *    if(minIncrease &gt; 0) {
+ *      increaseCapacity(minIncrease);
+ *    }
+ *    // append the collection ...
+ *  }
+ *
+ *  private void increaseCapacity(int minIncrease) {
+ *    int newCap = resizeMethod.resize(buf.length, resizeAmount, minIncrease);
+ *    Object[] newBuf = new Object[newCap];
+ *    System.arraycopy(buf, 0, newBuf, 0, size);
+ *    buf = newBuf;
+ *  }
+ *
+ * }
+ * }&lt;/pre&gt;&lt;/blockquote&gt;
+ *
+ * @author Ayco Holleman
+ * @see IntArrayList#IntArrayList(int, ResizeMethod, float)
+ */
+<span class="fc" id="L64">public enum ResizeMethod {</span>
+  /**
+   * Increase the capacity by a fixed amount each time the buffer reaches full
+   * capacity.
+   */
+<span class="fc" id="L69">  ADD,</span>
+  /**
+   * Increase the capacity by multiplying the current capacity by a fixed amount.
+   * Using this resize method with a resize factor of 2 is the &quot;classic&quot; way of
+   * resizing a backing array.
+   */
+<span class="fc" id="L75">  MULTIPLY,</span>
+  /**
+   * Increase the capacity by adding a fixed percentage of the current capacity to
+   * the current capacity.
+   */
+<span class="fc" id="L80">  PERCENTAGE;</span>
+
+  /**
+   * The maximum increase in size allowed by the {@link #MULTIPLY} and {@link
+   * #PERCENTAGE} resize methods: {@code 8 * 1024 * 1024}.
+   */
+  public static final int MAX_INCREASE = 8 * 1024 * 1024;
+
+  private static final int MAX_INT = Integer.MAX_VALUE;
+
+  /**
+   * Calculates the &lt;i&gt;extra&lt;/i&gt; capacity required to add {@code itemCount} items to
+   * an internally managed buffer, cache or backing array. If the result is zero or
+   * negative, no resizing is necessary. The return value of this method can be used
+   * as the {@code minIncrease} argument for the {@link #resize(int, double, int)
+   * resize} method.
+   *
+   * @param curCapacity The current length or size of the buffer, cache or
+   *     backing array
+   * @param curSize The number of items already in the buffer, cache or backing
+   *     array
+   * @param itemCount The number of items to be added to the buffer, cache or
+   *     backing array
+   * @return If positive, the &lt;i&gt;extra capacity&lt;/i&gt; required for the new items, else
+   *     the remaining capacity once the new items have been added
+   */
+  public static int getMinIncrease(int curCapacity, int curSize, int itemCount) {
+<span class="fc" id="L107">    long required = (long) curSize + itemCount;</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">    if (required &gt; (long) MAX_INT) {</span>
+<span class="fc" id="L109">      throw new BufferOverflowException();</span>
+    }
+<span class="fc" id="L111">    return (int) required - curCapacity;</span>
+  }
+
+  /**
+   * Calculates the new capacity for a buffer, cache or backing array using this
+   * {@code ResizeMethod} and the specified resize amount (c&amp;#46;q&amp;#46; factor
+   * c&amp;#46;q&amp;#46; percentage) The capacity will increase by at least 1.
+   *
+   * @param curCapacity The current capacity
+   * @param amount The amount, factor or percentage by which to increase the
+   *     current capacity. This would typically be the value of a (final) instance
+   *     variable in the class managing the backing array, and it would typically be
+   *     passed in through the constructor, along with the resize method.
+   * @return The value to be used as the length for the new backing array
+   */
+  public int resize(int curCapacity, double amount) {
+<span class="fc" id="L127">    return resize(curCapacity, amount, 1);</span>
+  }
+
+  /**
+   * Calculates the new capacity for a buffer, cache or backing array using this
+   * {@code ResizeMethod}. The capacity will increase by at least {@code
+   * minIncrease}. A {@link BufferOverflowException} is thrown if the current
+   * capacity is {@link Integer#MAX_VALUE}, or if {@code curCapacity + minIncrease}
+   * is greater than {@code Integer.MAX_VALUE}.
+   *
+   * @param curCapacity The current capacity. It is allowed to start off with
+   *     zero initial capacity. When resizing using the {@link #MULTIPLY} or {@link
+   *     #PERCENTAGE} method, the initial capacity will first be tacitly increased to
+   *     1.
+   * @param amount The amount, factor or percentage by which to increase the
+   *     current capacity. This would typically be the value of a (final) instance
+   *     variable in the class managing the backing array, and it would typically be
+   *     passed in through the constructor, along with the resize method.
+   * @param minIncrease The minimum amount by which to increase current capacity.
+   *     This would typically be the size of an incoming block of data that
+   *     necessitated the resizing of the backing array. The provided value will
+   *     override {@link #MAX_INCREASE} and it must be at least 1.
+   * @return The value to be used as the length for the new backing array
+   */
+  public int resize(int curCapacity, double amount, int minIncrease) {
+<span class="fc" id="L152">    Check.that(curCapacity, &quot;current capacity&quot;).is(gte(), 0);</span>
+<span class="fc" id="L153">    Check.that(minIncrease, &quot;minimum increase&quot;).is(gt(), 0);</span>
+<span class="fc" id="L154">    Check.that(curCapacity).is(ne(), MAX_INT, BufferOverflowException::new);</span>
+<span class="fc" id="L155">    long minCap = (long) curCapacity + minIncrease;</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">    if (minCap &gt; (long) MAX_INT) {</span>
+<span class="fc" id="L157">      throw new BufferOverflowException();</span>
+    }
+<span class="fc bfc" id="L159" title="All 4 branches covered.">    if (this != ADD &amp;&amp; curCapacity == 0) {</span>
+<span class="fc" id="L160">      curCapacity = 1;</span>
+    }
+<span class="pc bpc" id="L162" title="1 of 4 branches missed.">    long newCap = switch (this) {</span>
+      case ADD:
+<span class="fc" id="L164">        int x = (int) amount;</span>
+<span class="fc bfc" id="L165" title="All 4 branches covered.">        if (x != amount || x &lt;= 0) {</span>
+<span class="nc" id="L166">          yield fail(&quot;resize term must be positive, non-fractional number&quot;);</span>
+        }
+<span class="fc" id="L168">        yield curCapacity + x;</span>
+      case MULTIPLY:
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        if (amount &lt; 1) {</span>
+<span class="nc" id="L171">          yield fail(&quot;resize factor must be greater than 1&quot;);</span>
+        }
+<span class="fc" id="L173">        yield round(curCapacity * amount);</span>
+      case PERCENTAGE:
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        if (amount &lt;= 0) {</span>
+<span class="nc" id="L176">          yield fail(&quot;resize percentage must be greater than 0&quot;);</span>
+        }
+<span class="fc" id="L178">        yield curCapacity + round((amount / 100) * curCapacity);</span>
+    };
+<span class="fc" id="L180">    newCap = max(newCap, minCap);</span>
+<span class="fc bfc" id="L181" title="All 4 branches covered.">    if (minIncrease &lt; MAX_INCREASE &amp;&amp; this != ADD) {</span>
+<span class="fc" id="L182">      newCap = min(newCap, (long) curCapacity + MAX_INCREASE);</span>
+    }
+<span class="fc" id="L184">    return (int) min(MAX_INT, newCap);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

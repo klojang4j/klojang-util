@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArrayType.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Check</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util</a> &gt; <span class="el_source">ArrayType.java</span></div><h1>ArrayType.java</h1><pre class="source lang-java linenums">package org.klojang.util;
+
+import org.klojang.check.Check;
+
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.klojang.check.CommonChecks.array;
+import static org.klojang.check.CommonChecks.positive;
+import static org.klojang.util.InvokeMethods.getArrayLength;
+
+/**
+ * Provides metadata about an array type. An {@code ArrayType} consists of a base
+ * type and a dimension count. The base type is the &lt;i&gt;lowest-level&lt;/i&gt;
+ * {@linkplain Class#getComponentType() component type} of an array class. So for
+ * {@code int[][][]} that would be {@code int} and not {@code int[][]}. In other
+ * words, &lt;b&gt;the base type of an array always is a non-array type&lt;/b&gt;.
+ *
+ * @param baseType The lowest-level component type
+ * @param dimensions The number of dimensions
+ * @author Ayco Holleman
+ */
+<span class="fc" id="L22">public record ArrayType(Class&lt;?&gt; baseType, int dimensions) {</span>
+
+  /**
+   * {@code ArrayType} encoding a one-dimensional {@code byte} array.
+   */
+<span class="fc" id="L27">  public static final ArrayType BYTE_ARRAY = new ArrayType(byte.class, 1);</span>
+
+  /**
+   * {@code ArrayType} encoding a one-dimensional {@code int} array.
+   */
+<span class="fc" id="L32">  public static final ArrayType INT_ARRAY = new ArrayType(int.class, 1);</span>
+
+  // Let's just arbitrarily start with byte[]
+<span class="fc" id="L35">  private static final AtomicReference&lt;Tuple2&lt;Class&lt;?&gt;, ArrayType&gt;&gt; cache =</span>
+<span class="fc" id="L36">      new AtomicReference&lt;&gt;(Tuple2.of(byte[].class, BYTE_ARRAY));</span>
+
+  /**
+   * Returns a description of the provided array. It contains the base type's simple
+   * class name and the length of the outermost array. For example, for an array
+   * defined as {@code new Double[4][12]}, this method would return &quot;Double[4][]&quot;.
+   *
+   * @param array the array to describe
+   * @return a description of the array
+   */
+  public static String describe(Object array) {
+<span class="fc" id="L47">    ArrayType at = forArray(array);</span>
+<span class="fc" id="L48">    int len = getArrayLength(array);</span>
+<span class="fc" id="L49">    StringBuilder sb = new StringBuilder(at.baseType.getSimpleName())</span>
+<span class="fc" id="L50">        .append('[')</span>
+<span class="fc" id="L51">        .append(len)</span>
+<span class="fc" id="L52">        .append(']');</span>
+<span class="fc" id="L53">    sb.append(&quot;[]&quot;.repeat(Math.max(0, at.dimensions - 1)));</span>
+<span class="fc" id="L54">    return sb.toString();</span>
+  }
+
+  /**
+   * Returns the {@code ArrayType} corresponding to the specified array class. An
+   * {@link IllegalArgumentException} is thrown if the provided object is not an
+   * array type.
+   *
+   * @param arrayClass The array class
+   * @return the {@code ArrayType} instance
+   */
+  public static ArrayType forClass(Class&lt;?&gt; arrayClass) {
+<span class="fc" id="L66">    Check.notNull(arrayClass).is(array());</span>
+<span class="fc" id="L67">    return create(arrayClass);</span>
+  }
+
+  /**
+   * Returns the {@code ArrayType} corresponding to the specified array object. An
+   * {@link IllegalArgumentException} is thrown if the provided object is not an
+   * array.
+   *
+   * @param array the array
+   * @return the {@code ArrayType} instance
+   */
+  public static ArrayType forArray(Object array) {
+<span class="fc" id="L79">    Check.notNull(array).is(array());</span>
+<span class="fc" id="L80">    return create(array.getClass());</span>
+  }
+
+  /**
+   * Returns zero for non-array types, and the number of dimensions for array types.
+   *
+   * @param c The type for which to get the number of dimensions
+   * @return the dimensionality of the type.
+   */
+  public static int dimensions(Class&lt;?&gt; c) {
+<span class="fc" id="L90">    Check.notNull(c);</span>
+<span class="fc" id="L91">    int x = 0;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">    for (; c.isArray(); c = c.getComponentType()) {</span>
+<span class="fc" id="L93">      ++x;</span>
+    }
+<span class="fc" id="L95">    return x;</span>
+  }
+
+  /**
+   * Creates a new {@code ArrayType} instance. The {@code baseType} argument is
+   * allowed to be an array class, but the base type recorded by the instance will
+   * then be the base type of the array class and the number of dimensions of the
+   * array class will be added to the specified number of dimensions. The specified
+   * number of dimensions may be zero or negative, as long as the sum of the
+   * dimensions remains positive:
+   *
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * ArrayType threeD = new ArrayType(float[][].class, 1); // float[][][].class
+   * ArrayType oneD = new ArrayType(float[][].class, -1); // float[].class
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   *
+   * @param baseType The base type of the array
+   * @param dimensions The number of dimensions
+   */
+<span class="fc" id="L114">  public ArrayType(Class&lt;?&gt; baseType, int dimensions) {</span>
+<span class="fc" id="L115">    Check.notNull(baseType, &quot;baseType&quot;);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">    if (baseType.isArray()) {</span>
+<span class="fc" id="L117">      ArrayType tmp = create(baseType);</span>
+<span class="fc" id="L118">      this.baseType = tmp.baseType;</span>
+<span class="fc" id="L119">      int x = dimensions + tmp.dimensions;</span>
+<span class="fc" id="L120">      this.dimensions = Check.that(x, &quot;dimensions&quot;).is(positive()).ok();</span>
+<span class="fc" id="L121">    } else {</span>
+<span class="fc" id="L122">      Check.that(dimensions, &quot;dimensions&quot;).is(positive());</span>
+<span class="fc" id="L123">      this.baseType = baseType;</span>
+<span class="fc" id="L124">      this.dimensions = dimensions;</span>
+    }
+<span class="fc" id="L126">  }</span>
+
+  /**
+   * Returns the {@code Class} object corresponding to this {@code ArrayType}.
+   *
+   * @return a {@code Class} object
+   */
+  public Class&lt;?&gt; toClass() {
+<span class="fc" id="L134">    return toClass(baseType, dimensions);</span>
+  }
+
+  /**
+   * Returns the {@code Class} object corresponding to an {@code ArrayType} with the
+   * specified base type and with the same number of dimensions as this
+   * {@code ArrayType}.
+   *
+   * @param baseType the base type of the returned array class
+   * @return an array class
+   */
+  public Class&lt;?&gt; toClass(Class&lt;?&gt; baseType) {
+<span class="fc" id="L146">    return toClass(Check.notNull(baseType).ok(), dimensions);</span>
+  }
+
+  /**
+   * Returns the {@code Class} object corresponding to an {@code ArrayType} equal to
+   * this {@code ArrayType}, but with the boxed version of the base type. So for
+   * {@code int[][].class} it would return {@code Integer[][].class}. If the base
+   * type is not a primitive type, this method is equivalent to {@link #toClass()}.
+   *
+   * @return an array class
+   * @see ClassMethods#box(Class)
+   */
+  public Class&lt;?&gt; box() {
+<span class="fc" id="L159">    return toClass(ClassMethods.box(baseType));</span>
+  }
+
+  /**
+   * Returns the {@code Class} object corresponding to an {@code ArrayType} equal to
+   * this {@code ArrayType}, but with the unboxed version of the base type. So for
+   * {@code Float[][].class} it would return {@code float[][].class}. If the base
+   * type is not a primitive type, this method is equivalent to {@link #toClass()}.
+   *
+   * @return an array class
+   * @see ClassMethods#unbox(Class)
+   */
+  public Class&lt;?&gt; unbox() {
+<span class="fc" id="L172">    return toClass(ClassMethods.unbox(baseType));</span>
+  }
+
+  /**
+   * Returns the {@code Class} object corresponding to an {@code ArrayType} with the
+   * specified number of dimensions and with the same base type as this
+   * {@code ArrayType}.
+   *
+   * @param dimensions the number of dimension of the returned array class
+   * @return an array class
+   */
+  public Class&lt;?&gt; toClass(int dimensions) {
+<span class="fc" id="L184">    Check.that(dimensions, &quot;dimensions&quot;).is(positive());</span>
+<span class="fc" id="L185">    return toClass(baseType, dimensions);</span>
+  }
+
+  /**
+   * Returns the {@code ArrayType} for the boxed version of the base type.
+   *
+   * @return the {@code ArrayType} for the boxed version of the base type
+   */
+  public ArrayType boxed() {
+<span class="fc" id="L194">    return new ArrayType(ClassMethods.box(baseType), dimensions);</span>
+  }
+
+  /**
+   * Returns the {@code ArrayType} for the unboxed version of the base type.
+   *
+   * @return the {@code ArrayType} for the unboxed version of the base type
+   */
+  public ArrayType unboxed() {
+<span class="fc" id="L203">    return new ArrayType(ClassMethods.unbox(baseType), dimensions);</span>
+  }
+
+  /**
+   * Returns the simple class name of the array type encoded by this instance. The
+   * returned string is somewhat easier to read than what you get from
+   * {@link Class#getSimpleName()}. For example the returned value for
+   * {@code int[][].class} would be &quot;int[][]&quot;.
+   *
+   * @return the simple class name of the array type encoded by this
+   *     {@code ArrayType}
+   */
+  @Override
+  public String toString() {
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">    if (dimensions == 1) { // happy path for 99% of the cases</span>
+<span class="nc" id="L218">      return baseType().getSimpleName() + &quot;[]&quot;;</span>
+    }
+<span class="fc" id="L220">    String s = baseType().getSimpleName();</span>
+<span class="fc" id="L221">    StringBuilder sb = new StringBuilder(s.length() + dimensions * 2);</span>
+<span class="fc" id="L222">    sb.append(s);</span>
+<span class="fc" id="L223">    sb.append(&quot;[]&quot;.repeat(Math.max(0, dimensions)));</span>
+<span class="fc" id="L224">    return sb.toString();</span>
+  }
+
+  /**
+   * Returns the fully-qualified class name of the array type encoded by this
+   * instance. The returned string is somewhat easier to read than what you get from
+   * {@link Class#getName()}. For example, the returned value for
+   * {@code String[][].class} would be &quot;java.lang.String[][]&quot;.
+   *
+   * @return the fully-qualified class name of the array type encoded by this
+   *     {@code ArrayType}
+   */
+  public String arrayClassName() {
+<span class="fc" id="L237">    StringBuilder sb = new StringBuilder(baseType().getName());</span>
+<span class="fc" id="L238">    sb.append(&quot;[]&quot;.repeat(Math.max(0, dimensions)));</span>
+<span class="fc" id="L239">    return sb.toString();</span>
+  }
+
+  private static ArrayType create(Class&lt;?&gt; arrayClass) {
+<span class="fc" id="L243">    return cache.updateAndGet(tuple -&gt; {</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">      if (tuple.first() == arrayClass) {</span>
+<span class="fc" id="L245">        return tuple;</span>
+      }
+<span class="fc" id="L247">      var c = arrayClass.getComponentType();</span>
+<span class="fc" id="L248">      int i = 1;</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">      for (; c.isArray(); c = c.getComponentType()) {</span>
+<span class="fc" id="L250">        ++i;</span>
+      }
+<span class="fc" id="L252">      return Tuple2.of(arrayClass, new ArrayType(c, i));</span>
+<span class="fc" id="L253">    }).second();</span>
+  }
+
+  private static Class&lt;?&gt; toClass(Class&lt;?&gt; baseType, int dimensions) {
+<span class="fc" id="L257">    Class&lt;?&gt; c = baseType;</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">    for (int i = 0; i &lt; dimensions; ++i) {</span>
+<span class="fc" id="L259">      c = c.arrayType();</span>
+    }
+<span class="fc" id="L261">    return c;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
