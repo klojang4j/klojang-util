@@ -2,7 +2,6 @@ package org.klojang.util;
 
 import org.junit.Test;
 import org.klojang.check.aux.DuplicateValueException;
-import org.klojang.util.MutableInt;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,7 +39,8 @@ public class CollectionMethodsTest {
   public void listity00() {
     assertEquals(Collections.singletonList(null), listify(null));
     assertEquals(List.of("Hello World"), listify("Hello World"));
-    assertEquals(List.of("Hello", "World"), listify(new String[] {"Hello", "World"}));
+    assertEquals(List.of("Hello", "World"),
+        listify(new String[] {"Hello", "World"}));
     Object obj = new Object();
     assertEquals(Collections.singletonList(obj), listify(obj));
     assertEquals(List.of(1, 2, 3, 4, 5), listify(new int[] {1, 2, 3, 4, 5}));
@@ -455,6 +455,21 @@ public class CollectionMethodsTest {
     assertTrue(isNullRepellent(List.of("foo", "bar", "bozo", "teapot")));
     assertTrue(isNullRepellent(Collections.emptyList()));
     assertTrue(isNullRepellent(Collections.emptySet()));
+  }
+
+  @Test
+  public void findFirst00() {
+    assertNull(findFirst(List.of(1, 2, 3, 4, 5), i -> i == 7));
+  }
+
+  @Test
+  public void findFirst01() {
+    assertNull(findFirst(List.of(), (Integer i) -> i == 7));
+  }
+
+  @Test
+  public void findFirst02() {
+    assertEquals(2, (int) findFirst(List.of(1, 2, 3, 4, 5), i -> i % 2 == 0));
   }
 
 }

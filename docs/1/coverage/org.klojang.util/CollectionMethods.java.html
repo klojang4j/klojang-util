@@ -5,10 +5,7 @@ import org.klojang.check.aux.DuplicateValueException;
 import org.klojang.check.fallible.FallibleFunction;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Stream;
 
 import static java.util.Map.Entry;
@@ -29,19 +26,19 @@ public final class CollectionMethods {
   static final String CONVERTER = &quot;converter&quot;;
   static final String STRINGIFIER = &quot;stringifier&quot;;
 
-<span class="nc" id="L32">  private CollectionMethods() {</span>
-<span class="nc" id="L33">    throw new UnsupportedOperationException();</span>
+<span class="nc" id="L29">  private CollectionMethods() {</span>
+<span class="nc" id="L30">    throw new UnsupportedOperationException();</span>
   }
 
-<span class="fc" id="L36">  private static final Map&lt;Class&lt;?&gt;, Function&lt;Object, List&lt;?&gt;&gt;&gt; listifiers = Map.of(</span>
-<span class="fc" id="L37">      int[].class, o -&gt; ArrayMethods.asList((int[]) o),</span>
-<span class="fc" id="L38">      double[].class, o -&gt; ArrayMethods.asList((double[]) o),</span>
-<span class="fc" id="L39">      long[].class, o -&gt; ArrayMethods.asList((long[]) o),</span>
-<span class="fc" id="L40">      byte[].class, o -&gt; ArrayMethods.asList((byte[]) o),</span>
-<span class="fc" id="L41">      char[].class, o -&gt; ArrayMethods.asList((char[]) o),</span>
-<span class="fc" id="L42">      float[].class, o -&gt; ArrayMethods.asList((float[]) o),</span>
-<span class="fc" id="L43">      short[].class, o -&gt; ArrayMethods.asList((short[]) o),</span>
-<span class="fc" id="L44">      boolean[].class, o -&gt; ArrayMethods.asList((boolean[]) o)</span>
+<span class="fc" id="L33">  private static final Map&lt;Class&lt;?&gt;, Function&lt;Object, List&lt;?&gt;&gt;&gt; listifiers = Map.of(</span>
+<span class="fc" id="L34">      int[].class, o -&gt; ArrayMethods.asList((int[]) o),</span>
+<span class="fc" id="L35">      double[].class, o -&gt; ArrayMethods.asList((double[]) o),</span>
+<span class="fc" id="L36">      long[].class, o -&gt; ArrayMethods.asList((long[]) o),</span>
+<span class="fc" id="L37">      byte[].class, o -&gt; ArrayMethods.asList((byte[]) o),</span>
+<span class="fc" id="L38">      char[].class, o -&gt; ArrayMethods.asList((char[]) o),</span>
+<span class="fc" id="L39">      float[].class, o -&gt; ArrayMethods.asList((float[]) o),</span>
+<span class="fc" id="L40">      short[].class, o -&gt; ArrayMethods.asList((short[]) o),</span>
+<span class="fc" id="L41">      boolean[].class, o -&gt; ArrayMethods.asList((boolean[]) o)</span>
   );
 
   /**
@@ -72,20 +69,20 @@ public final class CollectionMethods {
    */
   @SuppressWarnings({&quot;unchecked&quot;})
   public static List&lt;?&gt; listify(Object value) {
-<span class="fc bfc" id="L75" title="All 2 branches covered.">    if (value != null) {</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">      if (value instanceof List&lt;?&gt; l) {</span>
-<span class="fc" id="L77">        return l;</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">      } else if (value instanceof Collection&lt;?&gt; c) {</span>
-<span class="fc" id="L79">        return new ArrayList&lt;&gt;(c);</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">      } else if (value instanceof Object[] o) {</span>
-<span class="fc" id="L81">        return Arrays.asList(o);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">    if (value != null) {</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">      if (value instanceof List&lt;?&gt; l) {</span>
+<span class="fc" id="L74">        return l;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">      } else if (value instanceof Collection&lt;?&gt; c) {</span>
+<span class="fc" id="L76">        return new ArrayList&lt;&gt;(c);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">      } else if (value instanceof Object[] o) {</span>
+<span class="fc" id="L78">        return Arrays.asList(o);</span>
       }
-<span class="fc" id="L83">      Function&lt;Object, List&lt;?&gt;&gt; fnc = listifiers.get(value.getClass());</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">      if (fnc != null) {</span>
-<span class="fc" id="L85">        return fnc.apply(value);</span>
+<span class="fc" id="L80">      Function&lt;Object, List&lt;?&gt;&gt; fnc = listifiers.get(value.getClass());</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">      if (fnc != null) {</span>
+<span class="fc" id="L82">        return fnc.apply(value);</span>
       }
     }
-<span class="fc" id="L88">    return Collections.singletonList(value);</span>
+<span class="fc" id="L85">    return Collections.singletonList(value);</span>
   }
 
   /**
@@ -100,13 +97,13 @@ public final class CollectionMethods {
    */
   @SuppressWarnings({&quot;unchecked&quot;})
   public static &lt;E&gt; List&lt;E&gt; initializeList(int size, E initVal) {
-<span class="fc" id="L103">    Check.that(size, SIZE).is(gte(), 0);</span>
-<span class="fc" id="L104">    Check.notNull(initVal, &quot;initialization value&quot;);</span>
-<span class="fc" id="L105">    Object[] array = new Object[size];</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">    for (int i = 0; i &lt; size; ++i) {</span>
-<span class="fc" id="L107">      array[i] = initVal;</span>
+<span class="fc" id="L100">    Check.that(size, SIZE).is(gte(), 0);</span>
+<span class="fc" id="L101">    Check.notNull(initVal, &quot;initialization value&quot;);</span>
+<span class="fc" id="L102">    Object[] array = new Object[size];</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">    for (int i = 0; i &lt; size; ++i) {</span>
+<span class="fc" id="L104">      array[i] = initVal;</span>
     }
-<span class="fc" id="L109">    return (List&lt;E&gt;) Arrays.asList(array);</span>
+<span class="fc" id="L106">    return (List&lt;E&gt;) Arrays.asList(array);</span>
   }
 
   /**
@@ -120,13 +117,13 @@ public final class CollectionMethods {
    */
   @SuppressWarnings({&quot;unchecked&quot;})
   public static &lt;E&gt; List&lt;E&gt; initializeList(int size, Supplier&lt;E&gt; initValSupplier) {
-<span class="fc" id="L123">    Check.that(size, SIZE).is(gte(), 0);</span>
-<span class="fc" id="L124">    Check.notNull(initValSupplier, &quot;supplier&quot;);</span>
-<span class="fc" id="L125">    Object[] array = new Object[size];</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">    for (int i = 0; i &lt; size; ++i) {</span>
-<span class="fc" id="L127">      array[i] = initValSupplier.get();</span>
+<span class="fc" id="L120">    Check.that(size, SIZE).is(gte(), 0);</span>
+<span class="fc" id="L121">    Check.notNull(initValSupplier, &quot;supplier&quot;);</span>
+<span class="fc" id="L122">    Object[] array = new Object[size];</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">    for (int i = 0; i &lt; size; ++i) {</span>
+<span class="fc" id="L124">      array[i] = initValSupplier.get();</span>
     }
-<span class="fc" id="L129">    return (List&lt;E&gt;) Arrays.asList(array);</span>
+<span class="fc" id="L126">    return (List&lt;E&gt;) Arrays.asList(array);</span>
   }
 
   /**
@@ -142,14 +139,14 @@ public final class CollectionMethods {
    */
   @SafeVarargs
   public static &lt;E&gt; List&lt;E&gt; newArrayList(int capacity, E... initVals) {
-<span class="nc" id="L145">    Check.that(capacity, CAPACITY).is(gte(), 0);</span>
-<span class="nc" id="L146">    Check.notNull(initVals, &quot;initVals&quot;);</span>
-<span class="nc bnc" id="L147" title="All 2 branches missed.">    if (initVals.length == 0) {</span>
-<span class="nc" id="L148">      return new ArrayList&lt;&gt;(Math.max(1, capacity));</span>
+<span class="nc" id="L142">    Check.that(capacity, CAPACITY).is(gte(), 0);</span>
+<span class="nc" id="L143">    Check.notNull(initVals, &quot;initVals&quot;);</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">    if (initVals.length == 0) {</span>
+<span class="nc" id="L145">      return new ArrayList&lt;&gt;(Math.max(1, capacity));</span>
     }
-<span class="nc" id="L150">    List&lt;E&gt; l = new ArrayList&lt;&gt;(Math.max(capacity, initVals.length));</span>
-<span class="nc" id="L151">    l.addAll(Arrays.asList(initVals));</span>
-<span class="nc" id="L152">    return l;</span>
+<span class="nc" id="L147">    List&lt;E&gt; l = new ArrayList&lt;&gt;(Math.max(capacity, initVals.length));</span>
+<span class="nc" id="L148">    l.addAll(Arrays.asList(initVals));</span>
+<span class="nc" id="L149">    return l;</span>
   }
 
   /**
@@ -172,34 +169,34 @@ public final class CollectionMethods {
   @SuppressWarnings(&quot;unchecked&quot;)
   public static &lt;K, V&gt; Map&lt;K, V&gt; newHashMap(
       int size, Class&lt;K&gt; keyClass, Class&lt;V&gt; valueClass, Object... kvPairs) {
-<span class="fc" id="L175">    Check.that(size, CAPACITY).isNot(negative());</span>
-<span class="fc" id="L176">    Check.notNull(kvPairs, &quot;kvPairs&quot;).has(length(), even());</span>
-<span class="pc bpc" id="L177" title="1 of 2 branches missed.">    if (kvPairs.length == 0) {</span>
-<span class="nc" id="L178">      return new HashMap&lt;&gt;(Math.max(1, size));</span>
+<span class="fc" id="L172">    Check.that(size, CAPACITY).isNot(negative());</span>
+<span class="fc" id="L173">    Check.notNull(kvPairs, &quot;kvPairs&quot;).has(length(), even());</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">    if (kvPairs.length == 0) {</span>
+<span class="nc" id="L175">      return new HashMap&lt;&gt;(Math.max(1, size));</span>
     }
     int cap;
-<span class="fc bfc" id="L181" title="All 2 branches covered.">    if (size &lt; kvPairs.length / 2) {</span>
-<span class="fc" id="L182">      cap = Math.max(1, size) * kvPairs.length;</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">    if (size &lt; kvPairs.length / 2) {</span>
+<span class="fc" id="L179">      cap = Math.max(1, size) * kvPairs.length;</span>
     } else {
-<span class="fc" id="L184">      cap = size;</span>
+<span class="fc" id="L181">      cap = size;</span>
     }
-<span class="fc" id="L186">    HashMap&lt;K, V&gt; map = new HashMap&lt;&gt;(1 + cap * 4 / 3);</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">    for (int i = 0; i &lt; kvPairs.length - 1; i += 2) {</span>
-<span class="fc" id="L188">      K key = (K) kvPairs[i];</span>
-<span class="fc" id="L189">      V val = (V) kvPairs[i + 1];</span>
-<span class="fc" id="L190">      Check.that(key).isNot(keyIn(),</span>
+<span class="fc" id="L183">    HashMap&lt;K, V&gt; map = new HashMap&lt;&gt;(1 + cap * 4 / 3);</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">    for (int i = 0; i &lt; kvPairs.length - 1; i += 2) {</span>
+<span class="fc" id="L185">      K key = (K) kvPairs[i];</span>
+<span class="fc" id="L186">      V val = (V) kvPairs[i + 1];</span>
+<span class="fc" id="L187">      Check.that(key).isNot(keyIn(),</span>
           map,
           &quot;duplicate key at position ${0}: ${arg}&quot;,
-<span class="fc" id="L193">          i);</span>
-<span class="pc bpc" id="L194" title="1 of 2 branches missed.">      if (key != null) {</span>
-<span class="fc" id="L195">        Check.that(key, &quot;kvPairs[&quot; + i + &quot;]&quot;).is(instanceOf(), keyClass);</span>
+<span class="fc" id="L190">          i);</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">      if (key != null) {</span>
+<span class="fc" id="L192">        Check.that(key, &quot;kvPairs[&quot; + i + &quot;]&quot;).is(instanceOf(), keyClass);</span>
       }
-<span class="fc bfc" id="L197" title="All 2 branches covered.">      if (val != null) {</span>
-<span class="fc" id="L198">        Check.that(val, &quot;kvPairs[&quot; + (i + 1) + &quot;]&quot;).is(instanceOf(), valueClass);</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">      if (val != null) {</span>
+<span class="fc" id="L195">        Check.that(val, &quot;kvPairs[&quot; + (i + 1) + &quot;]&quot;).is(instanceOf(), valueClass);</span>
       }
-<span class="fc" id="L200">      map.put(key, val);</span>
+<span class="fc" id="L197">      map.put(key, val);</span>
     }
-<span class="fc" id="L202">    return map;</span>
+<span class="fc" id="L199">    return map;</span>
   }
 
   /**
@@ -221,16 +218,16 @@ public final class CollectionMethods {
   @SuppressWarnings(&quot;unchecked&quot;)
   public static &lt;K extends Enum&lt;K&gt;, V&gt; EnumMap&lt;K, V&gt; saturatedEnumMap(
       Class&lt;K&gt; enumClass, V... values) throws IllegalArgumentException {
-<span class="fc" id="L224">    K[] constants = Check.notNull(enumClass, &quot;enumClass&quot;).ok().getEnumConstants();</span>
-<span class="fc" id="L225">    Check.notNull(values, VALUES).has(length(), eq(), constants.length);</span>
-<span class="fc" id="L226">    EnumMap&lt;K, V&gt; map = new EnumMap&lt;&gt;(enumClass);</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">    for (int i = 0; i &lt; constants.length; ++i) {</span>
-<span class="fc" id="L228">      Check.that(values[i]).is(notNull(),</span>
+<span class="fc" id="L221">    K[] constants = Check.notNull(enumClass, &quot;enumClass&quot;).ok().getEnumConstants();</span>
+<span class="fc" id="L222">    Check.notNull(values, VALUES).has(length(), eq(), constants.length);</span>
+<span class="fc" id="L223">    EnumMap&lt;K, V&gt; map = new EnumMap&lt;&gt;(enumClass);</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">    for (int i = 0; i &lt; constants.length; ++i) {</span>
+<span class="fc" id="L225">      Check.that(values[i]).is(notNull(),</span>
           &quot;Illegal null value for key ${0}&quot;,
           constants[i]);
-<span class="fc" id="L231">      map.put(constants[i], values[i]);</span>
+<span class="fc" id="L228">      map.put(constants[i], values[i]);</span>
     }
-<span class="fc" id="L233">    return map;</span>
+<span class="fc" id="L230">    return map;</span>
   }
 
   /**
@@ -249,26 +246,26 @@ public final class CollectionMethods {
    * @return a sublist of the provided list
    */
   public static &lt;T&gt; List&lt;T&gt; sublist(List&lt;T&gt; list, int offset, int length) {
-<span class="fc" id="L252">    Check.notNull(list, LIST);</span>
-<span class="fc" id="L253">    int sz = list.size();</span>
+<span class="fc" id="L249">    Check.notNull(list, LIST);</span>
+<span class="fc" id="L250">    int sz = list.size();</span>
     int from;
-<span class="fc bfc" id="L255" title="All 2 branches covered.">    if (offset &lt; 0) {</span>
-<span class="fc" id="L256">      from = offset + sz;</span>
-<span class="fc" id="L257">      Check.that(from, OFFSET).is(gte(), 0);</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">    if (offset &lt; 0) {</span>
+<span class="fc" id="L253">      from = offset + sz;</span>
+<span class="fc" id="L254">      Check.that(from, OFFSET).is(gte(), 0);</span>
     } else {
-<span class="fc" id="L259">      from = offset;</span>
-<span class="fc" id="L260">      Check.that(from, OFFSET).is(lte(), sz);</span>
+<span class="fc" id="L256">      from = offset;</span>
+<span class="fc" id="L257">      Check.that(from, OFFSET).is(lte(), sz);</span>
     }
     int to;
-<span class="fc bfc" id="L263" title="All 2 branches covered.">    if (length &gt;= 0) {</span>
-<span class="fc" id="L264">      to = from + length;</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">    if (length &gt;= 0) {</span>
+<span class="fc" id="L261">      to = from + length;</span>
     } else {
-<span class="fc" id="L266">      to = from + 1;</span>
-<span class="fc" id="L267">      from = to + length;</span>
-<span class="fc" id="L268">      Check.that(from, &quot;effective from-index&quot;).is(gte(), 0);</span>
+<span class="fc" id="L263">      to = from + 1;</span>
+<span class="fc" id="L264">      from = to + length;</span>
+<span class="fc" id="L265">      Check.that(from, &quot;effective from-index&quot;).is(gte(), 0);</span>
     }
-<span class="fc" id="L270">    Check.that(to, &quot;effective to-index&quot;).is(lte(), sz);</span>
-<span class="fc" id="L271">    return list.subList(from, to);</span>
+<span class="fc" id="L267">    Check.that(to, &quot;effective to-index&quot;).is(lte(), sz);</span>
+<span class="fc" id="L268">    return list.subList(from, to);</span>
   }
 
   /**
@@ -285,7 +282,7 @@ public final class CollectionMethods {
    * @return a new {@code Map} where keys and values are swapped
    */
   public static &lt;K, V&gt; Map&lt;V, K&gt; swap(Map&lt;K, V&gt; map) {
-<span class="fc" id="L288">    return swap(map, () -&gt; new HashMap&lt;&gt;(1 + map.size() * 4 / 3));</span>
+<span class="fc" id="L285">    return swap(map, () -&gt; new HashMap&lt;&gt;(1 + map.size() * 4 / 3));</span>
   }
 
   /**
@@ -305,11 +302,11 @@ public final class CollectionMethods {
    */
   public static &lt;K, V&gt; Map&lt;V, K&gt; swap(Map&lt;K, V&gt; map,
       Supplier&lt;? extends Map&lt;V, K&gt;&gt; mapFactory) throws DuplicateValueException {
-<span class="fc" id="L308">    Check.notNull(map, MAP);</span>
-<span class="fc" id="L309">    Check.notNull(mapFactory, &quot;mapFactory&quot;);</span>
-<span class="fc" id="L310">    Map&lt;V, K&gt; out = mapFactory.get();</span>
-<span class="fc" id="L311">    map.forEach((k, v) -&gt; out.put(v, k));</span>
-<span class="fc" id="L312">    return Check.that(out).has(mapSize(), eq(), map.size(), duplicateKey()).ok();</span>
+<span class="fc" id="L305">    Check.notNull(map, MAP);</span>
+<span class="fc" id="L306">    Check.notNull(mapFactory, &quot;mapFactory&quot;);</span>
+<span class="fc" id="L307">    Map&lt;V, K&gt; out = mapFactory.get();</span>
+<span class="fc" id="L308">    map.forEach((k, v) -&gt; out.put(v, k));</span>
+<span class="fc" id="L309">    return Check.that(out).has(mapSize(), eq(), map.size(), duplicateKey()).ok();</span>
   }
 
   /**
@@ -326,8 +323,8 @@ public final class CollectionMethods {
    * @return a new {@code Map} where keys and values are swapped
    */
   public static &lt;K, V&gt; Map&lt;V, K&gt; swapAndFreeze(Map&lt;K, V&gt; map) {
-<span class="fc" id="L329">    Map&lt;V, K&gt; out = deepFreeze(map, e -&gt; entry(e.getValue(), e.getKey()));</span>
-<span class="fc" id="L330">    return Check.that(out).has(mapSize(), eq(), map.size(), duplicateKey()).ok();</span>
+<span class="fc" id="L326">    Map&lt;V, K&gt; out = deepFreeze(map, e -&gt; entry(e.getValue(), e.getKey()));</span>
+<span class="fc" id="L327">    return Check.that(out).has(mapSize(), eq(), map.size(), duplicateKey()).ok();</span>
   }
 
   /**
@@ -347,12 +344,12 @@ public final class CollectionMethods {
    */
   public static &lt;K, V0, V1&gt; Map&lt;K, V1&gt; freeze(
       Map&lt;K, V0&gt; src, Function&lt;? super V0, ? extends V1&gt; valueConverter) {
-<span class="fc" id="L350">    Check.notNull(src, MAP);</span>
-<span class="fc" id="L351">    Check.notNull(valueConverter, &quot;value converter&quot;);</span>
-<span class="fc" id="L352">    return src.entrySet().stream()</span>
-<span class="fc" id="L353">        .peek(checkEntry())</span>
-<span class="fc" id="L354">        .map(toEntryConverter(valueConverter))</span>
-<span class="fc" id="L355">        .collect(toUnmodifiableMap(key(), value()));</span>
+<span class="fc" id="L347">    Check.notNull(src, MAP);</span>
+<span class="fc" id="L348">    Check.notNull(valueConverter, &quot;value converter&quot;);</span>
+<span class="fc" id="L349">    return src.entrySet().stream()</span>
+<span class="fc" id="L350">        .peek(checkEntry())</span>
+<span class="fc" id="L351">        .map(toEntryConverter(valueConverter))</span>
+<span class="fc" id="L352">        .collect(toUnmodifiableMap(key(), value()));</span>
   }
 
   /**
@@ -374,12 +371,12 @@ public final class CollectionMethods {
   public static &lt;K, V0, V1&gt; Map&lt;K, V1&gt; freeze(
       Map&lt;K, V0&gt; src,
       BiFunction&lt;? super K, ? super V0, ? extends V1&gt; valueConverter) {
-<span class="fc" id="L377">    Check.notNull(src, MAP);</span>
-<span class="fc" id="L378">    Check.notNull(valueConverter, &quot;value converter&quot;);</span>
-<span class="fc" id="L379">    return src.entrySet().stream()</span>
-<span class="fc" id="L380">        .peek(checkEntry())</span>
-<span class="fc" id="L381">        .map(toEntryConverter(valueConverter))</span>
-<span class="fc" id="L382">        .collect(toUnmodifiableMap(key(), value()));</span>
+<span class="fc" id="L374">    Check.notNull(src, MAP);</span>
+<span class="fc" id="L375">    Check.notNull(valueConverter, &quot;value converter&quot;);</span>
+<span class="fc" id="L376">    return src.entrySet().stream()</span>
+<span class="fc" id="L377">        .peek(checkEntry())</span>
+<span class="fc" id="L378">        .map(toEntryConverter(valueConverter))</span>
+<span class="fc" id="L379">        .collect(toUnmodifiableMap(key(), value()));</span>
   }
 
   /**
@@ -400,31 +397,31 @@ public final class CollectionMethods {
    */
   public static &lt;K0, V0, K1, V1&gt; Map&lt;K1, V1&gt; deepFreeze(
       Map&lt;K0, V0&gt; src, Function&lt;Entry&lt;K0, V0&gt;, Entry&lt;K1, V1&gt;&gt; entryConverter) {
-<span class="fc" id="L403">    Check.notNull(src, MAP);</span>
-<span class="fc" id="L404">    Check.notNull(entryConverter, &quot;entry converter&quot;);</span>
-<span class="fc" id="L405">    Map&lt;K1, V1&gt; out = new HashMap&lt;&gt;(1 + src.size() * 4 / 3);</span>
-<span class="fc" id="L406">    src.entrySet().stream()</span>
-<span class="fc" id="L407">        .peek(checkEntry())</span>
-<span class="fc" id="L408">        .map(entryConverter)</span>
-<span class="fc" id="L409">        .forEach(e -&gt; out.put(e.getKey(), e.getValue()));</span>
-<span class="fc" id="L410">    return Map.copyOf(out);</span>
+<span class="fc" id="L400">    Check.notNull(src, MAP);</span>
+<span class="fc" id="L401">    Check.notNull(entryConverter, &quot;entry converter&quot;);</span>
+<span class="fc" id="L402">    Map&lt;K1, V1&gt; out = new HashMap&lt;&gt;(1 + src.size() * 4 / 3);</span>
+<span class="fc" id="L403">    src.entrySet().stream()</span>
+<span class="fc" id="L404">        .peek(checkEntry())</span>
+<span class="fc" id="L405">        .map(entryConverter)</span>
+<span class="fc" id="L406">        .forEach(e -&gt; out.put(e.getKey(), e.getValue()));</span>
+<span class="fc" id="L407">    return Map.copyOf(out);</span>
   }
 
   private static &lt;K, V0, V1&gt; Function&lt;Entry&lt;K, V0&gt;, Entry&lt;K, V1&gt;&gt; toEntryConverter(
       BiFunction&lt;? super K, ? super V0, ? extends V1&gt; fnc) {
-<span class="fc" id="L415">    return e -&gt; entry(e.getKey(), fnc.apply(e.getKey(), e.getValue()));</span>
+<span class="fc" id="L412">    return e -&gt; entry(e.getKey(), fnc.apply(e.getKey(), e.getValue()));</span>
   }
 
   private static &lt;K, V0, V1&gt; Function&lt;Entry&lt;K, V0&gt;, Entry&lt;K, V1&gt;&gt; toEntryConverter(
       Function&lt;? super V0, ? extends V1&gt; fnc) {
-<span class="fc" id="L420">    return e -&gt; entry(e.getKey(), fnc.apply(e.getValue()));</span>
+<span class="fc" id="L417">    return e -&gt; entry(e.getKey(), fnc.apply(e.getValue()));</span>
   }
 
   private static &lt;K, V&gt; Consumer&lt;Entry&lt;K, V&gt;&gt; checkEntry() {
-<span class="fc" id="L424">    return e -&gt;</span>
-<span class="fc" id="L425">        Check.that(e)</span>
-<span class="fc" id="L426">            .has(key(), notNull(), &quot;Illegal null key for value ${0}&quot;, e.getValue())</span>
-<span class="fc" id="L427">            .has(value(), notNull(), &quot;Illegal null value for key ${0}&quot;, e.getKey());</span>
+<span class="fc" id="L421">    return e -&gt;</span>
+<span class="fc" id="L422">        Check.that(e)</span>
+<span class="fc" id="L423">            .has(key(), notNull(), &quot;Illegal null key for value ${0}&quot;, e.getValue())</span>
+<span class="fc" id="L424">            .has(value(), notNull(), &quot;Illegal null value for key ${0}&quot;, e.getKey());</span>
   }
 
   /**
@@ -446,13 +443,13 @@ public final class CollectionMethods {
   public static &lt;T, U, E extends Throwable&gt; List&lt;U&gt; freeze(
       List&lt;? extends T&gt; src, FallibleFunction&lt;? super T, ? extends U, E&gt; converter)
       throws E {
-<span class="fc" id="L449">    Check.notNull(src, LIST);</span>
-<span class="fc" id="L450">    Check.notNull(converter, CONVERTER);</span>
-<span class="fc" id="L451">    Object[] objs = new Object[src.size()];</span>
-<span class="fc bfc" id="L452" title="All 2 branches covered.">    for (int i = 0; i &lt; src.size(); ++i) {</span>
-<span class="fc" id="L453">      objs[i] = converter.apply(src.get(i));</span>
+<span class="fc" id="L446">    Check.notNull(src, LIST);</span>
+<span class="fc" id="L447">    Check.notNull(converter, CONVERTER);</span>
+<span class="fc" id="L448">    Object[] objs = new Object[src.size()];</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">    for (int i = 0; i &lt; src.size(); ++i) {</span>
+<span class="fc" id="L450">      objs[i] = converter.apply(src.get(i));</span>
     }
-<span class="fc" id="L455">    return (List&lt;U&gt;) List.of(objs);</span>
+<span class="fc" id="L452">    return (List&lt;U&gt;) List.of(objs);</span>
   }
 
   /**
@@ -474,14 +471,14 @@ public final class CollectionMethods {
   public static &lt;T, U, E extends Throwable&gt; Set&lt;U&gt; freeze(
       Set&lt;? extends T&gt; src, FallibleFunction&lt;? super T, ? extends U, E&gt; converter)
       throws E {
-<span class="fc" id="L477">    Check.notNull(src, SET);</span>
-<span class="fc" id="L478">    Check.notNull(converter, CONVERTER);</span>
-<span class="fc" id="L479">    Object[] objs = new Object[src.size()];</span>
-<span class="fc" id="L480">    Iterator&lt;? extends T&gt; iterator = src.iterator();</span>
-<span class="fc bfc" id="L481" title="All 2 branches covered.">    for (int i = 0; i &lt; src.size(); ++i) {</span>
-<span class="fc" id="L482">      objs[i] = converter.apply(iterator.next());</span>
+<span class="fc" id="L474">    Check.notNull(src, SET);</span>
+<span class="fc" id="L475">    Check.notNull(converter, CONVERTER);</span>
+<span class="fc" id="L476">    Object[] objs = new Object[src.size()];</span>
+<span class="fc" id="L477">    Iterator&lt;? extends T&gt; iterator = src.iterator();</span>
+<span class="fc bfc" id="L478" title="All 2 branches covered.">    for (int i = 0; i &lt; src.size(); ++i) {</span>
+<span class="fc" id="L479">      objs[i] = converter.apply(iterator.next());</span>
     }
-<span class="fc" id="L484">    return (Set&lt;U&gt;) Set.of(objs);</span>
+<span class="fc" id="L481">    return (Set&lt;U&gt;) Set.of(objs);</span>
   }
 
   /**
@@ -504,9 +501,9 @@ public final class CollectionMethods {
    */
   public static &lt;T, U&gt; List&lt;U&gt; collectionToList(
       Collection&lt;? extends T&gt; src, Function&lt;? super T, ? extends U&gt; converter) {
-<span class="fc" id="L507">    Check.notNull(src, COLLECTION);</span>
-<span class="fc" id="L508">    Check.notNull(converter, CONVERTER);</span>
-<span class="fc" id="L509">    return src.stream().map(converter).collect(toUnmodifiableList());</span>
+<span class="fc" id="L504">    Check.notNull(src, COLLECTION);</span>
+<span class="fc" id="L505">    Check.notNull(converter, CONVERTER);</span>
+<span class="fc" id="L506">    return src.stream().map(converter).collect(toUnmodifiableList());</span>
   }
 
   /**
@@ -529,9 +526,9 @@ public final class CollectionMethods {
    */
   public static &lt;T, U&gt; Set&lt;U&gt; collectionToSet(
       Collection&lt;? extends T&gt; src, Function&lt;? super T, ? extends U&gt; converter) {
-<span class="fc" id="L532">    Check.notNull(src, COLLECTION);</span>
-<span class="fc" id="L533">    Check.notNull(converter, CONVERTER);</span>
-<span class="fc" id="L534">    return src.stream().map(converter).collect(toUnmodifiableSet());</span>
+<span class="fc" id="L529">    Check.notNull(src, COLLECTION);</span>
+<span class="fc" id="L530">    Check.notNull(converter, CONVERTER);</span>
+<span class="fc" id="L531">    return src.stream().map(converter).collect(toUnmodifiableSet());</span>
   }
 
   /**
@@ -550,10 +547,25 @@ public final class CollectionMethods {
    */
   public static &lt;K, V&gt; Map&lt;K, V&gt; collectionToMap(
       Collection&lt;V&gt; src, Function&lt;? super V, ? extends K&gt; keyExtractor) {
-<span class="fc" id="L553">    Check.notNull(src, COLLECTION);</span>
-<span class="fc" id="L554">    Check.notNull(keyExtractor, &quot;key extractor&quot;);</span>
-<span class="fc" id="L555">    return src.stream().collect(toUnmodifiableMap(keyExtractor,</span>
-<span class="fc" id="L556">        Function.identity()));</span>
+<span class="fc" id="L550">    Check.notNull(src, COLLECTION);</span>
+<span class="fc" id="L551">    Check.notNull(keyExtractor, &quot;key extractor&quot;);</span>
+<span class="fc" id="L552">    return src.stream().collect(toUnmodifiableMap(keyExtractor,</span>
+<span class="fc" id="L553">        Function.identity()));</span>
+  }
+
+  /**
+   * Shortcut method. Returns the first element that passes the specified test, or
+   * else {@code null}. Shortcut for
+   * {@code collection.stream().filter(test).findFirst().orElse(null)}.
+   *
+   * @param collection the collection to search
+   * @param test the test
+   * @param &lt;T&gt; the type of the elements in the collection
+   * @return the first element that passes the specified test, or else {@code null}
+   */
+  public static &lt;T&gt; T findFirst(Collection&lt;T&gt; collection,
+      Predicate&lt;? super T&gt; test) {
+<span class="fc" id="L568">    return collection.stream().filter(test).findFirst().orElse(null);</span>
   }
 
   /**
@@ -566,7 +578,7 @@ public final class CollectionMethods {
    * @see ArrayMethods#implode(Object[])
    */
   public static &lt;T&gt; String implode(Collection&lt;T&gt; collection) {
-<span class="fc" id="L569">    return implode(collection, IMPLODE_SEPARATOR);</span>
+<span class="fc" id="L581">    return implode(collection, IMPLODE_SEPARATOR);</span>
   }
 
   /**
@@ -581,8 +593,8 @@ public final class CollectionMethods {
    * @see ArrayMethods#implode(Object[], String)
    */
   public static &lt;T&gt; String implode(Collection&lt;T&gt; collection, String separator) {
-<span class="fc" id="L584">    Check.notNull(collection);</span>
-<span class="fc" id="L585">    return implode(collection, Objects::toString, separator, 0, -1);</span>
+<span class="fc" id="L596">    Check.notNull(collection);</span>
+<span class="fc" id="L597">    return implode(collection, Objects::toString, separator, 0, -1);</span>
   }
 
   /**
@@ -599,7 +611,7 @@ public final class CollectionMethods {
    * @see ArrayMethods#implode(Object[], int)
    */
   public static &lt;T&gt; String implode(Collection&lt;T&gt; collection, int limit) {
-<span class="fc" id="L602">    return implode(collection, IMPLODE_SEPARATOR, limit);</span>
+<span class="fc" id="L614">    return implode(collection, IMPLODE_SEPARATOR, limit);</span>
   }
 
   /**
@@ -616,7 +628,7 @@ public final class CollectionMethods {
    */
   public static &lt;T&gt; String implode(Collection&lt;T&gt; collection,
       Function&lt;T, String&gt; stringifier) {
-<span class="fc" id="L619">    return implode(collection, stringifier, IMPLODE_SEPARATOR, 0, -1);</span>
+<span class="fc" id="L631">    return implode(collection, stringifier, IMPLODE_SEPARATOR, 0, -1);</span>
   }
 
   /**
@@ -636,7 +648,7 @@ public final class CollectionMethods {
   public static &lt;T&gt; String implode(Collection&lt;T&gt; collection,
       String separator,
       int limit) {
-<span class="fc" id="L639">    return implode(collection, Objects::toString, separator, 0, limit);</span>
+<span class="fc" id="L651">    return implode(collection, Objects::toString, separator, 0, limit);</span>
   }
 
   /**
@@ -665,41 +677,41 @@ public final class CollectionMethods {
       String separator,
       int from,
       int to) {
-<span class="fc" id="L668">    int sz = Check.notNull(collection, COLLECTION).ok(Collection::size);</span>
-<span class="fc" id="L669">    Check.notNull(stringifier, STRINGIFIER);</span>
-<span class="fc" id="L670">    Check.notNull(separator, SEPARATOR);</span>
-<span class="fc" id="L671">    Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), sz);</span>
-<span class="fc bfc" id="L672" title="All 2 branches covered.">    int x = to == -1 ? sz : Math.min(to, sz);</span>
-<span class="fc" id="L673">    Check.that(x, &quot;to&quot;).is(gte(), from);</span>
-<span class="fc bfc" id="L674" title="All 2 branches covered.">    if (from == 0) {</span>
-<span class="fc bfc" id="L675" title="All 2 branches covered.">      Stream&lt;T&gt; stream = x == sz</span>
-<span class="fc" id="L676">          ? collection.stream()</span>
-<span class="fc" id="L677">          : collection.stream().limit(x);</span>
-<span class="fc" id="L678">      return stream.map(stringifier).collect(joining(separator));</span>
-<span class="fc bfc" id="L679" title="All 2 branches covered.">    } else if (collection instanceof List) {</span>
-<span class="fc" id="L680">      List&lt;T&gt; sublist = ((List&lt;T&gt;) collection).subList(from, x);</span>
-<span class="fc" id="L681">      return sublist.stream().map(stringifier).collect(joining(separator));</span>
+<span class="fc" id="L680">    int sz = Check.notNull(collection, COLLECTION).ok(Collection::size);</span>
+<span class="fc" id="L681">    Check.notNull(stringifier, STRINGIFIER);</span>
+<span class="fc" id="L682">    Check.notNull(separator, SEPARATOR);</span>
+<span class="fc" id="L683">    Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), sz);</span>
+<span class="fc bfc" id="L684" title="All 2 branches covered.">    int x = to == -1 ? sz : Math.min(to, sz);</span>
+<span class="fc" id="L685">    Check.that(x, &quot;to&quot;).is(gte(), from);</span>
+<span class="fc bfc" id="L686" title="All 2 branches covered.">    if (from == 0) {</span>
+<span class="fc bfc" id="L687" title="All 2 branches covered.">      Stream&lt;T&gt; stream = x == sz</span>
+<span class="fc" id="L688">          ? collection.stream()</span>
+<span class="fc" id="L689">          : collection.stream().limit(x);</span>
+<span class="fc" id="L690">      return stream.map(stringifier).collect(joining(separator));</span>
+<span class="fc bfc" id="L691" title="All 2 branches covered.">    } else if (collection instanceof List) {</span>
+<span class="fc" id="L692">      List&lt;T&gt; sublist = ((List&lt;T&gt;) collection).subList(from, x);</span>
+<span class="fc" id="L693">      return sublist.stream().map(stringifier).collect(joining(separator));</span>
     }
-<span class="fc" id="L683">    Stream stream = Arrays.stream(collection.toArray(), from, x);</span>
-<span class="fc" id="L684">    return (String) stream.map(stringifier).collect(joining(separator));</span>
+<span class="fc" id="L695">    Stream stream = Arrays.stream(collection.toArray(), from, x);</span>
+<span class="fc" id="L696">    return (String) stream.map(stringifier).collect(joining(separator));</span>
   }
 
-<span class="fc" id="L687">  private static final Set&lt;Class&gt; NULL_REPELLERS =</span>
+<span class="fc" id="L699">  private static final Set&lt;Class&gt; NULL_REPELLERS =</span>
       // Actually, List.of(1) and List.of(1, 2) currently have the same type, but
       // better safe than sorry. They will anyhow be de-duplicated when entering
       // the HashSet
-<span class="fc" id="L691">      Set.copyOf(new HashSet&lt;&gt;(</span>
-<span class="fc" id="L692">          Arrays.asList(</span>
-<span class="fc" id="L693">              Collections.emptyList().getClass(),</span>
-<span class="fc" id="L694">              Collections.emptySet().getClass(),</span>
-<span class="fc" id="L695">              List.of().getClass(),</span>
-<span class="fc" id="L696">              List.of(1).getClass(),</span>
-<span class="fc" id="L697">              List.of(1, 2).getClass(),</span>
-<span class="fc" id="L698">              List.of(1, 2, 3).getClass(),</span>
-<span class="fc" id="L699">              Set.of().getClass(),</span>
-<span class="fc" id="L700">              Set.of(1).getClass(),</span>
-<span class="fc" id="L701">              Set.of(1, 2).getClass(),</span>
-<span class="fc" id="L702">              Set.of(1, 2, 3).getClass())));</span>
+<span class="fc" id="L703">      Set.copyOf(new HashSet&lt;&gt;(</span>
+<span class="fc" id="L704">          Arrays.asList(</span>
+<span class="fc" id="L705">              Collections.emptyList().getClass(),</span>
+<span class="fc" id="L706">              Collections.emptySet().getClass(),</span>
+<span class="fc" id="L707">              List.of().getClass(),</span>
+<span class="fc" id="L708">              List.of(1).getClass(),</span>
+<span class="fc" id="L709">              List.of(1, 2).getClass(),</span>
+<span class="fc" id="L710">              List.of(1, 2, 3).getClass(),</span>
+<span class="fc" id="L711">              Set.of().getClass(),</span>
+<span class="fc" id="L712">              Set.of(1).getClass(),</span>
+<span class="fc" id="L713">              Set.of(1, 2).getClass(),</span>
+<span class="fc" id="L714">              Set.of(1, 2, 3).getClass())));</span>
 
   /**
    * Returns {@code true} if the provided collection is a null-repellent collection
@@ -712,7 +724,7 @@ public final class CollectionMethods {
    * @return {@code true} if the provided collection is a null-repellent collection
    */
   public static boolean isNullRepellent(Collection&lt;?&gt; c) {
-<span class="fc" id="L715">    return NULL_REPELLERS.contains(c.getClass());</span>
+<span class="fc" id="L727">    return NULL_REPELLERS.contains(c.getClass());</span>
   }
 
 }

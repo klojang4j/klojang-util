@@ -5,10 +5,7 @@ import org.klojang.check.aux.DuplicateValueException;
 import org.klojang.check.fallible.FallibleFunction;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Stream;
 
 import static java.util.Map.Entry;
@@ -554,6 +551,21 @@ public final class CollectionMethods {
     Check.notNull(keyExtractor, "key extractor");
     return src.stream().collect(toUnmodifiableMap(keyExtractor,
         Function.identity()));
+  }
+
+  /**
+   * Shortcut method. Returns the first element that passes the specified test, or
+   * else {@code null}. Shortcut for
+   * {@code collection.stream().filter(test).findFirst().orElse(null)}.
+   *
+   * @param collection the collection to search
+   * @param test the test
+   * @param <T> the type of the elements in the collection
+   * @return the first element that passes the specified test, or else {@code null}
+   */
+  public static <T> T findFirst(Collection<T> collection,
+      Predicate<? super T> test) {
+    return collection.stream().filter(test).findFirst().orElse(null);
   }
 
   /**
