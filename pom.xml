@@ -7,10 +7,10 @@
 
     <groupId>org.klojang</groupId>
     <artifactId>klojang-util</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <packaging>jar</packaging>
 
-    <name>Klojang Check</name>
+    <name>Klojang Util</name>
     <description>
         Basic Java Utilities module
     </description>
@@ -85,7 +85,7 @@
         <!-- *** Check for updates: mvn versions:display-dependency-updates   *** -->
         <!-- *** Check dependencies: mvn dependency:analyze                   *** -->
         <!-- ==================================================================== -->
-        <klojang-check.version>2.1.0</klojang-check.version>
+        <klojang-check.version>2.1.1</klojang-check.version>
         <junit.version>4.13.2</junit.version>
     </properties>
 
