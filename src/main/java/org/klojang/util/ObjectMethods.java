@@ -34,8 +34,8 @@ public class ObjectMethods {
 
   /**
    * Does a brute-force cast of one type to another. This method may come in handy,
-   * especially in the form of a method reference, when bumping up against the limits
-   * of Java's implementation of generics:
+   * especially in the form of a method reference, when bumping up against the limits of
+   * Java's implementation of generics:
    *
    * <blockquote><pre>{@code
    * List<CharSequence> list1 = List.of("Hello", "world");
@@ -100,10 +100,10 @@ public class ObjectMethods {
   }
 
   /**
-   * Returns {@code true} if the specified {@code Optional} is empty or contains an
-   * empty object. This is the only {@code isEmpty} method that will throw an
-   * {@code IllegalArgumentException} if the argument is null as {@code Optional}
-   * objects should never be null.
+   * Returns {@code true} if the specified {@code Optional} is empty or contains an empty
+   * object. This is the only {@code isEmpty} method that will throw an
+   * {@code IllegalArgumentException} if the argument is null as {@code Optional} objects
+   * should never be null.
    *
    * @param arg the {@code Optional} to check
    * @return whether it is empty or contains an empty object
@@ -124,8 +124,8 @@ public class ObjectMethods {
   }
 
   /**
-   * Returns {@code true} if the specified argument is null or empty. More precisely,
-   * this method returns {@code true} if any of the following applies:
+   * Returns {@code true} if the specified argument is null or empty. More precisely, this
+   * method returns {@code true} if any of the following applies:
    *
    * <p>
    *
@@ -147,13 +147,13 @@ public class ObjectMethods {
    */
   public static boolean isEmpty(Object arg) {
     return arg == null
-        || (arg instanceof CharSequence cs && cs.isEmpty())
-        || (arg instanceof Collection<?> c && c.isEmpty())
-        || (arg instanceof Map<?, ?> m && m.isEmpty())
-        || (arg.getClass().isArray() && getArrayLength(arg) == 0)
-        || (arg instanceof Optional<?> o && (o.isEmpty() || isEmpty(o.get())))
-        || (arg instanceof Emptyable e && e.isEmpty())
-        ;
+          || (arg instanceof CharSequence cs && cs.isEmpty())
+          || (arg instanceof Collection<?> c && c.isEmpty())
+          || (arg instanceof Map<?, ?> m && m.isEmpty())
+          || (arg.getClass().isArray() && getArrayLength(arg) == 0)
+          || (arg instanceof Optional<?> o && (o.isEmpty() || isEmpty(o.get())))
+          || (arg instanceof Emptyable e && e.isEmpty())
+          ;
   }
 
   /**
@@ -182,27 +182,39 @@ public class ObjectMethods {
    */
   public static boolean isDeepNotEmpty(Object arg) {
     return arg != null
-        && (!(arg instanceof CharSequence cs) || cs.length() > 0)
-        && (!(arg instanceof Collection c) || dne(c))
-        && (!(arg instanceof Map m) || dne(m))
-        && (!(arg instanceof Object[] x) || dne(x))
-        && (!(arg instanceof Optional o) || dne(o))
-        && (!(arg instanceof Emptyable e) || e.isDeepNotEmpty())
-        && (!isPrimitiveArray(arg) || getArrayLength(arg) > 0);
+          && (!(arg instanceof CharSequence cs) || cs.length() > 0)
+          && (!(arg instanceof Collection c) || isDeepNotEmpty(c))
+          && (!(arg instanceof Map m) || isDeepNotEmpty(m))
+          && (!(arg instanceof Object[] x) || isDeepNotEmpty(x))
+          && (!(arg instanceof Optional o) || dne(o))
+          && (!(arg instanceof Emptyable e) || e.isDeepNotEmpty())
+          && (!isPrimitiveArray(arg) || getArrayLength(arg) > 0);
   }
 
-  private static boolean dne(Collection coll) {
-    if (coll.isEmpty()) {
-      return false;
-    }
-    return coll.stream().allMatch(ObjectMethods::isDeepNotEmpty);
+  /**
+   * Verifies that the specified collection is non-null, non-empty, and contains only
+   * deep-not-empty elements.
+   *
+   * @param coll the collection to test
+   * @return whether it is recursively non-empty
+   */
+  public static boolean isDeepNotEmpty(Collection<?> coll) {
+    return coll != null
+          && !coll.isEmpty()
+          && coll.stream().allMatch(ObjectMethods::isDeepNotEmpty);
   }
 
-  private static boolean dne(Map map) {
-    if (map.isEmpty()) {
-      return false;
-    }
-    return map.entrySet().stream().allMatch(ObjectMethods::entryDeepNotEmpty);
+  /**
+   * Verifies that the specified map is non-null, non-empty, and contains only
+   * deep-not-empty keys and values.
+   *
+   * @param map the map to test
+   * @return whether it is recursively non-empty
+   */
+  public static boolean isDeepNotEmpty(Map<?, ?> map) {
+    return map != null
+          && !map.isEmpty()
+          && map.entrySet().stream().allMatch(ObjectMethods::entryDeepNotEmpty);
   }
 
   private static boolean entryDeepNotEmpty(Object obj) {
@@ -210,11 +222,17 @@ public class ObjectMethods {
     return isDeepNotEmpty(e.getKey()) && isDeepNotEmpty(e.getValue());
   }
 
-  private static boolean dne(Object[] arr) {
-    if (arr.length == 0) {
-      return false;
-    }
-    return Arrays.stream(arr).allMatch(ObjectMethods::isDeepNotEmpty);
+  /**
+   * Verifies that the specified array is non-null, non-empty, and contains only
+   * deep-not-empty keys and values.
+   *
+   * @param arr the array to test
+   * @return whether it is recursively non-empty
+   */
+  public static boolean isDeepNotEmpty(Object[] arr) {
+    return arr != null
+          && arr.length != 0
+          && Arrays.stream(arr).allMatch(ObjectMethods::isDeepNotEmpty);
   }
 
   private static boolean dne(Optional opt) {
@@ -222,10 +240,10 @@ public class ObjectMethods {
   }
 
   /**
-   * Verifies that the argument is not null and, if it is array, {@link Collection}
-   * or {@link Map}, does not contain any null values. It may still be an empty
-   * array, {@code Collection} or {@code Map}, however. For maps, both keys and
-   * values are tested for {@code null}.
+   * Verifies that the argument is not null and, if it is array, {@link Collection} or
+   * {@link Map}, does not contain any null values. It may still be an empty array,
+   * {@code Collection} or {@code Map}, however. For maps, both keys and values are tested
+   * for {@code null}.
    *
    * @param arg the object to be tested
    * @return whether it is not null and does not contain any null values
@@ -242,20 +260,21 @@ public class ObjectMethods {
       return c.stream().allMatch(notNull());
     } else if (arg instanceof Map<?, ?> m) {
       return m.entrySet().stream()
-          .allMatch(e -> e.getKey() != null && e.getValue() != null);
+            .allMatch(e -> e.getKey() != null && e.getValue() != null);
     }
     return true;
   }
 
   /**
-   * Tests the provided arguments for equality using <i>empty-equals-null</i>
-   * semantics. This is roughly equivalent to
-   * {@code Objects.equals(e2n(arg0), e2n(arg1))}, except that {@code e2nEquals}
+   * Tests the provided arguments for equality using <i>empty-equals-null</i> semantics.
+   * This is roughly equivalent to {@code Objects.equals(e2n(arg0), e2n(arg1))}, except
+   * that {@code e2nEquals}
    * <i>does</i> take the types of the two arguments into account. So an empty
    * {@code String} is not equal to an empty {@code ArrayList} and an empty
    * {@code ArrayList} is not equal to an empty {@code HashSet}. (An empty
-   * {@code HashSet} <i>is</i> equal to an empty {@code TreeSet}, but that is just
-   * behaviour specified by the Collections Framework.)
+   * {@code HashSet}
+   * <i>is</i> equal to an empty {@code TreeSet}, but that is just behaviour specified by
+   * the Collections Framework.)
    *
    * <p>
    *
@@ -272,14 +291,13 @@ public class ObjectMethods {
    *
    * @param arg0 The 1st of the pair of objects to compare
    * @param arg1 The 2nd of the pair of objects to compare
-   * @return whether the provided arguments are equal using empty-equals-null
-   *     semantics
+   * @return whether the provided arguments are equal using empty-equals-null semantics
    */
   public static boolean e2nEquals(Object arg0, Object arg1) {
     return (arg0 == arg1)
-        || (arg0 == null && isEmpty(arg1))
-        || (arg1 == null && isEmpty(arg0))
-        || Objects.equals(arg0, arg1);
+          || (arg0 == null && isEmpty(arg1))
+          || (arg1 == null && isEmpty(arg0))
+          || Objects.equals(arg0, arg1);
   }
 
   /**
@@ -289,21 +307,21 @@ public class ObjectMethods {
    * @param arg0 The 1st of the pair of objects to compare
    * @param arg1 The 2nd of the pair of objects to compare
    * @return whether the provided arguments are deeply equal using empty-equals-null
-   *     semantics
+   * semantics
    */
   public static boolean e2nDeepEquals(Object arg0, Object arg1) {
     return (arg0 == arg1)
-        || (arg0 == null && isEmpty(arg1))
-        || (arg1 == null && isEmpty(arg0))
-        || eq(arg0, arg1);
+          || (arg0 == null && isEmpty(arg1))
+          || (arg1 == null && isEmpty(arg0))
+          || eq(arg0, arg1);
   }
 
   /**
    * Generates a hash code for the provided object using <i>empty-equals-null</i>
-   * semantics. Empty objects (whatever their type and including {@code null}) all
-   * have the same hash code: 0 (zero)! If the argument is any array, this method is
-   * recursively applied to the array's elements. Therefore {@code e2nHashCode} in
-   * effect generates a "deep" hash code.
+   * semantics. Empty objects (whatever their type and including {@code null}) all have
+   * the same hash code: 0 (zero)! If the argument is any array, this method is
+   * recursively applied to the array's elements. Therefore {@code e2nHashCode} in effect
+   * generates a "deep" hash code.
    *
    * @param obj The object to generate a hash code for
    * @return the hash code
@@ -339,22 +357,21 @@ public class ObjectMethods {
 
   /**
    * <p>Generates a hash code for the provided object using <i>empty-equals-null</i>
-   * semantics. This variant of {@code hashCode()} includes the type of the argument
-   * in the computation of the hash code. As with {@link #e2nEquals(Object, Object)},
-   * this ensures that an empty {@code String} will not have the same hash code as an
-   * empty {@code ArrayList}, and an empty {@code ArrayList} will not have the same
-   * hash code as an empty {@code HashSet}. An empty {@code HashSet} <i>will</i> have
-   * the same hash code as an empty {@code TreeSet}, because for Collection Framework
-   * classes it is hash code of the base type that is included in the computation of
-   * the hash code (i.e. {@code List.class}, {@code Set.class} and
-   * {@code Map.class}).
+   * semantics. This variant of {@code hashCode()} includes the type of the argument in
+   * the computation of the hash code. As with {@link #e2nEquals(Object, Object)}, this
+   * ensures that an empty {@code String} will not have the same hash code as an empty
+   * {@code ArrayList}, and an empty {@code ArrayList} will not have the same hash code as
+   * an empty {@code HashSet}. An empty {@code HashSet} <i>will</i> have the same hash
+   * code as an empty {@code TreeSet}, because for Collection Framework classes it is hash
+   * code of the base type that is included in the computation of the hash code (i.e.
+   * {@code List.class}, {@code Set.class} and {@code Map.class}).
    *
    * <p>Thus, using {@code e2nTypedHashCode} will lead to fewer hash collisions
-   * than {@code e2nHashcode}. However, it may, in some circumstances break the
-   * contract for {@link Object#hashCode()}. A class could define an {@code equals}
-   * method that allows instances of it to be equal to instances of its superclass.
-   * However, {@code e2nTypedHashCode} precludes this as the hash code for the class
-   * and the superclass will be different.
+   * than {@code e2nHashcode}. However, it may, in some circumstances break the contract
+   * for {@link Object#hashCode()}. A class could define an {@code equals} method that
+   * allows instances of it to be equal to instances of its superclass. However,
+   * {@code e2nTypedHashCode} precludes this as the hash code for the class and the
+   * superclass will be different.
    *
    * <p>Also note that this anyhow only becomes relevant if the collection of
    * objects you work with is remarkably heterogeneous: strings, empty strings, sets,
@@ -445,25 +462,26 @@ public class ObjectMethods {
   }
 
   /**
-   * Returns the first argument if it is not {@code null}, else the value produced by
-   * the specified {@code Supplier}.
+   * Returns the first argument if it is not {@code null}, else the value produced by the
+   * specified {@code Supplier}.
    *
    * @param <T> the type of the arguments and the return value
    * @param <E> The type of the exception that can potentially be thrown by the
-   *     {@code Supplier}
+   * {@code Supplier}
    * @param value The value to return if it is not {@code null}
    * @param supplier The supplier of a default value
    * @return a non-null value
    */
-  public static <T, E extends Exception> T ifNull(T value,
-      FallibleSupplier<? extends T, E> supplier) throws E {
+  public static <T, E extends Exception> T ifNull(
+        T value,
+        FallibleSupplier<? extends T, E> supplier) throws E {
     Check.notNull(supplier, "supplier");
     return value == null ? supplier.get() : value;
   }
 
   /**
-   * Returns the first argument if it is not empty (as per {@link #isEmpty(Object)}),
-   * else the second argument.
+   * Returns the first argument if it is not empty (as per {@link #isEmpty(Object)}), else
+   * the second argument.
    *
    * @param <T> the type of the arguments and the return value
    * @param value The value to return if it is not empty
@@ -475,9 +493,8 @@ public class ObjectMethods {
   }
 
   /**
-   * Returns the first argument if it is not empty (as per {@link #isEmpty(Object)}),
-   * else the value produced by the specified {@code Supplier} (which may be empty as
-   * well).
+   * Returns the first argument if it is not empty (as per {@link #isEmpty(Object)}), else
+   * the value produced by the specified {@code Supplier} (which may be empty as well).
    *
    * @param value The value to return if not empty
    * @param supplier The supplier of a default value if {@code value} is null
@@ -485,14 +502,14 @@ public class ObjectMethods {
    * @param <E> The exception potentially being thrown by the supplier as it
    * @return a non-empty value
    */
-  public static <T, E extends Exception> T ifEmpty(T value,
-      FallibleSupplier<? extends T, E> supplier) throws E {
+  public static <T, E extends Exception> T ifEmpty(
+        T value,
+        FallibleSupplier<? extends T, E> supplier) throws E {
     return isEmpty(value) ? Check.notNull(supplier, "supplier").ok().get() : value;
   }
 
   /**
-   * Returns this first argument if it is among the allowed values, else
-   * {@code null}.
+   * Returns this first argument if it is among the allowed values, else {@code null}.
    *
    * @param value The value to test
    * @param allowedValues The values it is allowed to have
@@ -506,8 +523,8 @@ public class ObjectMethods {
   }
 
   /**
-   * Returns {@code null} if the first argument is among the forbidden values, else
-   * the first argument itself.
+   * Returns {@code null} if the first argument is among the forbidden values, else the
+   * first argument itself.
    *
    * @param <T> the type of the involved values
    * @param value The value to test
@@ -522,8 +539,8 @@ public class ObjectMethods {
 
   /**
    * Returns the result of passing the specified argument to the specified
-   * {@code Function} if the argument is not {@code null}, else returns {@code null}.
-   * For example:
+   * {@code Function} if the argument is not {@code null}, else returns {@code null}. For
+   * example:
    *
    * <pre>
    * String[] strs = ifNotNull("Hello World", s -> s.split(" "));
@@ -541,8 +558,7 @@ public class ObjectMethods {
 
   /**
    * Returns the result of passing the specified argument to the specified
-   * {@code Function} if the argument is not null, else a default value. For
-   * example:
+   * {@code Function} if the argument is not null, else a default value. For example:
    *
    * <pre>
    * String[] strs = ifNotNull("Hello World", s -> s.split(" "), new String[0]);
@@ -561,8 +577,8 @@ public class ObjectMethods {
 
   /**
    * Returns the result of passing the specified argument to the specified
-   * {@code Function} if the argument is not {@link #isEmpty(Object) empty}, else
-   * returns null.
+   * {@code Function} if the argument is not {@link #isEmpty(Object) empty}, else returns
+   * null.
    *
    * @param <T> the type of the value to transform
    * @param <U> The return type
@@ -591,9 +607,8 @@ public class ObjectMethods {
   }
 
   /**
-   * Replaces a value with another value if it satisfies a certain criterion. Note
-   * that the {@link CommonChecks} class defines various predicates that might be of
-   * use.
+   * Replaces a value with another value if it satisfies a certain criterion. Note that
+   * the {@link CommonChecks} class defines various predicates that might be of use.
    *
    * @param value the value to test and possibly return
    * @param criterion the criterion determining which value to return
@@ -601,17 +616,17 @@ public class ObjectMethods {
    * @param <T> the type of the values
    * @return the value determined by the criterion
    */
-  public static <T> T replaceIf(T value,
-      Predicate<? super T> criterion,
-      T replacement) {
+  public static <T> T replaceIf(
+        T value,
+        Predicate<? super T> criterion,
+        T replacement) {
     return criterion.test(value) ? replacement : value;
   }
 
   /**
    * Replaces a value with another value if it has a certain relation <i>to</i> that
-   * value. Note that the {@link CommonChecks} class defines various relations that
-   * might be of use. This method can be used to apply some sort of clamping. For
-   * example:
+   * value. Note that the {@link CommonChecks} class defines various relations that might
+   * be of use. This method can be used to apply some sort of clamping. For example:
    *
    * <blockquote><pre>{@code
    * // import static nl.naturalis.check.CommonChecks.GT;
@@ -622,7 +637,7 @@ public class ObjectMethods {
    *
    * @param value the value to test and possibly return
    * @param relation the relation that needs to exist between the value and the
-   *     replacement value in order for the replacement value to be returned
+   * replacement value in order for the replacement value to be returned
    * @param replacement the replacement value
    * @param <T> the type of the values
    * @return the value determined by the relation by the two values
@@ -633,8 +648,8 @@ public class ObjectMethods {
 
   /**
    * Replaces a value with another value if it has a certain relation to yet another
-   * value. Note that the {@link CommonChecks} class defines various relations that
-   * might be of use. For example:
+   * value. Note that the {@link CommonChecks} class defines various relations that might
+   * be of use. For example:
    *
    * <blockquote><pre>{@code
    * // import static nl.naturalis.check.CommonChecks.EQ;
@@ -644,25 +659,25 @@ public class ObjectMethods {
    * }</pre></blockquote>
    *
    * @param value the value to test and possibly return
-   * @param relation the relation that needs to exist between the value and the
-   *     compare-to value in order for the replacement value to be returned
+   * @param relation the relation that needs to exist between the value and the compare-to
+   * value in order for the replacement value to be returned
    * @param compareTo the compare-to value
-   * @param replacement the value returned if the specified relation is found to
-   *     exist between the value and the compare-to value
+   * @param replacement the value returned if the specified relation is found to exist
+   * between the value and the compare-to value
    * @param <T> the type of the values
    * @return the value determined by the relation by the two values
    */
-  public static <T> T replaceIf(T value,
-      Relation<T, T> relation,
-      T compareTo,
-      T replacement) {
+  public static <T> T replaceIf(
+        T value,
+        Relation<T, T> relation,
+        T compareTo,
+        T replacement) {
     return relation.exists(value, compareTo) ? replacement : value;
   }
 
   /**
-   * Replaces a value with another value if it satisfies a certain criterion. Note
-   * that the {@link CommonChecks} class defines various predicates that might be of
-   * use.
+   * Replaces a value with another value if it satisfies a certain criterion. Note that
+   * the {@link CommonChecks} class defines various predicates that might be of use.
    *
    * @param value the value to test and possibly return
    * @param criterion the criterion determining which value to return
@@ -676,8 +691,8 @@ public class ObjectMethods {
   /**
    * Retains a value if it has a certain relation to another value, else replaces it
    * <i>with</i> that value. Note that the {@link CommonChecks} class defines
-   * various relations that might be of use. This method can be used to apply some
-   * sort of clamping. For example:
+   * various relations that might be of use. This method can be used to apply some sort of
+   * clamping. For example:
    *
    * <blockquote><pre>{@code
    * // import static nl.naturalis.check.CommonChecks.gt;
@@ -688,7 +703,7 @@ public class ObjectMethods {
    *
    * @param value the value to test and possibly return
    * @param relation the relation that needs to exist between the value and the
-   *     replacement value in order for the replacement value to be returned
+   * replacement value in order for the replacement value to be returned
    * @param replacement the replacement value
    * @return the value determined by the relation by the two values
    */
@@ -698,21 +713,22 @@ public class ObjectMethods {
 
   /**
    * Replaces a value with another value if it has a certain relation to yet another
-   * value. Note that the {@link CommonChecks} class defines various relations that
-   * might be of use.
+   * value. Note that the {@link CommonChecks} class defines various relations that might
+   * be of use.
    *
    * @param value the value to test and possibly return
-   * @param relation the relation that needs to exist between the value and the
-   *     compare-to value in order for the replacement value to be returned
+   * @param relation the relation that needs to exist between the value and the compare-to
+   * value in order for the replacement value to be returned
    * @param compareTo the compare-to value
-   * @param replacement the value returned if the specified relation is found to
-   *     exist between the value and the compare-to value
+   * @param replacement the value returned if the specified relation is found to exist
+   * between the value and the compare-to value
    * @return the value determined by the relation by the two values
    */
-  public static int replaceIf(int value,
-      IntRelation relation,
-      int compareTo,
-      int replacement) {
+  public static int replaceIf(
+        int value,
+        IntRelation relation,
+        int compareTo,
+        int replacement) {
     return relation.exists(value, compareTo) ? replacement : value;
   }
 
@@ -740,8 +756,8 @@ public class ObjectMethods {
   }
 
   /**
-   * Null-to-empty: returns {@link Collections#emptyList()} if the argument is null,
-   * else the argument itself.
+   * Null-to-empty: returns {@link Collections#emptyList()} if the argument is null, else
+   * the argument itself.
    *
    * @param arg an argument of type {@code List}
    * @return the argument or the default value of the corresponding primitive type
@@ -751,8 +767,8 @@ public class ObjectMethods {
   }
 
   /**
-   * Null-to-empty: returns {@link Collections#emptySet()} if the argument is null,
-   * else the argument itself.
+   * Null-to-empty: returns {@link Collections#emptySet()} if the argument is null, else
+   * the argument itself.
    *
    * @param arg an argument of type {@code List}
    * @return the argument or the default value of the corresponding primitive type
@@ -762,8 +778,8 @@ public class ObjectMethods {
   }
 
   /**
-   * Null-to-empty: returns {@link Collections#emptyMap()} if the argument is null,
-   * else the argument itself.
+   * Null-to-empty: returns {@link Collections#emptyMap()} if the argument is null, else
+   * the argument itself.
    *
    * @param arg an argument of type {@code List}
    * @return the argument or the default value of the corresponding primitive type
@@ -843,8 +859,7 @@ public class ObjectMethods {
   }
 
   /**
-   * Returns {@link Boolean#FALSE} if the argument is null, else the argument
-   * itself.
+   * Returns {@link Boolean#FALSE} if the argument is null, else the argument itself.
    *
    * @param arg an argument of type {@code Byte}
    * @return the argument or the default value of the corresponding primitive type

@@ -9,7 +9,7 @@ Klojang Util,org.klojang.util,ClassMethods,159,281,16,30,32,56,20,28,10,15
 Klojang Util,org.klojang.util,MutableInt,0,281,0,44,0,46,0,52,0,30
 Klojang Util,org.klojang.util,MathMethods,6,1218,0,96,2,194,1,86,1,38
 Klojang Util,org.klojang.util,ArrayType,5,292,1,11,1,64,1,25,0,20
-Klojang Util,org.klojang.util,ObjectMethods,67,1072,24,248,17,187,20,172,3,53
+Klojang Util,org.klojang.util,ObjectMethods,67,1084,29,255,17,186,25,173,3,53
 Klojang Util,org.klojang.util,InvokeMethods,83,46,4,0,25,13,7,5,5,5
 Klojang Util,org.klojang.util,StringMethods,71,1765,14,230,9,360,14,177,2,67
 Klojang Util,org.klojang.util,ExceptionMethods,22,308,3,25,6,57,4,25,1,14

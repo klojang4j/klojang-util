@@ -34,8 +34,8 @@ public class ObjectMethods {
 
   /**
    * Does a brute-force cast of one type to another. This method may come in handy,
-   * especially in the form of a method reference, when bumping up against the limits
-   * of Java's implementation of generics:
+   * especially in the form of a method reference, when bumping up against the limits of
+   * Java's implementation of generics:
    *
    * &lt;blockquote&gt;&lt;pre&gt;{@code
    * List&lt;CharSequence&gt; list1 = List.of(&quot;Hello&quot;, &quot;world&quot;);
@@ -100,10 +100,10 @@ public class ObjectMethods {
   }
 
   /**
-   * Returns {@code true} if the specified {@code Optional} is empty or contains an
-   * empty object. This is the only {@code isEmpty} method that will throw an
-   * {@code IllegalArgumentException} if the argument is null as {@code Optional}
-   * objects should never be null.
+   * Returns {@code true} if the specified {@code Optional} is empty or contains an empty
+   * object. This is the only {@code isEmpty} method that will throw an
+   * {@code IllegalArgumentException} if the argument is null as {@code Optional} objects
+   * should never be null.
    *
    * @param arg the {@code Optional} to check
    * @return whether it is empty or contains an empty object
@@ -124,8 +124,8 @@ public class ObjectMethods {
   }
 
   /**
-   * Returns {@code true} if the specified argument is null or empty. More precisely,
-   * this method returns {@code true} if any of the following applies:
+   * Returns {@code true} if the specified argument is null or empty. More precisely, this
+   * method returns {@code true} if any of the following applies:
    *
    * &lt;p&gt;
    *
@@ -147,13 +147,13 @@ public class ObjectMethods {
    */
   public static boolean isEmpty(Object arg) {
 <span class="fc" id="L149">    return arg == null</span>
-<span class="fc bfc" id="L150" title="All 4 branches covered.">        || (arg instanceof CharSequence cs &amp;&amp; cs.isEmpty())</span>
-<span class="fc bfc" id="L151" title="All 4 branches covered.">        || (arg instanceof Collection&lt;?&gt; c &amp;&amp; c.isEmpty())</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">        || (arg instanceof Map&lt;?, ?&gt; m &amp;&amp; m.isEmpty())</span>
-<span class="fc bfc" id="L153" title="All 6 branches covered.">        || (arg.getClass().isArray() &amp;&amp; getArrayLength(arg) == 0)</span>
-<span class="fc bfc" id="L154" title="All 6 branches covered.">        || (arg instanceof Optional&lt;?&gt; o &amp;&amp; (o.isEmpty() || isEmpty(o.get())))</span>
-<span class="fc bfc" id="L155" title="All 6 branches covered.">        || (arg instanceof Emptyable e &amp;&amp; e.isEmpty())</span>
-        ;
+<span class="fc bfc" id="L150" title="All 4 branches covered.">          || (arg instanceof CharSequence cs &amp;&amp; cs.isEmpty())</span>
+<span class="fc bfc" id="L151" title="All 4 branches covered.">          || (arg instanceof Collection&lt;?&gt; c &amp;&amp; c.isEmpty())</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">          || (arg instanceof Map&lt;?, ?&gt; m &amp;&amp; m.isEmpty())</span>
+<span class="fc bfc" id="L153" title="All 6 branches covered.">          || (arg.getClass().isArray() &amp;&amp; getArrayLength(arg) == 0)</span>
+<span class="fc bfc" id="L154" title="All 6 branches covered.">          || (arg instanceof Optional&lt;?&gt; o &amp;&amp; (o.isEmpty() || isEmpty(o.get())))</span>
+<span class="fc bfc" id="L155" title="All 6 branches covered.">          || (arg instanceof Emptyable e &amp;&amp; e.isEmpty())</span>
+          ;
   }
 
   /**
@@ -182,80 +182,99 @@ public class ObjectMethods {
    */
   public static boolean isDeepNotEmpty(Object arg) {
 <span class="fc" id="L184">    return arg != null</span>
-<span class="pc bpc" id="L185" title="1 of 4 branches missed.">        &amp;&amp; (!(arg instanceof CharSequence cs) || cs.length() &gt; 0)</span>
-<span class="fc bfc" id="L186" title="All 4 branches covered.">        &amp;&amp; (!(arg instanceof Collection c) || dne(c))</span>
-<span class="fc bfc" id="L187" title="All 4 branches covered.">        &amp;&amp; (!(arg instanceof Map m) || dne(m))</span>
-<span class="fc bfc" id="L188" title="All 4 branches covered.">        &amp;&amp; (!(arg instanceof Object[] x) || dne(x))</span>
-<span class="fc bfc" id="L189" title="All 4 branches covered.">        &amp;&amp; (!(arg instanceof Optional o) || dne(o))</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">        &amp;&amp; (!(arg instanceof Emptyable e) || e.isDeepNotEmpty())</span>
-<span class="pc bpc" id="L191" title="1 of 8 branches missed.">        &amp;&amp; (!isPrimitiveArray(arg) || getArrayLength(arg) &gt; 0);</span>
-  }
-
-  private static boolean dne(Collection coll) {
-<span class="fc bfc" id="L195" title="All 2 branches covered.">    if (coll.isEmpty()) {</span>
-<span class="fc" id="L196">      return false;</span>
-    }
-<span class="fc" id="L198">    return coll.stream().allMatch(ObjectMethods::isDeepNotEmpty);</span>
-  }
-
-  private static boolean dne(Map map) {
-<span class="fc bfc" id="L202" title="All 2 branches covered.">    if (map.isEmpty()) {</span>
-<span class="fc" id="L203">      return false;</span>
-    }
-<span class="fc" id="L205">    return map.entrySet().stream().allMatch(ObjectMethods::entryDeepNotEmpty);</span>
-  }
-
-  private static boolean entryDeepNotEmpty(Object obj) {
-<span class="fc" id="L209">    Map.Entry e = (Map.Entry) obj;</span>
-<span class="pc bpc" id="L210" title="1 of 4 branches missed.">    return isDeepNotEmpty(e.getKey()) &amp;&amp; isDeepNotEmpty(e.getValue());</span>
-  }
-
-  private static boolean dne(Object[] arr) {
-<span class="fc bfc" id="L214" title="All 2 branches covered.">    if (arr.length == 0) {</span>
-<span class="fc" id="L215">      return false;</span>
-    }
-<span class="fc" id="L217">    return Arrays.stream(arr).allMatch(ObjectMethods::isDeepNotEmpty);</span>
-  }
-
-  private static boolean dne(Optional opt) {
-<span class="pc bpc" id="L221" title="1 of 4 branches missed.">    return opt.isPresent() &amp;&amp; isDeepNotEmpty(opt.get());</span>
+<span class="pc bpc" id="L185" title="1 of 4 branches missed.">          &amp;&amp; (!(arg instanceof CharSequence cs) || cs.length() &gt; 0)</span>
+<span class="pc bpc" id="L186" title="1 of 4 branches missed.">          &amp;&amp; (!(arg instanceof Collection c) || isDeepNotEmpty(c))</span>
+<span class="fc bfc" id="L187" title="All 4 branches covered.">          &amp;&amp; (!(arg instanceof Map m) || isDeepNotEmpty(m))</span>
+<span class="fc bfc" id="L188" title="All 4 branches covered.">          &amp;&amp; (!(arg instanceof Object[] x) || isDeepNotEmpty(x))</span>
+<span class="fc bfc" id="L189" title="All 4 branches covered.">          &amp;&amp; (!(arg instanceof Optional o) || dne(o))</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">          &amp;&amp; (!(arg instanceof Emptyable e) || e.isDeepNotEmpty())</span>
+<span class="pc bpc" id="L191" title="1 of 8 branches missed.">          &amp;&amp; (!isPrimitiveArray(arg) || getArrayLength(arg) &gt; 0);</span>
   }
 
   /**
-   * Verifies that the argument is not null and, if it is array, {@link Collection}
-   * or {@link Map}, does not contain any null values. It may still be an empty
-   * array, {@code Collection} or {@code Map}, however. For maps, both keys and
-   * values are tested for {@code null}.
+   * Verifies that the specified collection is non-null, non-empty, and contains only
+   * deep-not-empty elements.
+   *
+   * @param coll the collection to test
+   * @return whether it is recursively non-empty
+   */
+  public static boolean isDeepNotEmpty(Collection&lt;?&gt; coll) {
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">    return coll != null</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">          &amp;&amp; !coll.isEmpty()</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">          &amp;&amp; coll.stream().allMatch(ObjectMethods::isDeepNotEmpty);</span>
+  }
+
+  /**
+   * Verifies that the specified map is non-null, non-empty, and contains only
+   * deep-not-empty keys and values.
+   *
+   * @param map the map to test
+   * @return whether it is recursively non-empty
+   */
+  public static boolean isDeepNotEmpty(Map&lt;?, ?&gt; map) {
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">    return map != null</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">          &amp;&amp; !map.isEmpty()</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">          &amp;&amp; map.entrySet().stream().allMatch(ObjectMethods::entryDeepNotEmpty);</span>
+  }
+
+  private static boolean entryDeepNotEmpty(Object obj) {
+<span class="fc" id="L221">    Map.Entry e = (Map.Entry) obj;</span>
+<span class="pc bpc" id="L222" title="1 of 4 branches missed.">    return isDeepNotEmpty(e.getKey()) &amp;&amp; isDeepNotEmpty(e.getValue());</span>
+  }
+
+  /**
+   * Verifies that the specified array is non-null, non-empty, and contains only
+   * deep-not-empty keys and values.
+   *
+   * @param arr the array to test
+   * @return whether it is recursively non-empty
+   */
+  public static boolean isDeepNotEmpty(Object[] arr) {
+<span class="pc bpc" id="L233" title="1 of 4 branches missed.">    return arr != null</span>
+          &amp;&amp; arr.length != 0
+<span class="pc bpc" id="L235" title="1 of 2 branches missed.">          &amp;&amp; Arrays.stream(arr).allMatch(ObjectMethods::isDeepNotEmpty);</span>
+  }
+
+  private static boolean dne(Optional opt) {
+<span class="pc bpc" id="L239" title="1 of 4 branches missed.">    return opt.isPresent() &amp;&amp; isDeepNotEmpty(opt.get());</span>
+  }
+
+  /**
+   * Verifies that the argument is not null and, if it is array, {@link Collection} or
+   * {@link Map}, does not contain any null values. It may still be an empty array,
+   * {@code Collection} or {@code Map}, however. For maps, both keys and values are tested
+   * for {@code null}.
    *
    * @param arg the object to be tested
    * @return whether it is not null and does not contain any null values
    */
   public static boolean isDeepNotNull(Object arg) {
-<span class="nc bnc" id="L234" title="All 2 branches missed.">    if (arg == null) {</span>
-<span class="nc" id="L235">      return false;</span>
-<span class="nc bnc" id="L236" title="All 2 branches missed.">    } else if (arg instanceof Object[] x) {</span>
-<span class="nc" id="L237">      return Arrays.stream(x).allMatch(notNull());</span>
-<span class="nc bnc" id="L238" title="All 2 branches missed.">    } else if (arg instanceof Collection c) {</span>
-<span class="nc bnc" id="L239" title="All 2 branches missed.">      if (CollectionMethods.isNullRepellent(c)) {</span>
-<span class="nc" id="L240">        return true;</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">    if (arg == null) {</span>
+<span class="nc" id="L253">      return false;</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">    } else if (arg instanceof Object[] x) {</span>
+<span class="nc" id="L255">      return Arrays.stream(x).allMatch(notNull());</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">    } else if (arg instanceof Collection c) {</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">      if (CollectionMethods.isNullRepellent(c)) {</span>
+<span class="nc" id="L258">        return true;</span>
       }
-<span class="nc" id="L242">      return c.stream().allMatch(notNull());</span>
-<span class="nc bnc" id="L243" title="All 2 branches missed.">    } else if (arg instanceof Map&lt;?, ?&gt; m) {</span>
-<span class="nc" id="L244">      return m.entrySet().stream()</span>
-<span class="nc bnc" id="L245" title="All 4 branches missed.">          .allMatch(e -&gt; e.getKey() != null &amp;&amp; e.getValue() != null);</span>
+<span class="nc" id="L260">      return c.stream().allMatch(notNull());</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">    } else if (arg instanceof Map&lt;?, ?&gt; m) {</span>
+<span class="nc" id="L262">      return m.entrySet().stream()</span>
+<span class="nc bnc" id="L263" title="All 4 branches missed.">            .allMatch(e -&gt; e.getKey() != null &amp;&amp; e.getValue() != null);</span>
     }
-<span class="nc" id="L247">    return true;</span>
+<span class="nc" id="L265">    return true;</span>
   }
 
   /**
-   * Tests the provided arguments for equality using &lt;i&gt;empty-equals-null&lt;/i&gt;
-   * semantics. This is roughly equivalent to
-   * {@code Objects.equals(e2n(arg0), e2n(arg1))}, except that {@code e2nEquals}
+   * Tests the provided arguments for equality using &lt;i&gt;empty-equals-null&lt;/i&gt; semantics.
+   * This is roughly equivalent to {@code Objects.equals(e2n(arg0), e2n(arg1))}, except
+   * that {@code e2nEquals}
    * &lt;i&gt;does&lt;/i&gt; take the types of the two arguments into account. So an empty
    * {@code String} is not equal to an empty {@code ArrayList} and an empty
    * {@code ArrayList} is not equal to an empty {@code HashSet}. (An empty
-   * {@code HashSet} &lt;i&gt;is&lt;/i&gt; equal to an empty {@code TreeSet}, but that is just
-   * behaviour specified by the Collections Framework.)
+   * {@code HashSet}
+   * &lt;i&gt;is&lt;/i&gt; equal to an empty {@code TreeSet}, but that is just behaviour specified by
+   * the Collections Framework.)
    *
    * &lt;p&gt;
    *
@@ -272,14 +291,13 @@ public class ObjectMethods {
    *
    * @param arg0 The 1st of the pair of objects to compare
    * @param arg1 The 2nd of the pair of objects to compare
-   * @return whether the provided arguments are equal using empty-equals-null
-   *     semantics
+   * @return whether the provided arguments are equal using empty-equals-null semantics
    */
   public static boolean e2nEquals(Object arg0, Object arg1) {
-<span class="fc bfc" id="L279" title="All 4 branches covered.">    return (arg0 == arg1)</span>
-<span class="fc bfc" id="L280" title="All 4 branches covered.">        || (arg0 == null &amp;&amp; isEmpty(arg1))</span>
-<span class="fc bfc" id="L281" title="All 2 branches covered.">        || (arg1 == null &amp;&amp; isEmpty(arg0))</span>
-<span class="fc bfc" id="L282" title="All 2 branches covered.">        || Objects.equals(arg0, arg1);</span>
+<span class="fc bfc" id="L297" title="All 4 branches covered.">    return (arg0 == arg1)</span>
+<span class="fc bfc" id="L298" title="All 4 branches covered.">          || (arg0 == null &amp;&amp; isEmpty(arg1))</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">          || (arg1 == null &amp;&amp; isEmpty(arg0))</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">          || Objects.equals(arg0, arg1);</span>
   }
 
   /**
@@ -289,72 +307,71 @@ public class ObjectMethods {
    * @param arg0 The 1st of the pair of objects to compare
    * @param arg1 The 2nd of the pair of objects to compare
    * @return whether the provided arguments are deeply equal using empty-equals-null
-   *     semantics
+   * semantics
    */
   public static boolean e2nDeepEquals(Object arg0, Object arg1) {
-<span class="fc bfc" id="L295" title="All 4 branches covered.">    return (arg0 == arg1)</span>
-<span class="fc bfc" id="L296" title="All 4 branches covered.">        || (arg0 == null &amp;&amp; isEmpty(arg1))</span>
-<span class="fc bfc" id="L297" title="All 2 branches covered.">        || (arg1 == null &amp;&amp; isEmpty(arg0))</span>
-<span class="fc bfc" id="L298" title="All 2 branches covered.">        || eq(arg0, arg1);</span>
+<span class="fc bfc" id="L313" title="All 4 branches covered.">    return (arg0 == arg1)</span>
+<span class="fc bfc" id="L314" title="All 4 branches covered.">          || (arg0 == null &amp;&amp; isEmpty(arg1))</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">          || (arg1 == null &amp;&amp; isEmpty(arg0))</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">          || eq(arg0, arg1);</span>
   }
 
   /**
    * Generates a hash code for the provided object using &lt;i&gt;empty-equals-null&lt;/i&gt;
-   * semantics. Empty objects (whatever their type and including {@code null}) all
-   * have the same hash code: 0 (zero)! If the argument is any array, this method is
-   * recursively applied to the array's elements. Therefore {@code e2nHashCode} in
-   * effect generates a &quot;deep&quot; hash code.
+   * semantics. Empty objects (whatever their type and including {@code null}) all have
+   * the same hash code: 0 (zero)! If the argument is any array, this method is
+   * recursively applied to the array's elements. Therefore {@code e2nHashCode} in effect
+   * generates a &quot;deep&quot; hash code.
    *
    * @param obj The object to generate a hash code for
    * @return the hash code
    */
   public static int e2nHashCode(Object obj) {
-<span class="fc bfc" id="L312" title="All 2 branches covered.">    if (isEmpty(obj)) {</span>
-<span class="fc" id="L313">      return 0;</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">    if (isEmpty(obj)) {</span>
+<span class="fc" id="L331">      return 0;</span>
     }
     int hash;
-<span class="fc bfc" id="L316" title="All 2 branches covered.">    if (obj instanceof Collection&lt;?&gt; c) {</span>
-<span class="fc" id="L317">      hash = 1;</span>
-<span class="fc bfc" id="L318" title="All 2 branches covered.">      for (Object o : c) {</span>
-<span class="fc" id="L319">        hash = hash * 31 + e2nHashCode(o);</span>
-<span class="fc" id="L320">      }</span>
-<span class="fc bfc" id="L321" title="All 2 branches covered.">    } else if (obj instanceof Map&lt;?, ?&gt; m) {</span>
-<span class="fc" id="L322">      hash = 1;</span>
-<span class="fc bfc" id="L323" title="All 2 branches covered.">      for (Map.Entry e : m.entrySet()) {</span>
-<span class="fc" id="L324">        hash = hash * 31 + e2nHashCode(e.getKey());</span>
-<span class="fc" id="L325">        hash = hash * 31 + e2nHashCode(e.getValue());</span>
-<span class="fc" id="L326">      }</span>
-<span class="fc bfc" id="L327" title="All 2 branches covered.">    } else if (obj instanceof Object[] a) {</span>
-<span class="fc" id="L328">      hash = 1;</span>
-<span class="fc bfc" id="L329" title="All 2 branches covered.">      for (Object o : a) {</span>
-<span class="fc" id="L330">        hash = hash * 31 + e2nHashCode(o);</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">    if (obj instanceof Collection&lt;?&gt; c) {</span>
+<span class="fc" id="L335">      hash = 1;</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">      for (Object o : c) {</span>
+<span class="fc" id="L337">        hash = hash * 31 + e2nHashCode(o);</span>
+<span class="fc" id="L338">      }</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">    } else if (obj instanceof Map&lt;?, ?&gt; m) {</span>
+<span class="fc" id="L340">      hash = 1;</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">      for (Map.Entry e : m.entrySet()) {</span>
+<span class="fc" id="L342">        hash = hash * 31 + e2nHashCode(e.getKey());</span>
+<span class="fc" id="L343">        hash = hash * 31 + e2nHashCode(e.getValue());</span>
+<span class="fc" id="L344">      }</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">    } else if (obj instanceof Object[] a) {</span>
+<span class="fc" id="L346">      hash = 1;</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">      for (Object o : a) {</span>
+<span class="fc" id="L348">        hash = hash * 31 + e2nHashCode(o);</span>
       }
-<span class="fc bfc" id="L332" title="All 2 branches covered.">    } else if (obj.getClass().isArray()) {</span>
-<span class="fc" id="L333">      hash = ArrayMethods.hashCode(obj);</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">    } else if (obj.getClass().isArray()) {</span>
+<span class="fc" id="L351">      hash = ArrayMethods.hashCode(obj);</span>
     } else {
-<span class="fc" id="L335">      hash = obj.hashCode();</span>
+<span class="fc" id="L353">      hash = obj.hashCode();</span>
     }
-<span class="fc" id="L337">    return hash;</span>
+<span class="fc" id="L355">    return hash;</span>
   }
 
   /**
    * &lt;p&gt;Generates a hash code for the provided object using &lt;i&gt;empty-equals-null&lt;/i&gt;
-   * semantics. This variant of {@code hashCode()} includes the type of the argument
-   * in the computation of the hash code. As with {@link #e2nEquals(Object, Object)},
-   * this ensures that an empty {@code String} will not have the same hash code as an
-   * empty {@code ArrayList}, and an empty {@code ArrayList} will not have the same
-   * hash code as an empty {@code HashSet}. An empty {@code HashSet} &lt;i&gt;will&lt;/i&gt; have
-   * the same hash code as an empty {@code TreeSet}, because for Collection Framework
-   * classes it is hash code of the base type that is included in the computation of
-   * the hash code (i.e. {@code List.class}, {@code Set.class} and
-   * {@code Map.class}).
+   * semantics. This variant of {@code hashCode()} includes the type of the argument in
+   * the computation of the hash code. As with {@link #e2nEquals(Object, Object)}, this
+   * ensures that an empty {@code String} will not have the same hash code as an empty
+   * {@code ArrayList}, and an empty {@code ArrayList} will not have the same hash code as
+   * an empty {@code HashSet}. An empty {@code HashSet} &lt;i&gt;will&lt;/i&gt; have the same hash
+   * code as an empty {@code TreeSet}, because for Collection Framework classes it is hash
+   * code of the base type that is included in the computation of the hash code (i.e.
+   * {@code List.class}, {@code Set.class} and {@code Map.class}).
    *
    * &lt;p&gt;Thus, using {@code e2nTypedHashCode} will lead to fewer hash collisions
-   * than {@code e2nHashcode}. However, it may, in some circumstances break the
-   * contract for {@link Object#hashCode()}. A class could define an {@code equals}
-   * method that allows instances of it to be equal to instances of its superclass.
-   * However, {@code e2nTypedHashCode} precludes this as the hash code for the class
-   * and the superclass will be different.
+   * than {@code e2nHashcode}. However, it may, in some circumstances break the contract
+   * for {@link Object#hashCode()}. A class could define an {@code equals} method that
+   * allows instances of it to be equal to instances of its superclass. However,
+   * {@code e2nTypedHashCode} precludes this as the hash code for the class and the
+   * superclass will be different.
    *
    * &lt;p&gt;Also note that this anyhow only becomes relevant if the collection of
    * objects you work with is remarkably heterogeneous: strings, empty strings, sets,
@@ -364,55 +381,55 @@ public class ObjectMethods {
    * @return the hash code
    */
   public static int e2nTypedHashCode(Object obj) {
-<span class="fc bfc" id="L367" title="All 2 branches covered.">    if (obj == null) {</span>
-<span class="fc" id="L368">      return 0;</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">    if (obj == null) {</span>
+<span class="fc" id="L385">      return 0;</span>
     }
     int hash;
-<span class="fc bfc" id="L371" title="All 2 branches covered.">    if (obj instanceof String s) {</span>
-<span class="fc" id="L372">      hash = String.class.hashCode();</span>
-<span class="fc bfc" id="L373" title="All 2 branches covered.">      if (!s.isEmpty()) {</span>
-<span class="fc" id="L374">        hash = hash * 31 + s.hashCode();</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">    if (obj instanceof String s) {</span>
+<span class="fc" id="L389">      hash = String.class.hashCode();</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">      if (!s.isEmpty()) {</span>
+<span class="fc" id="L391">        hash = hash * 31 + s.hashCode();</span>
       }
-<span class="fc bfc" id="L376" title="All 2 branches covered.">    } else if (obj instanceof List x) {</span>
-<span class="fc" id="L377">      hash = List.class.hashCode();</span>
-<span class="fc bfc" id="L378" title="All 2 branches covered.">      for (Object o : x) {</span>
-<span class="fc" id="L379">        hash = hash * 31 + e2nTypedHashCode(o);</span>
-<span class="fc" id="L380">      }</span>
-<span class="fc bfc" id="L381" title="All 2 branches covered.">    } else if (obj instanceof Set x) {</span>
-<span class="fc" id="L382">      hash = Set.class.hashCode();</span>
-<span class="fc bfc" id="L383" title="All 2 branches covered.">      for (Object o : x) {</span>
-<span class="fc" id="L384">        hash = hash * 31 + e2nTypedHashCode(o);</span>
-<span class="fc" id="L385">      }</span>
-<span class="fc bfc" id="L386" title="All 2 branches covered.">    } else if (obj instanceof Map&lt;?, ?&gt; x) {</span>
-<span class="fc" id="L387">      hash = Map.class.hashCode();</span>
-<span class="fc bfc" id="L388" title="All 2 branches covered.">      for (Map.Entry e : x.entrySet()) {</span>
-<span class="fc" id="L389">        hash = hash * 31 + e2nTypedHashCode(e.getKey());</span>
-<span class="fc" id="L390">        hash = hash * 31 + e2nTypedHashCode(e.getValue());</span>
-<span class="fc" id="L391">      }</span>
-<span class="fc bfc" id="L392" title="All 2 branches covered.">    } else if (obj instanceof Object[] x) {</span>
-<span class="fc" id="L393">      hash = x.getClass().hashCode();</span>
-<span class="fc bfc" id="L394" title="All 2 branches covered.">      for (Object o : x) {</span>
-<span class="fc" id="L395">        hash = hash * 31 + e2nTypedHashCode(o);</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">    } else if (obj instanceof List x) {</span>
+<span class="fc" id="L394">      hash = List.class.hashCode();</span>
+<span class="fc bfc" id="L395" title="All 2 branches covered.">      for (Object o : x) {</span>
+<span class="fc" id="L396">        hash = hash * 31 + e2nTypedHashCode(o);</span>
+<span class="fc" id="L397">      }</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">    } else if (obj instanceof Set x) {</span>
+<span class="fc" id="L399">      hash = Set.class.hashCode();</span>
+<span class="fc bfc" id="L400" title="All 2 branches covered.">      for (Object o : x) {</span>
+<span class="fc" id="L401">        hash = hash * 31 + e2nTypedHashCode(o);</span>
+<span class="fc" id="L402">      }</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">    } else if (obj instanceof Map&lt;?, ?&gt; x) {</span>
+<span class="fc" id="L404">      hash = Map.class.hashCode();</span>
+<span class="fc bfc" id="L405" title="All 2 branches covered.">      for (Map.Entry e : x.entrySet()) {</span>
+<span class="fc" id="L406">        hash = hash * 31 + e2nTypedHashCode(e.getKey());</span>
+<span class="fc" id="L407">        hash = hash * 31 + e2nTypedHashCode(e.getValue());</span>
+<span class="fc" id="L408">      }</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">    } else if (obj instanceof Object[] x) {</span>
+<span class="fc" id="L410">      hash = x.getClass().hashCode();</span>
+<span class="fc bfc" id="L411" title="All 2 branches covered.">      for (Object o : x) {</span>
+<span class="fc" id="L412">        hash = hash * 31 + e2nTypedHashCode(o);</span>
       }
-<span class="fc bfc" id="L397" title="All 2 branches covered.">    } else if (obj.getClass().isArray()) {</span>
-<span class="fc" id="L398">      hash = obj.getClass().hashCode();</span>
-<span class="fc bfc" id="L399" title="All 2 branches covered.">      if (Array.getLength(obj) != 0) {</span>
-<span class="fc" id="L400">        hash = ArrayMethods.hashCode(obj);</span>
+<span class="fc bfc" id="L414" title="All 2 branches covered.">    } else if (obj.getClass().isArray()) {</span>
+<span class="fc" id="L415">      hash = obj.getClass().hashCode();</span>
+<span class="fc bfc" id="L416" title="All 2 branches covered.">      if (Array.getLength(obj) != 0) {</span>
+<span class="fc" id="L417">        hash = ArrayMethods.hashCode(obj);</span>
       }
-<span class="fc bfc" id="L402" title="All 2 branches covered.">    } else if (obj instanceof Optional o) {</span>
-<span class="fc" id="L403">      hash = Optional.class.hashCode();</span>
-<span class="fc bfc" id="L404" title="All 4 branches covered.">      if (o.isPresent() &amp;&amp; !isEmpty(o.get())) {</span>
-<span class="fc" id="L405">        hash = hash * 31 + e2nTypedHashCode(o.get());</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">    } else if (obj instanceof Optional o) {</span>
+<span class="fc" id="L420">      hash = Optional.class.hashCode();</span>
+<span class="fc bfc" id="L421" title="All 4 branches covered.">      if (o.isPresent() &amp;&amp; !isEmpty(o.get())) {</span>
+<span class="fc" id="L422">        hash = hash * 31 + e2nTypedHashCode(o.get());</span>
       }
-<span class="fc bfc" id="L407" title="All 2 branches covered.">    } else if (obj instanceof Result r) {</span>
-<span class="fc" id="L408">      hash = Result.class.hashCode();</span>
-<span class="fc bfc" id="L409" title="All 4 branches covered.">      if (r.isAvailable() &amp;&amp; !isEmpty(r.get())) {</span>
-<span class="fc" id="L410">        hash = hash * 31 + e2nTypedHashCode(r.get());</span>
+<span class="fc bfc" id="L424" title="All 2 branches covered.">    } else if (obj instanceof Result r) {</span>
+<span class="fc" id="L425">      hash = Result.class.hashCode();</span>
+<span class="fc bfc" id="L426" title="All 4 branches covered.">      if (r.isAvailable() &amp;&amp; !isEmpty(r.get())) {</span>
+<span class="fc" id="L427">        hash = hash * 31 + e2nTypedHashCode(r.get());</span>
       }
     } else {
-<span class="fc" id="L413">      hash = obj.hashCode();</span>
+<span class="fc" id="L430">      hash = obj.hashCode();</span>
     }
-<span class="fc" id="L415">    return hash;</span>
+<span class="fc" id="L432">    return hash;</span>
   }
 
   /**
@@ -423,14 +440,14 @@ public class ObjectMethods {
    * @return the hash code
    */
   public static int e2nHash(Object... objs) {
-<span class="fc bfc" id="L426" title="All 2 branches covered.">    if (objs == null) {</span>
-<span class="fc" id="L427">      return 0;</span>
+<span class="fc bfc" id="L443" title="All 2 branches covered.">    if (objs == null) {</span>
+<span class="fc" id="L444">      return 0;</span>
     }
-<span class="fc" id="L429">    int hash = 1;</span>
-<span class="fc bfc" id="L430" title="All 2 branches covered.">    for (Object obj : objs) {</span>
-<span class="fc" id="L431">      hash = hash * 31 + e2nHashCode(obj);</span>
+<span class="fc" id="L446">    int hash = 1;</span>
+<span class="fc bfc" id="L447" title="All 2 branches covered.">    for (Object obj : objs) {</span>
+<span class="fc" id="L448">      hash = hash * 31 + e2nHashCode(obj);</span>
     }
-<span class="fc" id="L433">    return hash;</span>
+<span class="fc" id="L450">    return hash;</span>
   }
 
   /**
@@ -441,29 +458,30 @@ public class ObjectMethods {
    * @return A non-null value
    */
   public static &lt;T&gt; T ifNull(T value, T defVal) {
-<span class="fc bfc" id="L444" title="All 2 branches covered.">    return value == null ? defVal : value;</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">    return value == null ? defVal : value;</span>
   }
 
   /**
-   * Returns the first argument if it is not {@code null}, else the value produced by
-   * the specified {@code Supplier}.
+   * Returns the first argument if it is not {@code null}, else the value produced by the
+   * specified {@code Supplier}.
    *
    * @param &lt;T&gt; the type of the arguments and the return value
    * @param &lt;E&gt; The type of the exception that can potentially be thrown by the
-   *     {@code Supplier}
+   * {@code Supplier}
    * @param value The value to return if it is not {@code null}
    * @param supplier The supplier of a default value
    * @return a non-null value
    */
-  public static &lt;T, E extends Exception&gt; T ifNull(T value,
-      FallibleSupplier&lt;? extends T, E&gt; supplier) throws E {
-<span class="fc" id="L460">    Check.notNull(supplier, &quot;supplier&quot;);</span>
-<span class="fc bfc" id="L461" title="All 2 branches covered.">    return value == null ? supplier.get() : value;</span>
+  public static &lt;T, E extends Exception&gt; T ifNull(
+        T value,
+        FallibleSupplier&lt;? extends T, E&gt; supplier) throws E {
+<span class="fc" id="L478">    Check.notNull(supplier, &quot;supplier&quot;);</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">    return value == null ? supplier.get() : value;</span>
   }
 
   /**
-   * Returns the first argument if it is not empty (as per {@link #isEmpty(Object)}),
-   * else the second argument.
+   * Returns the first argument if it is not empty (as per {@link #isEmpty(Object)}), else
+   * the second argument.
    *
    * @param &lt;T&gt; the type of the arguments and the return value
    * @param value The value to return if it is not empty
@@ -471,13 +489,12 @@ public class ObjectMethods {
    * @return a non-empty value
    */
   public static &lt;T&gt; T ifEmpty(T value, T defVal) {
-<span class="fc bfc" id="L474" title="All 2 branches covered.">    return isEmpty(value) ? defVal : value;</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">    return isEmpty(value) ? defVal : value;</span>
   }
 
   /**
-   * Returns the first argument if it is not empty (as per {@link #isEmpty(Object)}),
-   * else the value produced by the specified {@code Supplier} (which may be empty as
-   * well).
+   * Returns the first argument if it is not empty (as per {@link #isEmpty(Object)}), else
+   * the value produced by the specified {@code Supplier} (which may be empty as well).
    *
    * @param value The value to return if not empty
    * @param supplier The supplier of a default value if {@code value} is null
@@ -485,14 +502,14 @@ public class ObjectMethods {
    * @param &lt;E&gt; The exception potentially being thrown by the supplier as it
    * @return a non-empty value
    */
-  public static &lt;T, E extends Exception&gt; T ifEmpty(T value,
-      FallibleSupplier&lt;? extends T, E&gt; supplier) throws E {
-<span class="fc bfc" id="L490" title="All 2 branches covered.">    return isEmpty(value) ? Check.notNull(supplier, &quot;supplier&quot;).ok().get() : value;</span>
+  public static &lt;T, E extends Exception&gt; T ifEmpty(
+        T value,
+        FallibleSupplier&lt;? extends T, E&gt; supplier) throws E {
+<span class="fc bfc" id="L508" title="All 2 branches covered.">    return isEmpty(value) ? Check.notNull(supplier, &quot;supplier&quot;).ok().get() : value;</span>
   }
 
   /**
-   * Returns this first argument if it is among the allowed values, else
-   * {@code null}.
+   * Returns this first argument if it is among the allowed values, else {@code null}.
    *
    * @param value The value to test
    * @param allowedValues The values it is allowed to have
@@ -501,13 +518,13 @@ public class ObjectMethods {
    */
   @SuppressWarnings(&quot;unchecked&quot;)
   public static &lt;T&gt; T nullUnless(T value, T... allowedValues) {
-<span class="fc" id="L504">    Check.notNull(allowedValues, &quot;allowedValue&quot;);</span>
-<span class="fc bfc" id="L505" title="All 2 branches covered.">    return isElementOf(value, allowedValues) ? value : null;</span>
+<span class="fc" id="L521">    Check.notNull(allowedValues, &quot;allowedValue&quot;);</span>
+<span class="fc bfc" id="L522" title="All 2 branches covered.">    return isElementOf(value, allowedValues) ? value : null;</span>
   }
 
   /**
-   * Returns {@code null} if the first argument is among the forbidden values, else
-   * the first argument itself.
+   * Returns {@code null} if the first argument is among the forbidden values, else the
+   * first argument itself.
    *
    * @param &lt;T&gt; the type of the involved values
    * @param value The value to test
@@ -516,14 +533,14 @@ public class ObjectMethods {
    */
   @SuppressWarnings(&quot;unchecked&quot;)
   public static &lt;T&gt; T nullIf(T value, T... forbiddenValues) {
-<span class="fc" id="L519">    Check.notNull(forbiddenValues, &quot;forbiddenValues&quot;);</span>
-<span class="fc bfc" id="L520" title="All 2 branches covered.">    return isElementOf(value, forbiddenValues) ? null : value;</span>
+<span class="fc" id="L536">    Check.notNull(forbiddenValues, &quot;forbiddenValues&quot;);</span>
+<span class="fc bfc" id="L537" title="All 2 branches covered.">    return isElementOf(value, forbiddenValues) ? null : value;</span>
   }
 
   /**
    * Returns the result of passing the specified argument to the specified
-   * {@code Function} if the argument is not {@code null}, else returns {@code null}.
-   * For example:
+   * {@code Function} if the argument is not {@code null}, else returns {@code null}. For
+   * example:
    *
    * &lt;pre&gt;
    * String[] strs = ifNotNull(&quot;Hello World&quot;, s -&gt; s.split(&quot; &quot;));
@@ -536,13 +553,12 @@ public class ObjectMethods {
    * @return {@code value} or null
    */
   public static &lt;T, U&gt; U ifNotNull(T arg, Function&lt;T, U&gt; then) {
-<span class="fc" id="L539">    return ifNotNull(arg, then, null);</span>
+<span class="fc" id="L556">    return ifNotNull(arg, then, null);</span>
   }
 
   /**
    * Returns the result of passing the specified argument to the specified
-   * {@code Function} if the argument is not null, else a default value. For
-   * example:
+   * {@code Function} if the argument is not null, else a default value. For example:
    *
    * &lt;pre&gt;
    * String[] strs = ifNotNull(&quot;Hello World&quot;, s -&gt; s.split(&quot; &quot;), new String[0]);
@@ -556,13 +572,13 @@ public class ObjectMethods {
    * @return the result produced by the {@code Function} or by the {@code Supplier}
    */
   public static &lt;T, U&gt; U ifNotNull(T arg, Function&lt;T, U&gt; then, U dfault) {
-<span class="fc bfc" id="L559" title="All 2 branches covered.">    return arg != null ? then.apply(arg) : dfault;</span>
+<span class="fc bfc" id="L575" title="All 2 branches covered.">    return arg != null ? then.apply(arg) : dfault;</span>
   }
 
   /**
    * Returns the result of passing the specified argument to the specified
-   * {@code Function} if the argument is not {@link #isEmpty(Object) empty}, else
-   * returns null.
+   * {@code Function} if the argument is not {@link #isEmpty(Object) empty}, else returns
+   * null.
    *
    * @param &lt;T&gt; the type of the value to transform
    * @param &lt;U&gt; The return type
@@ -571,7 +587,7 @@ public class ObjectMethods {
    * @return the result produced by the {@code Function} or a default value
    */
   public static &lt;T, U&gt; U ifNotEmpty(T arg, Function&lt;T, U&gt; then) {
-<span class="fc" id="L574">    return ifNotEmpty(arg, then, null);</span>
+<span class="fc" id="L590">    return ifNotEmpty(arg, then, null);</span>
   }
 
   /**
@@ -587,13 +603,12 @@ public class ObjectMethods {
    * @return the result produced by the {@code Function} or a default value
    */
   public static &lt;T, U&gt; U ifNotEmpty(T arg, Function&lt;T, U&gt; then, U dfault) {
-<span class="fc bfc" id="L590" title="All 2 branches covered.">    return !isEmpty(arg) ? then.apply(arg) : dfault;</span>
+<span class="fc bfc" id="L606" title="All 2 branches covered.">    return !isEmpty(arg) ? then.apply(arg) : dfault;</span>
   }
 
   /**
-   * Replaces a value with another value if it satisfies a certain criterion. Note
-   * that the {@link CommonChecks} class defines various predicates that might be of
-   * use.
+   * Replaces a value with another value if it satisfies a certain criterion. Note that
+   * the {@link CommonChecks} class defines various predicates that might be of use.
    *
    * @param value the value to test and possibly return
    * @param criterion the criterion determining which value to return
@@ -601,17 +616,17 @@ public class ObjectMethods {
    * @param &lt;T&gt; the type of the values
    * @return the value determined by the criterion
    */
-  public static &lt;T&gt; T replaceIf(T value,
-      Predicate&lt;? super T&gt; criterion,
-      T replacement) {
-<span class="fc bfc" id="L607" title="All 2 branches covered.">    return criterion.test(value) ? replacement : value;</span>
+  public static &lt;T&gt; T replaceIf(
+        T value,
+        Predicate&lt;? super T&gt; criterion,
+        T replacement) {
+<span class="fc bfc" id="L623" title="All 2 branches covered.">    return criterion.test(value) ? replacement : value;</span>
   }
 
   /**
    * Replaces a value with another value if it has a certain relation &lt;i&gt;to&lt;/i&gt; that
-   * value. Note that the {@link CommonChecks} class defines various relations that
-   * might be of use. This method can be used to apply some sort of clamping. For
-   * example:
+   * value. Note that the {@link CommonChecks} class defines various relations that might
+   * be of use. This method can be used to apply some sort of clamping. For example:
    *
    * &lt;blockquote&gt;&lt;pre&gt;{@code
    * // import static nl.naturalis.check.CommonChecks.GT;
@@ -622,19 +637,19 @@ public class ObjectMethods {
    *
    * @param value the value to test and possibly return
    * @param relation the relation that needs to exist between the value and the
-   *     replacement value in order for the replacement value to be returned
+   * replacement value in order for the replacement value to be returned
    * @param replacement the replacement value
    * @param &lt;T&gt; the type of the values
    * @return the value determined by the relation by the two values
    */
   public static &lt;T&gt; T clamp(T value, Relation&lt;T, T&gt; relation, T replacement) {
-<span class="fc bfc" id="L631" title="All 2 branches covered.">    return relation.exists(value, replacement) ? replacement : value;</span>
+<span class="fc bfc" id="L646" title="All 2 branches covered.">    return relation.exists(value, replacement) ? replacement : value;</span>
   }
 
   /**
    * Replaces a value with another value if it has a certain relation to yet another
-   * value. Note that the {@link CommonChecks} class defines various relations that
-   * might be of use. For example:
+   * value. Note that the {@link CommonChecks} class defines various relations that might
+   * be of use. For example:
    *
    * &lt;blockquote&gt;&lt;pre&gt;{@code
    * // import static nl.naturalis.check.CommonChecks.EQ;
@@ -644,25 +659,25 @@ public class ObjectMethods {
    * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
    * @param value the value to test and possibly return
-   * @param relation the relation that needs to exist between the value and the
-   *     compare-to value in order for the replacement value to be returned
+   * @param relation the relation that needs to exist between the value and the compare-to
+   * value in order for the replacement value to be returned
    * @param compareTo the compare-to value
-   * @param replacement the value returned if the specified relation is found to
-   *     exist between the value and the compare-to value
+   * @param replacement the value returned if the specified relation is found to exist
+   * between the value and the compare-to value
    * @param &lt;T&gt; the type of the values
    * @return the value determined by the relation by the two values
    */
-  public static &lt;T&gt; T replaceIf(T value,
-      Relation&lt;T, T&gt; relation,
-      T compareTo,
-      T replacement) {
-<span class="fc bfc" id="L659" title="All 2 branches covered.">    return relation.exists(value, compareTo) ? replacement : value;</span>
+  public static &lt;T&gt; T replaceIf(
+        T value,
+        Relation&lt;T, T&gt; relation,
+        T compareTo,
+        T replacement) {
+<span class="fc bfc" id="L675" title="All 2 branches covered.">    return relation.exists(value, compareTo) ? replacement : value;</span>
   }
 
   /**
-   * Replaces a value with another value if it satisfies a certain criterion. Note
-   * that the {@link CommonChecks} class defines various predicates that might be of
-   * use.
+   * Replaces a value with another value if it satisfies a certain criterion. Note that
+   * the {@link CommonChecks} class defines various predicates that might be of use.
    *
    * @param value the value to test and possibly return
    * @param criterion the criterion determining which value to return
@@ -670,14 +685,14 @@ public class ObjectMethods {
    * @return the value determined by the criterion
    */
   public static int replaceIf(int value, IntPredicate criterion, int replacement) {
-<span class="fc bfc" id="L673" title="All 2 branches covered.">    return criterion.test(value) ? replacement : value;</span>
+<span class="fc bfc" id="L688" title="All 2 branches covered.">    return criterion.test(value) ? replacement : value;</span>
   }
 
   /**
    * Retains a value if it has a certain relation to another value, else replaces it
    * &lt;i&gt;with&lt;/i&gt; that value. Note that the {@link CommonChecks} class defines
-   * various relations that might be of use. This method can be used to apply some
-   * sort of clamping. For example:
+   * various relations that might be of use. This method can be used to apply some sort of
+   * clamping. For example:
    *
    * &lt;blockquote&gt;&lt;pre&gt;{@code
    * // import static nl.naturalis.check.CommonChecks.gt;
@@ -688,32 +703,33 @@ public class ObjectMethods {
    *
    * @param value the value to test and possibly return
    * @param relation the relation that needs to exist between the value and the
-   *     replacement value in order for the replacement value to be returned
+   * replacement value in order for the replacement value to be returned
    * @param replacement the replacement value
    * @return the value determined by the relation by the two values
    */
   public static int clamp(int value, IntRelation relation, int replacement) {
-<span class="fc bfc" id="L696" title="All 2 branches covered.">    return relation.exists(value, replacement) ? replacement : value;</span>
+<span class="fc bfc" id="L711" title="All 2 branches covered.">    return relation.exists(value, replacement) ? replacement : value;</span>
   }
 
   /**
    * Replaces a value with another value if it has a certain relation to yet another
-   * value. Note that the {@link CommonChecks} class defines various relations that
-   * might be of use.
+   * value. Note that the {@link CommonChecks} class defines various relations that might
+   * be of use.
    *
    * @param value the value to test and possibly return
-   * @param relation the relation that needs to exist between the value and the
-   *     compare-to value in order for the replacement value to be returned
+   * @param relation the relation that needs to exist between the value and the compare-to
+   * value in order for the replacement value to be returned
    * @param compareTo the compare-to value
-   * @param replacement the value returned if the specified relation is found to
-   *     exist between the value and the compare-to value
+   * @param replacement the value returned if the specified relation is found to exist
+   * between the value and the compare-to value
    * @return the value determined by the relation by the two values
    */
-  public static int replaceIf(int value,
-      IntRelation relation,
-      int compareTo,
-      int replacement) {
-<span class="fc bfc" id="L716" title="All 2 branches covered.">    return relation.exists(value, compareTo) ? replacement : value;</span>
+  public static int replaceIf(
+        int value,
+        IntRelation relation,
+        int compareTo,
+        int replacement) {
+<span class="fc bfc" id="L732" title="All 2 branches covered.">    return relation.exists(value, compareTo) ? replacement : value;</span>
   }
 
   /**
@@ -725,7 +741,7 @@ public class ObjectMethods {
    * @return the argument itself if not empty, else {@code null}
    */
   public static &lt;T&gt; T e2n(T arg) {
-<span class="fc bfc" id="L728" title="All 2 branches covered.">    return isEmpty(arg) ? null : arg;</span>
+<span class="fc bfc" id="L744" title="All 2 branches covered.">    return isEmpty(arg) ? null : arg;</span>
   }
 
   /**
@@ -736,40 +752,40 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static String n2e(String arg) {
-<span class="fc" id="L739">    return ifNull(arg, StringMethods.EMPTY_STRING);</span>
+<span class="fc" id="L755">    return ifNull(arg, StringMethods.EMPTY_STRING);</span>
   }
 
   /**
-   * Null-to-empty: returns {@link Collections#emptyList()} if the argument is null,
-   * else the argument itself.
+   * Null-to-empty: returns {@link Collections#emptyList()} if the argument is null, else
+   * the argument itself.
    *
    * @param arg an argument of type {@code List}
    * @return the argument or the default value of the corresponding primitive type
    */
   public static &lt;T&gt; List&lt;T&gt; n2e(List&lt;T&gt; arg) {
-<span class="fc" id="L750">    return ifNull(arg, Collections.emptyList());</span>
+<span class="fc" id="L766">    return ifNull(arg, Collections.emptyList());</span>
   }
 
   /**
-   * Null-to-empty: returns {@link Collections#emptySet()} if the argument is null,
-   * else the argument itself.
+   * Null-to-empty: returns {@link Collections#emptySet()} if the argument is null, else
+   * the argument itself.
    *
    * @param arg an argument of type {@code List}
    * @return the argument or the default value of the corresponding primitive type
    */
   public static &lt;T&gt; Set&lt;T&gt; n2e(Set&lt;T&gt; arg) {
-<span class="fc" id="L761">    return ifNull(arg, Collections.emptySet());</span>
+<span class="fc" id="L777">    return ifNull(arg, Collections.emptySet());</span>
   }
 
   /**
-   * Null-to-empty: returns {@link Collections#emptyMap()} if the argument is null,
-   * else the argument itself.
+   * Null-to-empty: returns {@link Collections#emptyMap()} if the argument is null, else
+   * the argument itself.
    *
    * @param arg an argument of type {@code List}
    * @return the argument or the default value of the corresponding primitive type
    */
   public static &lt;K, V&gt; Map&lt;K, V&gt; n2e(Map&lt;K, V&gt; arg) {
-<span class="fc" id="L772">    return ifNull(arg, Collections.emptyMap());</span>
+<span class="fc" id="L788">    return ifNull(arg, Collections.emptyMap());</span>
   }
 
   /**
@@ -779,7 +795,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Integer n2e(Integer arg) {
-<span class="fc" id="L782">    return ifNull(arg, 0);</span>
+<span class="fc" id="L798">    return ifNull(arg, 0);</span>
   }
 
   /**
@@ -789,7 +805,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Double n2e(Double arg) {
-<span class="fc" id="L792">    return ifNull(arg, 0D);</span>
+<span class="fc" id="L808">    return ifNull(arg, 0D);</span>
   }
 
   /**
@@ -799,7 +815,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Long n2e(Long arg) {
-<span class="fc" id="L802">    return ifNull(arg, 0L);</span>
+<span class="fc" id="L818">    return ifNull(arg, 0L);</span>
   }
 
   /**
@@ -809,7 +825,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Float n2e(Float arg) {
-<span class="fc" id="L812">    return ifNull(arg, 0F);</span>
+<span class="fc" id="L828">    return ifNull(arg, 0F);</span>
   }
 
   /**
@@ -819,7 +835,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Short n2e(Short arg) {
-<span class="fc" id="L822">    return ifNull(arg, (short) 0);</span>
+<span class="fc" id="L838">    return ifNull(arg, (short) 0);</span>
   }
 
   /**
@@ -829,7 +845,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Byte n2e(Byte arg) {
-<span class="fc" id="L832">    return ifNull(arg, (byte) 0);</span>
+<span class="fc" id="L848">    return ifNull(arg, (byte) 0);</span>
   }
 
   /**
@@ -839,93 +855,92 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Character n2e(Character arg) {
-<span class="fc" id="L842">    return ifNull(arg, '\0');</span>
+<span class="fc" id="L858">    return ifNull(arg, '\0');</span>
   }
 
   /**
-   * Returns {@link Boolean#FALSE} if the argument is null, else the argument
-   * itself.
+   * Returns {@link Boolean#FALSE} if the argument is null, else the argument itself.
    *
    * @param arg an argument of type {@code Byte}
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Boolean n2e(Boolean arg) {
-<span class="fc" id="L853">    return ifNull(arg, Boolean.FALSE);</span>
+<span class="fc" id="L868">    return ifNull(arg, Boolean.FALSE);</span>
   }
 
   private static boolean eq(Object arg0, Object arg1) {
-<span class="fc bfc" id="L857" title="All 4 branches covered.">    if (arg0 instanceof Object[] &amp;&amp; arg1 instanceof Object[]) {</span>
-<span class="fc" id="L858">      return arraysEqual((Object[]) arg0, (Object[]) arg1);</span>
-<span class="fc bfc" id="L859" title="All 4 branches covered.">    } else if (arg0 instanceof List &amp;&amp; arg1 instanceof List) {</span>
-<span class="fc" id="L860">      return listsEqual((List) arg0, (List) arg1);</span>
-<span class="fc bfc" id="L861" title="All 4 branches covered.">    } else if (arg0 instanceof Set &amp;&amp; arg1 instanceof Set) {</span>
-<span class="fc" id="L862">      return setsEqual((Set) arg0, (Set) arg1);</span>
-<span class="pc bpc" id="L863" title="1 of 4 branches missed.">    } else if (arg0 instanceof Map &amp;&amp; arg1 instanceof Map) {</span>
-<span class="fc" id="L864">      return mapsEqual((Map) arg0, (Map) arg1);</span>
+<span class="fc bfc" id="L872" title="All 4 branches covered.">    if (arg0 instanceof Object[] &amp;&amp; arg1 instanceof Object[]) {</span>
+<span class="fc" id="L873">      return arraysEqual((Object[]) arg0, (Object[]) arg1);</span>
+<span class="fc bfc" id="L874" title="All 4 branches covered.">    } else if (arg0 instanceof List &amp;&amp; arg1 instanceof List) {</span>
+<span class="fc" id="L875">      return listsEqual((List) arg0, (List) arg1);</span>
+<span class="fc bfc" id="L876" title="All 4 branches covered.">    } else if (arg0 instanceof Set &amp;&amp; arg1 instanceof Set) {</span>
+<span class="fc" id="L877">      return setsEqual((Set) arg0, (Set) arg1);</span>
+<span class="pc bpc" id="L878" title="1 of 4 branches missed.">    } else if (arg0 instanceof Map &amp;&amp; arg1 instanceof Map) {</span>
+<span class="fc" id="L879">      return mapsEqual((Map) arg0, (Map) arg1);</span>
     }
-<span class="fc" id="L866">    return Objects.deepEquals(arg0, arg1);</span>
+<span class="fc" id="L881">    return Objects.deepEquals(arg0, arg1);</span>
   }
 
   private static boolean arraysEqual(Object[] arr0, Object[] arr1) {
-<span class="fc bfc" id="L870" title="All 2 branches covered.">    if (arr0.length == arr1.length) {</span>
-<span class="fc bfc" id="L871" title="All 2 branches covered.">      for (int i = 0; i &lt; arr0.length; ++i) {</span>
-<span class="pc bpc" id="L872" title="1 of 2 branches missed.">        if (!e2nDeepEquals(arr0[i], arr1[i])) {</span>
-<span class="nc" id="L873">          return false;</span>
+<span class="fc bfc" id="L885" title="All 2 branches covered.">    if (arr0.length == arr1.length) {</span>
+<span class="fc bfc" id="L886" title="All 2 branches covered.">      for (int i = 0; i &lt; arr0.length; ++i) {</span>
+<span class="pc bpc" id="L887" title="1 of 2 branches missed.">        if (!e2nDeepEquals(arr0[i], arr1[i])) {</span>
+<span class="nc" id="L888">          return false;</span>
         }
       }
-<span class="fc" id="L876">      return true;</span>
+<span class="fc" id="L891">      return true;</span>
     }
-<span class="fc" id="L878">    return false;</span>
+<span class="fc" id="L893">    return false;</span>
   }
 
   private static boolean listsEqual(List list0, List list1) {
-<span class="pc bpc" id="L882" title="1 of 2 branches missed.">    if (list0.size() == list1.size()) {</span>
-<span class="fc" id="L883">      Iterator it0 = list0.iterator();</span>
-<span class="fc" id="L884">      Iterator it1 = list1.iterator();</span>
-<span class="fc bfc" id="L885" title="All 2 branches covered.">      while (it0.hasNext()) {</span>
-<span class="pc bpc" id="L886" title="2 of 4 branches missed.">        if (!it1.hasNext() || !e2nDeepEquals(it0.next(), it1.next())) {</span>
-<span class="nc" id="L887">          return false;</span>
+<span class="pc bpc" id="L897" title="1 of 2 branches missed.">    if (list0.size() == list1.size()) {</span>
+<span class="fc" id="L898">      Iterator it0 = list0.iterator();</span>
+<span class="fc" id="L899">      Iterator it1 = list1.iterator();</span>
+<span class="fc bfc" id="L900" title="All 2 branches covered.">      while (it0.hasNext()) {</span>
+<span class="pc bpc" id="L901" title="2 of 4 branches missed.">        if (!it1.hasNext() || !e2nDeepEquals(it0.next(), it1.next())) {</span>
+<span class="nc" id="L902">          return false;</span>
         }
       }
-<span class="fc" id="L890">      return true;</span>
+<span class="fc" id="L905">      return true;</span>
     }
-<span class="nc" id="L892">    return false;</span>
+<span class="nc" id="L907">    return false;</span>
   }
 
   private static boolean setsEqual(Set set0, Set set1) {
-<span class="fc" id="L896">    Set s0 = (Set) set0.stream().map(ObjectMethods::e2n).collect(toSet());</span>
-<span class="fc" id="L897">    Set s1 = (Set) set1.stream().map(ObjectMethods::e2n).collect(toSet());</span>
-<span class="fc bfc" id="L898" title="All 2 branches covered.">    if (s0.size() != s1.size()) {</span>
-<span class="fc" id="L899">      return false;</span>
-<span class="fc bfc" id="L900" title="All 2 branches covered.">    } else if (s0.equals(s1)) {</span>
-<span class="fc" id="L901">      return true;</span>
+<span class="fc" id="L911">    Set s0 = (Set) set0.stream().map(ObjectMethods::e2n).collect(toSet());</span>
+<span class="fc" id="L912">    Set s1 = (Set) set1.stream().map(ObjectMethods::e2n).collect(toSet());</span>
+<span class="fc bfc" id="L913" title="All 2 branches covered.">    if (s0.size() != s1.size()) {</span>
+<span class="fc" id="L914">      return false;</span>
+<span class="fc bfc" id="L915" title="All 2 branches covered.">    } else if (s0.equals(s1)) {</span>
+<span class="fc" id="L916">      return true;</span>
     }
-<span class="fc bfc" id="L903" title="All 2 branches covered.">    for (Object obj0 : s0) {</span>
-<span class="fc" id="L904">      boolean found = false;</span>
-<span class="fc bfc" id="L905" title="All 2 branches covered.">      for (Object obj1 : s1) {</span>
-<span class="fc bfc" id="L906" title="All 2 branches covered.">        if (e2nDeepEquals(obj0, obj1)) {</span>
-<span class="fc" id="L907">          found = true;</span>
-<span class="fc" id="L908">          s1.remove(obj0);</span>
-<span class="fc" id="L909">          break;</span>
+<span class="fc bfc" id="L918" title="All 2 branches covered.">    for (Object obj0 : s0) {</span>
+<span class="fc" id="L919">      boolean found = false;</span>
+<span class="fc bfc" id="L920" title="All 2 branches covered.">      for (Object obj1 : s1) {</span>
+<span class="fc bfc" id="L921" title="All 2 branches covered.">        if (e2nDeepEquals(obj0, obj1)) {</span>
+<span class="fc" id="L922">          found = true;</span>
+<span class="fc" id="L923">          s1.remove(obj0);</span>
+<span class="fc" id="L924">          break;</span>
         }
-<span class="fc" id="L911">      }</span>
-<span class="fc bfc" id="L912" title="All 2 branches covered.">      if (!found) {</span>
-<span class="fc" id="L913">        return false;</span>
+<span class="fc" id="L926">      }</span>
+<span class="fc bfc" id="L927" title="All 2 branches covered.">      if (!found) {</span>
+<span class="fc" id="L928">        return false;</span>
       }
-<span class="fc" id="L915">    }</span>
-<span class="fc" id="L916">    return true;</span>
+<span class="fc" id="L930">    }</span>
+<span class="fc" id="L931">    return true;</span>
   }
 
   private static boolean mapsEqual(Map map0, Map map1) {
-<span class="fc bfc" id="L920" title="All 2 branches covered.">    if (map0.size() == map1.size()) {</span>
-<span class="fc bfc" id="L921" title="All 2 branches covered.">      for (Object k : map0.keySet()) {</span>
-<span class="pc bpc" id="L922" title="1 of 4 branches missed.">        if (!map1.containsKey(k) || !e2nDeepEquals(map0.get(k), map1.get(k))) {</span>
-<span class="fc" id="L923">          return false;</span>
+<span class="fc bfc" id="L935" title="All 2 branches covered.">    if (map0.size() == map1.size()) {</span>
+<span class="fc bfc" id="L936" title="All 2 branches covered.">      for (Object k : map0.keySet()) {</span>
+<span class="pc bpc" id="L937" title="1 of 4 branches missed.">        if (!map1.containsKey(k) || !e2nDeepEquals(map0.get(k), map1.get(k))) {</span>
+<span class="fc" id="L938">          return false;</span>
         }
-<span class="fc" id="L925">      }</span>
-<span class="fc" id="L926">      return true;</span>
+<span class="fc" id="L940">      }</span>
+<span class="fc" id="L941">      return true;</span>
     }
-<span class="fc" id="L928">    return false;</span>
+<span class="fc" id="L943">    return false;</span>
   }
 
 }
