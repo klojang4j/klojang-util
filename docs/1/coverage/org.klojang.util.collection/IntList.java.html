@@ -14,13 +14,13 @@ import java.util.stream.IntStream;
 import static org.klojang.check.CommonChecks.notNull;
 
 /**
- * The {@code list-of-int} interface. {@code IntList} is a sealed interface with just
- * two implementations: one ({@link IntArrayList}) allows mutations on the list and
- * the other is immutable. Instances of the immutable variant can only be obtained
- * through static factory methods on the {@code IntList} interface.
+ * The ubiquitous {@code list-of-int}. While waiting for Valhalla. {@code IntList} is a
+ * sealed interface with just two implementations: one ({@link IntArrayList}) allows
+ * mutations on the list while the other is immutable. Instances of the immutable variant
+ * can only be obtained through static factory methods on the {@code IntList} interface.
  */
 public sealed interface IntList extends Emptyable permits IntArrayList,
-    UnmodifiableIntList {
+                                                          UnmodifiableIntList {
 
   /**
    * Converts the provided collection of {@code Integer} objects to an unmodifiable
@@ -75,7 +75,7 @@ public sealed interface IntList extends Emptyable permits IntArrayList,
    * @return an unmodifiable {@code IntList} containing the provided element
    */
   static IntList of(int e0) {
-<span class="fc" id="L78">    int[] buf = new int[] {e0};</span>
+<span class="fc" id="L78">    int[] buf = new int[]{e0};</span>
 <span class="fc" id="L79">    return new UnmodifiableIntList(buf);</span>
   }
 
@@ -87,7 +87,7 @@ public sealed interface IntList extends Emptyable permits IntArrayList,
    * @return an unmodifiable {@code IntList} containing the provided elements
    */
   static IntList of(int e0, int e1) {
-<span class="fc" id="L90">    int[] buf = new int[] {e0, e1};</span>
+<span class="fc" id="L90">    int[] buf = new int[]{e0, e1};</span>
 <span class="fc" id="L91">    return new UnmodifiableIntList(buf);</span>
   }
 
@@ -100,7 +100,7 @@ public sealed interface IntList extends Emptyable permits IntArrayList,
    * @return an unmodifiable {@code IntList} containing the provided elements
    */
   static IntList of(int e0, int e1, int e2) {
-<span class="fc" id="L103">    int[] buf = new int[] {e0, e1, e2};</span>
+<span class="fc" id="L103">    int[] buf = new int[]{e0, e1, e2};</span>
 <span class="fc" id="L104">    return new UnmodifiableIntList(buf);</span>
   }
 
@@ -114,7 +114,7 @@ public sealed interface IntList extends Emptyable permits IntArrayList,
    * @return an unmodifiable {@code IntList} containing the provided elements
    */
   static IntList of(int e0, int e1, int e2, int e3) {
-<span class="fc" id="L117">    int[] buf = new int[] {e0, e1, e2, e3};</span>
+<span class="fc" id="L117">    int[] buf = new int[]{e0, e1, e2, e3};</span>
 <span class="fc" id="L118">    return new UnmodifiableIntList(buf);</span>
   }
 
@@ -180,26 +180,22 @@ public sealed interface IntList extends Emptyable permits IntArrayList,
   void set(int index, int value);
 
   /**
-   * Returns an {@link OptionalInt} containing the array index of the first
-   * occurrence of the specified value, or an empty {@link OptionalInt} if the value
-   * is not present.
+   * Returns an {@link OptionalInt} containing the array index of the first occurrence of
+   * the specified value, or an empty {@link OptionalInt} if the value is not present.
    *
    * @param value the value to search for
-   * @return an {@link OptionalInt} containing the array index of the first
-   *     occurrence of the specified value, or an empty {@link OptionalInt} if the
-   *     value is not present
+   * @return an {@link OptionalInt} containing the array index of the first occurrence of
+   * the specified value, or an empty {@link OptionalInt} if the value is not present
    */
   OptionalInt indexOf(int value);
 
   /**
-   * Returns an {@link OptionalInt} containing the array index of the last occurrence
-   * of the specified value, or an empty {@link OptionalInt} if the value is not
-   * present.
+   * Returns an {@link OptionalInt} containing the array index of the last occurrence of
+   * the specified value, or an empty {@link OptionalInt} if the value is not present.
    *
    * @param value the value to search for
-   * @return an {@link OptionalInt} containing the array index of the first
-   *     occurrence of the specified value, or an empty {@link OptionalInt} if the
-   *     value is not present
+   * @return an {@link OptionalInt} containing the array index of the first occurrence of
+   * the specified value, or an empty {@link OptionalInt} if the value is not present
    */
   OptionalInt lastIndexOf(int value);
 
@@ -211,8 +207,8 @@ public sealed interface IntList extends Emptyable permits IntArrayList,
   void add(int value);
 
   /**
-   * Inserts the specified value at the specified index, right-shifting all elements
-   * at, and following that the index.
+   * Inserts the specified value at the specified index, right-shifting all elements at,
+   * and following that the index.
    *
    * @param index the index at which to insert the integer
    * @param value the integer to insert
@@ -330,8 +326,8 @@ public sealed interface IntList extends Emptyable permits IntArrayList,
   boolean isEmpty();
 
   /**
-   * Clears the list. Note that this leaves the backing array untouched. It just
-   * resets the internal cursor.
+   * Clears the list. Note that this leaves the backing array untouched. It just resets
+   * the internal cursor.
    */
   void clear();
 
@@ -339,8 +335,8 @@ public sealed interface IntList extends Emptyable permits IntArrayList,
    * Trims the list to the specified size. Note that this leaves the backing array
    * untouched. It just moves the internal cursor backwards.
    *
-   * @param newSize the desired new size of the list (must be less than or equal
-   *     to its current size)
+   * @param newSize the desired new size of the list (must be less than or equal to its
+   * current size)
    * @see #setCapacity(int)
    */
   void trim(int newSize);
@@ -353,9 +349,9 @@ public sealed interface IntList extends Emptyable permits IntArrayList,
   int capacity();
 
   /**
-   * Resizes the backing array. the new capacity is allowed to be less than the
-   * current capacity, and even less than the current size of the list. So this
-   * method can be used as a truncate or a trim-to-size method.
+   * Resizes the backing array. the new capacity is allowed to be less than the current
+   * capacity, and even less than the current size of the list. So this method can be used
+   * as a truncate or a trim-to-size method.
    *
    * @param newCapacity the desired length of the backing array
    * @see #trim(int)
