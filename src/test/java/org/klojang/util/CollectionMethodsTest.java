@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.time.DayOfWeek;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -40,19 +41,19 @@ public class CollectionMethodsTest {
     assertEquals(Collections.singletonList(null), listify(null));
     assertEquals(List.of("Hello World"), listify("Hello World"));
     assertEquals(List.of("Hello", "World"),
-        listify(new String[] {"Hello", "World"}));
+        listify(new String[]{"Hello", "World"}));
     Object obj = new Object();
     assertEquals(Collections.singletonList(obj), listify(obj));
-    assertEquals(List.of(1, 2, 3, 4, 5), listify(new int[] {1, 2, 3, 4, 5}));
-    assertEquals(List.of(1D, 2D, 3D, 4D, 5D), listify(new double[] {1, 2, 3, 4, 5}));
-    assertEquals(List.of(1L, 2L, 3L, 4L, 5L), listify(new long[] {1, 2, 3, 4, 5}));
-    assertEquals(List.of(1F, 2F, 3F, 4F, 5F), listify(new float[] {1, 2, 3, 4, 5}));
+    assertEquals(List.of(1, 2, 3, 4, 5), listify(new int[]{1, 2, 3, 4, 5}));
+    assertEquals(List.of(1D, 2D, 3D, 4D, 5D), listify(new double[]{1, 2, 3, 4, 5}));
+    assertEquals(List.of(1L, 2L, 3L, 4L, 5L), listify(new long[]{1, 2, 3, 4, 5}));
+    assertEquals(List.of(1F, 2F, 3F, 4F, 5F), listify(new float[]{1, 2, 3, 4, 5}));
     assertEquals(List.of((short) 1, (short) 2, (short) 3),
-        listify(new short[] {1, 2, 3}));
+        listify(new short[]{1, 2, 3}));
     assertEquals(List.of((byte) 1, (byte) 2, (byte) 3),
-        listify(new byte[] {1, 2, 3}));
+        listify(new byte[]{1, 2, 3}));
     assertEquals(List.of((char) 1, (char) 2, (char) 3),
-        listify(new char[] {1, 2, 3}));
+        listify(new char[]{1, 2, 3}));
     Set<Integer> s = new LinkedHashSet<>();
     s.add(1);
     s.add(2);
@@ -60,7 +61,7 @@ public class CollectionMethodsTest {
     assertEquals(List.of(1, 2, 3), listify(s));
     assertEquals(
         List.of(Boolean.TRUE, Boolean.FALSE, Boolean.TRUE),
-        listify(new boolean[] {true, false, true}));
+        listify(new boolean[]{true, false, true}));
     List l = new ArrayList();
     l.add(10);
     assertSame(l, listify(l));
@@ -182,6 +183,13 @@ public class CollectionMethodsTest {
   public void implode09() {
     List<Integer> l = List.of(1, 2, 3);
     assertEquals("2|3", implode(l, strval(), "|", 1, -1));
+  }
+
+  @Test
+  public void implode10() {
+    List<Integer> l = List.of(1, 2, 3);
+    Function<Integer, String> fnc = obj -> String.valueOf(obj * 2);
+    assertEquals("2**4**6", implode(l, fnc, "**"));
   }
 
   @Test

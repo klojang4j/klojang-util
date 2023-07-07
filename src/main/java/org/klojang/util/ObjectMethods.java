@@ -19,6 +19,7 @@ import static org.klojang.check.CommonChecks.notNull;
 import static org.klojang.util.ArrayMethods.isElementOf;
 import static org.klojang.util.ClassMethods.isPrimitiveArray;
 import static org.klojang.util.InvokeMethods.getArrayLength;
+import static org.klojang.util.StringMethods.EMPTY_STRING;
 
 /**
  * General methods applicable to objects of any type.
@@ -57,6 +58,20 @@ public class ObjectMethods {
    */
   public static <T, R> R hardCast(T input) {
     return (R) input;
+  }
+
+  /**
+   * Returns an empty string if the argument is {@code null}, else the result of calling
+   * {@code toString()} on the argument. Equivalent to
+   * {@link Objects#toString(Object, String) Objects.toString(obj, "")}, but more usable
+   * as method reference.
+   *
+   * @param obj the object to stringify
+   * @return an empty string if the argument is {@code null}, else the result of calling
+   * {@code toString()} on the argument
+   */
+  public static String stringify(Object obj) {
+    return Objects.toString(obj, EMPTY_STRING);
   }
 
   /**
@@ -126,8 +141,6 @@ public class ObjectMethods {
   /**
    * Returns {@code true} if the specified argument is null or empty. More precisely, this
    * method returns {@code true} if any of the following applies:
-   *
-   * <p>
    *
    * <ul>
    *   <li>{@code arg} is {@code null}
@@ -752,7 +765,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static String n2e(String arg) {
-    return ifNull(arg, StringMethods.EMPTY_STRING);
+    return ifNull(arg, EMPTY_STRING);
   }
 
   /**

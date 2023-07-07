@@ -45,6 +45,12 @@ public class ObjectMethodsTest {
   }
 
   @Test
+  public void toString00() {
+    assertEquals("", ObjectMethods.stringify(null));
+    assertEquals("2", ObjectMethods.stringify(2));
+  }
+
+  @Test
   public void isEmpty00() {
     assertTrue(isEmpty((Map) null));
     assertTrue(isEmpty(Map.of()));

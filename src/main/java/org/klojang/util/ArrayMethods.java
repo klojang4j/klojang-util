@@ -178,9 +178,9 @@ public final class ArrayMethods {
   }
 
   /**
-   * Returns an {@link OptionalInt} containing the array index of the first
-   * occurrence of the specified value within the specified array. Returns an empty
-   * {@link OptionalInt} if the array does not contain the value.
+   * Returns an {@link OptionalInt} containing the array index of the first occurrence of
+   * the specified value within the specified array. Returns an empty {@link OptionalInt}
+   * if the array does not contain the value.
    *
    * @param array the array to search
    * @param value the value to search for
@@ -197,9 +197,9 @@ public final class ArrayMethods {
   }
 
   /**
-   * Returns an {@link OptionalInt} containing the array index of the last occurrence
-   * of the specified value within the specified array. Returns an empty
-   * {@link OptionalInt} if the array does not contain the value.
+   * Returns an {@link OptionalInt} containing the array index of the last occurrence of
+   * the specified value within the specified array. Returns an empty {@link OptionalInt}
+   * if the array does not contain the value.
    *
    * @param array the array to search
    * @param value the value to search for
@@ -216,9 +216,9 @@ public final class ArrayMethods {
   }
 
   /**
-   * Returns the array index of the first occurrence of the specified value within
-   * the specified array. Returns -1 if the array does not contain the value.
-   * Searching for null is allowed.
+   * Returns the array index of the first occurrence of the specified value within the
+   * specified array. Returns -1 if the array does not contain the value. Searching for
+   * null is allowed.
    *
    * @param <T> the type of the elements within the array
    * @param array the array to search
@@ -245,8 +245,8 @@ public final class ArrayMethods {
 
   /**
    * Returns the array index of the last occurrence of the specified value within the
-   * specified array. Returns -1 if the array does not contain the value. Searching
-   * for null is allowed.
+   * specified array. Returns -1 if the array does not contain the value. Searching for
+   * null is allowed.
    *
    * @param <T> the type of the elements within the array
    * @param array the array to search
@@ -327,9 +327,8 @@ public final class ArrayMethods {
   }
 
   /**
-   * Returns a {@link Result} containing a property of the first array element that
-   * passes the specified test, or {@link Result#notAvailable()} if no element passed
-   * the test.
+   * Returns a {@link Result} containing a property of the first array element that passes
+   * the specified test, or {@link Result#notAvailable()} if no element passed the test.
    *
    * <blockquote><pre>{@code
    * Person[] persons = getPersons();
@@ -344,8 +343,8 @@ public final class ArrayMethods {
    * @param <T> the type of the array elements
    * @param <R> the type of the value extracted from the array element
    * @return the {@code Result} containing the value extracted from the first array
-   *     element that passed the specified test, or {@code null} if no element passed
-   *     the test
+   *     element that passed the specified test, or {@code null} if no element passed the
+   *     test
    */
   public static <T, R> Result<R> find(T[] array,
       Predicate<T> test,
@@ -458,9 +457,9 @@ public final class ArrayMethods {
           byte[].class, obj -> Arrays.hashCode((byte[]) obj));
 
   /**
-   * Returns the hash code of an array. Allows you to retrieve the hash code of an
-   * array object even if you don't know its exact type. An
-   * {@link IllegalArgumentException} is thrown if the argument is not an array.
+   * Returns the hash code of an array. Allows you to retrieve the hash code of an array
+   * object even if you don't know its exact type. An {@link IllegalArgumentException} is
+   * thrown if the argument is not an array.
    *
    * @param array the array
    * @return Its hash code
@@ -474,8 +473,8 @@ public final class ArrayMethods {
   }
 
   /**
-   * Returns the deep hash code of an array. Allow you to retrieve the deep hash code
-   * of an array object even if you don't know its exact type. An
+   * Returns the deep hash code of an array. Allow you to retrieve the deep hash code of
+   * an array object even if you don't know its exact type. An
    * {@link IllegalArgumentException} is thrown if the argument is not an array.
    *
    * @param array the array
@@ -490,8 +489,8 @@ public final class ArrayMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating the array elements using ", "
-   * (comma+space) as separator. Optimized for {@code int[]} arrays.
+   * PHP-style implode method, concatenating the array elements using ", " (comma+space)
+   * as separator. Optimized for {@code int[]} arrays.
    *
    * @param array the array to implode
    * @return a concatenation of the elements in the array.
@@ -513,13 +512,13 @@ public final class ArrayMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} array elements
-   * using ", " (comma+space) as separator.
+   * PHP-style implode method, concatenating at most {@code limit} array elements using ",
+   * " (comma+space) as separator.
    *
    * @param array the array to implode
-   * @param limit The maximum number of elements to collect. The specified number
-   *     will be clamped to {@code array.length} (i.e. it's OK to specify a number
-   *     greater than {@code array.length}). You can specify -1 as a shorthand for
+   * @param limit The maximum number of elements to collect. The specified number will
+   *     be clamped to {@code array.length} (i.e. it's OK to specify a number greater than
+   *     {@code array.length}). You can specify -1 as a shorthand for
    *     {@code array.length}.
    * @return a concatenation of the elements in the array.
    */
@@ -528,8 +527,8 @@ public final class ArrayMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} array elements
-   * using ", " (comma+space) as separator.
+   * PHP-style implode method, concatenating at most {@code limit} array elements using ",
+   * " (comma+space) as separator.
    *
    * @param array the array to implode
    * @param stringifier A {@code Function} that converts the array elements to
@@ -541,14 +540,14 @@ public final class ArrayMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} array elements
-   * using the specified separator.
+   * PHP-style implode method, concatenating at most {@code limit} array elements using
+   * the specified separator.
    *
    * @param array the array to implode
    * @param separator the string used to separate the elements
-   * @param limit The maximum number of elements to collect. The specified number
-   *     will be clamped to {@code array.length} (i.e. it's OK to specify a number
-   *     greater than {@code array.length}). You can specify -1 as a shorthand for
+   * @param limit The maximum number of elements to collect. The specified number will
+   *     be clamped to {@code array.length} (i.e. it's OK to specify a number greater than
+   *     {@code array.length}). You can specify -1 as a shorthand for
    *     {@code array.length}.
    * @return a concatenation of the elements in the array.
    */
@@ -563,12 +562,11 @@ public final class ArrayMethods {
    * @param stringifier A {@code Function} that converts the array elements to
    *     strings
    * @param separator the string used to separate the elements
-   * @param from The index of the element to begin the concatenation with
-   *     (inclusive)
-   * @param to The index of the element to end the concatenation with
-   *     (exclusive). The specified number will be clamped to {@code array.length}
-   *     (i.e. it's OK to specify a number greater than {@code array.length}). You
-   *     can specify -1 as a shorthand for {@code array.length}.
+   * @param from The index of the element to begin the concatenation with (inclusive)
+   * @param to The index of the element to end the concatenation with (exclusive). The
+   *     specified number will be clamped to {@code array.length} (i.e. it's OK to specify
+   *     a number greater than {@code array.length}). You can specify -1 as a shorthand
+   *     for {@code array.length}.
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, Function, String, int, int)
    */
@@ -588,10 +586,10 @@ public final class ArrayMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating the array elements using ", "
-   * (comma+space) as separator. This method is primarily meant to implode primitive
-   * arrays, but you <i>can</i> use it to implode any type of array. An
-   * {@link IllegalArgumentException} is thrown if {@code array} is not an array.
+   * PHP-style implode method, concatenating the array elements using ", " (comma+space)
+   * as separator. This method is primarily meant to implode primitive arrays, but you
+   * <i>can</i> use it to implode any type of array. An {@link IllegalArgumentException}
+   * is thrown if {@code array} is not an array.
    *
    * @param array the array to implode
    * @return a concatenation of the elements in the array.
@@ -617,10 +615,10 @@ public final class ArrayMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating the array elements using ", "
-   * (comma+space) as separator. This method is primarily meant to implode primitive
-   * arrays, but you <i>can</i> use it to implode any type of array. An
-   * {@link IllegalArgumentException} is thrown if {@code array} is not an array.
+   * PHP-style implode method, concatenating the array elements using ", " (comma+space)
+   * as separator. This method is primarily meant to implode primitive arrays, but you
+   * <i>can</i> use it to implode any type of array. An {@link IllegalArgumentException}
+   * is thrown if {@code array} is not an array.
    *
    * @param array the array to implode
    * @param stringifier A {@code Function} that converts the array elements to
@@ -634,15 +632,15 @@ public final class ArrayMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} array elements
-   * using ", " (comma+space) as separator. This method is primarily meant to implode
-   * primitive arrays, but you <i>can</i> use it to implode any type of array. An
+   * PHP-style implode method, concatenating at most {@code limit} array elements using ",
+   * " (comma+space) as separator. This method is primarily meant to implode primitive
+   * arrays, but you <i>can</i> use it to implode any type of array. An
    * {@link IllegalArgumentException} is thrown if {@code array} is not an array.
    *
    * @param array the array to implode
-   * @param limit The maximum number of elements to collect. The specified number
-   *     will be clamped to {@code array.length} (i.e. it's OK to specify a number
-   *     greater than {@code array.length}). You can specify -1 as a shorthand for
+   * @param limit The maximum number of elements to collect. The specified number will
+   *     be clamped to {@code array.length} (i.e. it's OK to specify a number greater than
+   *     {@code array.length}). You can specify -1 as a shorthand for
    *     {@code array.length}.
    * @return a concatenation of the elements in the array.
    */
@@ -651,16 +649,16 @@ public final class ArrayMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} array elements
-   * using the specified separator. This method is primarily meant to implode
-   * primitive arrays, but you <i>can</i> use it to implode any type of array. An
+   * PHP-style implode method, concatenating at most {@code limit} array elements using
+   * the specified separator. This method is primarily meant to implode primitive arrays,
+   * but you <i>can</i> use it to implode any type of array. An
    * {@link IllegalArgumentException} is thrown if {@code array} is not an array.
    *
    * @param array the array to implode
    * @param separator the string used to separate the elements
-   * @param limit The maximum number of elements to collect. The specified number
-   *     will be clamped to {@code array.length} (i.e. it's OK to specify a number
-   *     greater than {@code array.length}). You can specify -1 as a shorthand for
+   * @param limit The maximum number of elements to collect. The specified number will
+   *     be clamped to {@code array.length} (i.e. it's OK to specify a number greater than
+   *     {@code array.length}). You can specify -1 as a shorthand for
    *     {@code array.length}.
    * @return a concatenation of the elements in the array.
    */
@@ -669,20 +667,19 @@ public final class ArrayMethods {
   }
 
   /**
-   * PHP-style implode method. This method is primarily meant to implode primitive
-   * arrays, but you <i>can</i> use it to implode any type of array. An
+   * PHP-style implode method. This method is primarily meant to implode primitive arrays,
+   * but you <i>can</i> use it to implode any type of array. An
    * {@link IllegalArgumentException} is thrown if {@code array} is not an array.
    *
    * @param array the array to implode
    * @param stringifier A {@code Function} that converts the array elements to
    *     strings
    * @param separator the string used to separate the elements
-   * @param from The index of the element to begin the concatenation with
-   *     (inclusive)
-   * @param to The index of the element to end the concatenation with
-   *     (exclusive). The specified number will be clamped to {@code array.length}
-   *     (i.e. it's OK to specify a number greater than {@code array.length}). You
-   *     can specify -1 as a shorthand for {@code array.length}.
+   * @param from The index of the element to begin the concatenation with (inclusive)
+   * @param to The index of the element to end the concatenation with (exclusive). The
+   *     specified number will be clamped to {@code array.length} (i.e. it's OK to specify
+   *     a number greater than {@code array.length}). You can specify -1 as a shorthand
+   *     for {@code array.length}.
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, Function, String, int, int)
    */
@@ -706,8 +703,8 @@ public final class ArrayMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating the array elements using ", "
-   * (comma+space) as separator.
+   * PHP-style implode method, concatenating the array elements using ", " (comma+space)
+   * as separator.
    *
    * @param array the collection to implode
    * @param <T> the type of the array elements
@@ -734,13 +731,13 @@ public final class ArrayMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} array elements
-   * using ", " (comma+space) as separator.
+   * PHP-style implode method, concatenating at most {@code limit} array elements using ",
+   * " (comma+space) as separator.
    *
    * @param array the array to implode
-   * @param limit The maximum number of elements to collect. The specified number
-   *     will be clamped to {@code array.length} (i.e. it's OK to specify a number
-   *     greater than {@code array.length}). You can specify -1 as a shorthand for
+   * @param limit The maximum number of elements to collect. The specified number will
+   *     be clamped to {@code array.length} (i.e. it's OK to specify a number greater than
+   *     {@code array.length}). You can specify -1 as a shorthand for
    *     {@code array.length}.
    * @param <T> the type of the array elements
    * @return a concatenation of the elements in the array.
@@ -751,8 +748,8 @@ public final class ArrayMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} array elements
-   * using ", " (comma+space) as separator.
+   * PHP-style implode method, concatenating at most {@code limit} array elements using ",
+   * " (comma+space) as separator.
    *
    * @param array the array to implode
    * @param stringifier A {@code Function} that converts the array elements to
@@ -766,14 +763,32 @@ public final class ArrayMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} array elements
-   * using the specified separator.
+   * PHP-style implode method, concatenating at most {@code limit} array elements using ",
+   * " (comma+space) as separator.
+   *
+   * @param array the array to implode
+   * @param stringifier A {@code Function} that converts the array elements to
+   *     strings
+   * @param separator the string used to separate the elements
+   * @param <T> the type of the array elements
+   * @return a concatenation of the elements in the array.
+   * @see CollectionMethods#implode(Collection, int)
+   */
+  public static <T> String implode(T[] array,
+      Function<T, String> stringifier,
+      String separator) {
+    return implode(array, stringifier, separator, 0, -1);
+  }
+
+  /**
+   * PHP-style implode method, concatenating at most {@code limit} array elements using
+   * the specified separator.
    *
    * @param array the array to implode
    * @param separator the string used to separate the elements
-   * @param limit The maximum number of elements to collect. The specified number
-   *     will be clamped to {@code array.length} (i.e. it's OK to specify a number
-   *     greater than {@code array.length}). You can specify -1 as a shorthand for
+   * @param limit The maximum number of elements to collect. The specified number will
+   *     be clamped to {@code array.length} (i.e. it's OK to specify a number greater than
+   *     {@code array.length}). You can specify -1 as a shorthand for
    *     {@code array.length}.
    * @param <T> the type of the array elements
    * @return a concatenation of the elements in the array.
@@ -790,12 +805,11 @@ public final class ArrayMethods {
    * @param stringifier A {@code Function} that converts the array elements to
    *     strings
    * @param separator the string used to separate the elements
-   * @param from The index of the element to begin the concatenation with
-   *     (inclusive)
-   * @param to The index of the element to end the concatenation with
-   *     (exclusive). The specified number will be clamped to {@code array.length}
-   *     (i.e. it's OK to specify a number greater than {@code array.length}). You
-   *     can specify -1 as a shorthand for {@code array.length}.
+   * @param from The index of the element to begin the concatenation with (inclusive)
+   * @param to The index of the element to end the concatenation with (exclusive). The
+   *     specified number will be clamped to {@code array.length} (i.e. it's OK to specify
+   *     a number greater than {@code array.length}). You can specify -1 as a shorthand
+   *     for {@code array.length}.
    * @param <T> the type of the array elements
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, Function, String, int, int)
@@ -890,8 +904,8 @@ public final class ArrayMethods {
    * @param array the array to be prefixed
    * @param obj the object to prefix
    * @param <T> the type of the array elements and the object to be prefixed
-   * @return a new array containing the specified object and the elements of the
-   *     specified array
+   * @return a new array containing the specified object and the elements of the specified
+   *     array
    */
   public static <T> T[] prefix(T[] array, T obj) {
     Check.notNull(array, ARRAY);
@@ -1019,8 +1033,8 @@ public final class ArrayMethods {
   }
 
   /**
-   * Converts an {@code Integer} array to an {@code int} array. {@code null} elements
-   * in the source array are converted to 0 (zero).
+   * Converts an {@code Integer} array to an {@code int} array. {@code null} elements in
+   * the source array are converted to 0 (zero).
    *
    * @param values the {@code Integer} array
    * @return the {@code int} array

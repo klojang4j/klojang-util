@@ -15,7 +15,7 @@ import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonExceptions.duplicateKey;
 import static org.klojang.check.CommonProperties.*;
 import static org.klojang.check.Tag.*;
-import static org.klojang.util.ArrayMethods.*;
+import static org.klojang.util.ArrayMethods.IMPLODE_SEPARATOR;
 
 /**
  * Methods extending the Java Collection framework.
@@ -90,8 +90,7 @@ public final class CollectionMethods {
    * specified value. The initialization value must not be {@code null}.
    *
    * @param size The desired size of the {@code List}
-   * @param initVal The initial value of the list elements (must not be
-   *     {@code null})
+   * @param initVal The initial value of the list elements (must not be {@code null})
    * @param <E> the type of the elements
    * @return a fixed-size, mutable, initialized {@code List}
    */
@@ -107,8 +106,8 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns a fixed-size, mutable {@code List} with all elements initialized to
-   * values provided by a {@code Supplier}.
+   * Returns a fixed-size, mutable {@code List} with all elements initialized to values
+   * provided by a {@code Supplier}.
    *
    * @param size The desired size of the {@code List}
    * @param initValSupplier The supplier of the initial values
@@ -127,10 +126,9 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns a new {@link ArrayList} initialized with the specified values. The
-   * values are allowed to be {@code null}. The initial capacity will always be at
-   * least the length of the {@code initVals} array, whatever the value of the
-   * {@code capacity} argument.
+   * Returns a new {@link ArrayList} initialized with the specified values. The values are
+   * allowed to be {@code null}. The initial capacity will always be at least the length
+   * of the {@code initVals} array, whatever the value of the {@code capacity} argument.
    *
    * @param capacity The initial capacity of the list
    * @param initVals The values to add to the list
@@ -150,17 +148,16 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns a {@link HashMap} initialized with the specified key-value pairs. Both
-   * keys and values are allowed to be {@code null}. Keys will be checked for
-   * uniqueness.
+   * Returns a {@link HashMap} initialized with the specified key-value pairs. Both keys
+   * and values are allowed to be {@code null}. Keys will be checked for uniqueness.
    *
    * @param <K> the type of the keys
    * @param <V> the type of the values
    * @param size The expected number of map entries. No rehashing will take place
-   *     until that number is reached. If you specify a number less than the number
-   *     of key-value pairs (half the length of the varargs array), it will be taken
-   *     as a multiplier. For example, 2 would mean that you expect the map to grow
-   *     to about twice the specified number of key-value pairs.
+   *     until that number is reached. If you specify a number less than the number of
+   *     key-value pairs (half the length of the varargs array), it will be taken as a
+   *     multiplier. For example, 2 would mean that you expect the map to grow to about
+   *     twice the specified number of key-value pairs.
    * @param keyClass The class of the keys
    * @param valueClass The class of the values
    * @param kvPairs An array alternating between keys and values
@@ -200,20 +197,20 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns an {@link EnumMap} with all enum constants set to non-null values. The
-   * number of values must exactly equal the number of enum constants, and they are
-   * assigned according to ordinal number. This method throws an
-   * {@link IllegalArgumentException} if the number of values is not exactly equal to
-   * the number of constants in the enum class, or if any of the values is null.
+   * Returns an {@link EnumMap} with all enum constants set to non-null values. The number
+   * of values must exactly equal the number of enum constants, and they are assigned
+   * according to ordinal number. This method throws an {@link IllegalArgumentException}
+   * if the number of values is not exactly equal to the number of constants in the enum
+   * class, or if any of the values is null.
    *
    * @param <K> the key type
    * @param <V> the value type
    * @param enumClass The enum class
    * @param values The values to associate with the enum constants
    * @return a fully-occupied {@code EnumMap} with no null-values
-   * @throws IllegalArgumentException if {@code enumClass} or {@code Values} is
-   *     null, or if any of the provided values is null, or is the number of values
-   *     is not exactly equals to the number of enum constants
+   * @throws IllegalArgumentException if {@code enumClass} or {@code Values} is null,
+   *     or if any of the provided values is null, or is the number of values is not
+   *     exactly equals to the number of enum constants
    */
   @SuppressWarnings("unchecked")
   public static <K extends Enum<K>, V> EnumMap<K, V> saturatedEnumMap(
@@ -233,11 +230,11 @@ public final class CollectionMethods {
   /**
    * Returns a sublist of the provided list starting with element {@code from} and
    * containing at most {@code length} elements. The returned list is backed by the
-   * original list, so changing its elements will affect the original list as well.
-   * If {@code offset} is negative, it is taken relative to the end of the list. If
-   * {@code length} is negative, the sublist is taken in the opposite direction
-   * &#8212; that is, the element at {@code offset} now becomes the <i>last</i>
-   * element of the sublist.
+   * original list, so changing its elements will affect the original list as well. If
+   * {@code offset} is negative, it is taken relative to the end of the list. If
+   * {@code length} is negative, the sublist is taken in the opposite direction &#8212;
+   * that is, the element at {@code offset} now becomes the <i>last</i> element of the
+   * sublist.
    *
    * @param list the {@code List} to extract a sublist from
    * @param offset the start index if the sublist (however, see above)
@@ -269,15 +266,15 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns a new {@code Map} where keys and values of the input map have traded
-   * places. The specified {@code Map} must not contain duplicate values. An
-   * {@link IllegalArgumentException} is thrown if it does. The returned map is
-   * tightly sized, but modifiable.
+   * Returns a new {@code Map} where keys and values of the input map have traded places.
+   * The specified {@code Map} must not contain duplicate values. An
+   * {@link IllegalArgumentException} is thrown if it does. The returned map is tightly
+   * sized, but modifiable.
    *
-   * @param <K> the type of the keys in the original map, and of the values in
-   *     the returned map
-   * @param <V> the type of the values in the original map, and of the keys in
-   *     the returned map
+   * @param <K> the type of the keys in the original map, and of the values in the
+   *     returned map
+   * @param <V> the type of the values in the original map, and of the keys in the
+   *     returned map
    * @param map The source map
    * @return a new {@code Map} where keys and values are swapped
    */
@@ -286,15 +283,15 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns a new {@code Map} where keys and values of the input map have traded
-   * places. The specified {@code Map} must not contain duplicate values. A
-   * {@link DuplicateValueException} is thrown if it does. {@code null} keys and
-   * values are allowed, however.
+   * Returns a new {@code Map} where keys and values of the input map have traded places.
+   * The specified {@code Map} must not contain duplicate values. A
+   * {@link DuplicateValueException} is thrown if it does. {@code null} keys and values
+   * are allowed, however.
    *
-   * @param <K> the type of the keys in the original map, and of the values in
-   *     the returned map
-   * @param <V> the type of the values in the original map, and of the keys in
-   *     the returned map
+   * @param <K> the type of the keys in the original map, and of the values in the
+   *     returned map
+   * @param <V> the type of the values in the original map, and of the keys in the
+   *     returned map
    * @param map The source map
    * @param mapFactory A supplier of a {@code Map} instance
    * @return a new {@code Map} where keys and values are swapped
@@ -315,10 +312,10 @@ public final class CollectionMethods {
    * {@code null} values or duplicate values. An {@link IllegalArgumentException} is
    * thrown if it does.
    *
-   * @param <K> the type of the keys in the original map, and of the values in
-   *     the returned map
-   * @param <V> the type of the values in the original map, and of the keys in
-   *     the returned map
+   * @param <K> the type of the keys in the original map, and of the values in the
+   *     returned map
+   * @param <V> the type of the values in the original map, and of the keys in the
+   *     returned map
    * @param map The source map
    * @return a new {@code Map} where keys and values are swapped
    */
@@ -328,19 +325,19 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns an unmodifiable {@code Map} where the values of the input {@code Map}
-   * have been converted using the specified {@code Function}. The specified
-   * {@code Map} must not contain {@code null} keys, {@code null} values or duplicate
-   * values. An {@link IllegalArgumentException} is thrown if it does.
+   * Returns an unmodifiable {@code Map} where the values of the input {@code Map} have
+   * been converted using the specified {@code Function}. The specified {@code Map} must
+   * not contain {@code null} keys, {@code null} values or duplicate values. An
+   * {@link IllegalArgumentException} is thrown if it does.
    *
    * @param <K> the type of the keys of the input and output {@code Map}
    * @param <V0> the type of the values of the input {@code Map}
    * @param <V1> the type of the values of the output {@code Map}
    * @param src the input {@code Map}
-   * @param valueConverter A {@code Function} that converts the values of the
-   *     input {@code Map}
-   * @return an unmodifiable {@code Map} where the values of the input {@code Map}
-   *     have been converted using the specified {@code Function}
+   * @param valueConverter A {@code Function} that converts the values of the input
+   *     {@code Map}
+   * @return an unmodifiable {@code Map} where the values of the input {@code Map} have
+   *     been converted using the specified {@code Function}
    */
   public static <K, V0, V1> Map<K, V1> freeze(
       Map<K, V0> src, Function<? super V0, ? extends V1> valueConverter) {
@@ -353,20 +350,19 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns an unmodifiable {@code Map} where the values of the input {@code Map}
-   * have been converted using the specified {@code BiFunction}. This method passes
-   * both the key and the value to the converter function so you can make the
-   * conversion key-dependent, or so you can mention the key if the conversion
-   * fails.
+   * Returns an unmodifiable {@code Map} where the values of the input {@code Map} have
+   * been converted using the specified {@code BiFunction}. This method passes both the
+   * key and the value to the converter function so you can make the conversion
+   * key-dependent, or so you can mention the key if the conversion fails.
    *
    * @param <K> the type of the keys of the input and output {@code Map}
    * @param <V0> the type of the values of the input {@code Map}
    * @param <V1> the type of the values of the output {@code Map}
    * @param src the input {@code Map}
-   * @param valueConverter A {@code Function} that converts the values of the
-   *     input {@code Map}
-   * @return an unmodifiable {@code Map} where the values of the input {@code Map}
-   *     have been converted using the specified {@code Function}
+   * @param valueConverter A {@code Function} that converts the values of the input
+   *     {@code Map}
+   * @return an unmodifiable {@code Map} where the values of the input {@code Map} have
+   *     been converted using the specified {@code Function}
    */
   public static <K, V0, V1> Map<K, V1> freeze(
       Map<K, V0> src,
@@ -381,9 +377,9 @@ public final class CollectionMethods {
 
   /**
    * Returns an unmodifiable {@code Map} where both keys and values of the input
-   * {@code Map} have been converted using the specified {@code Function}. The output
-   * map may be smaller than the input map if the conversion function does not
-   * generate unique keys.
+   * {@code Map} have been converted using the specified {@code Function}. The output map
+   * may be smaller than the input map if the conversion function does not generate unique
+   * keys.
    *
    * @param src the input {@code Map}
    * @param entryConverter a {@code Function} that produces a new entry from the
@@ -392,8 +388,8 @@ public final class CollectionMethods {
    * @param <V0> the type of the values in the input map
    * @param <K1> the type of the keys in the output map
    * @param <V1> the type of the values in the output map
-   * @return an unmodifiable {@code Map} where the values of the input {@code Map}
-   *     have been converted using the specified {@code Function}
+   * @return an unmodifiable {@code Map} where the values of the input {@code Map} have
+   *     been converted using the specified {@code Function}
    */
   public static <K0, V0, K1, V1> Map<K1, V1> deepFreeze(
       Map<K0, V0> src, Function<Entry<K0, V0>, Entry<K1, V1>> entryConverter) {
@@ -425,19 +421,18 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns an unmodifiable {@code List} containing the values that result from
-   * applying the specified function to the source list's elements. The conversion
-   * function is allowed to throw a checked exception.
+   * Returns an unmodifiable {@code List} containing the values that result from applying
+   * the specified function to the source list's elements. The conversion function is
+   * allowed to throw a checked exception.
    *
    * @param <T> the type of the elements in the source list
    * @param <U> the type of the elements in the returned list
    * @param <E> the type of exception thrown if the conversion fails
    * @param src the source list
    * @param converter the conversion function
-   * @return an unmodifiable {@code List} containing the values that result from
-   *     applying the specified function to the source list's elements
-   * @throws E the exception potentially being thrown from the conversion
-   *     function
+   * @return an unmodifiable {@code List} containing the values that result from applying
+   *     the specified function to the source list's elements
+   * @throws E the exception potentially being thrown from the conversion function
    */
   @SuppressWarnings("unchecked")
   public static <T, U, E extends Throwable> List<U> freeze(
@@ -453,19 +448,18 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns an unmodifiable {@code Set} containing the values that result from
-   * applying the specified function to the source set's elements. The conversion
-   * function is allowed to throw a checked exception.
+   * Returns an unmodifiable {@code Set} containing the values that result from applying
+   * the specified function to the source set's elements. The conversion function is
+   * allowed to throw a checked exception.
    *
    * @param <T> the type of the elements in the source set
    * @param <U> the type of the elements in the returned set
    * @param <E> the type of exception thrown if the conversion fails
    * @param src the source set
    * @param converter the conversion function
-   * @return an unmodifiable {@code Set} containing the values that result from
-   *     applying the
-   * @throws E the exception potentially being thrown from the conversion
-   *     function
+   * @return an unmodifiable {@code Set} containing the values that result from applying
+   *     the
+   * @throws E the exception potentially being thrown from the conversion function
    */
   @SuppressWarnings({"unchecked"})
   public static <T, U, E extends Throwable> Set<U> freeze(
@@ -496,8 +490,8 @@ public final class CollectionMethods {
    * @param <U> the type of the elements in the returned list
    * @param src the source list
    * @param converter the conversion function
-   * @return an unmodifiable {@code List} containing the values that result from
-   *     applying the specified function to the source collection's elements
+   * @return an unmodifiable {@code List} containing the values that result from applying
+   *     the specified function to the source collection's elements
    */
   public static <T, U> List<U> collectionToList(
       Collection<? extends T> src, Function<? super T, ? extends U> converter) {
@@ -521,8 +515,8 @@ public final class CollectionMethods {
    * @param <U> the type of the elements in the returned list
    * @param src the source list
    * @param converter the conversion function
-   * @return an unmodifiable {@code Set} containing the values that result from
-   *     applying the specified function to the source collection's elements
+   * @return an unmodifiable {@code Set} containing the values that result from applying
+   *     the specified function to the source collection's elements
    */
   public static <T, U> Set<U> collectionToSet(
       Collection<? extends T> src, Function<? super T, ? extends U> converter) {
@@ -532,8 +526,7 @@ public final class CollectionMethods {
   }
 
   /**
-   * Shortcut method. Returns an unmodifiable map from the specified collection
-   * using:
+   * Shortcut method. Returns an unmodifiable map from the specified collection using:
    *
    * <blockquote> <pre>{@code
    * src.stream().collect(toUnmodifiableMap(keyExtractor, Function.identity()))
@@ -554,8 +547,8 @@ public final class CollectionMethods {
   }
 
   /**
-   * Shortcut method. Returns the first element that passes the specified test, or
-   * else {@code null}. Shortcut for
+   * Shortcut method. Returns the first element that passes the specified test, or else
+   * {@code null}. Shortcut for
    * {@code collection.stream().filter(test).findFirst().orElse(null)}.
    *
    * @param collection the collection to search
@@ -582,8 +575,8 @@ public final class CollectionMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating the collection elements with the
-   * specified separator.
+   * PHP-style implode method, concatenating the collection elements with the specified
+   * separator.
    *
    * @param collection the collection to implode
    * @param separator the string used to separate the elements
@@ -598,13 +591,13 @@ public final class CollectionMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} collection
-   * elements using ", " (comma-space) as separator.
+   * PHP-style implode method, concatenating at most {@code limit} collection elements
+   * using ", " (comma-space) as separator.
    *
    * @param collection the collection to implode
    * @param limit The maximum number of elements to collect. Specify -1 for no
-   *     maximum. Specifying a number greater than the length of the collection is
-   *     OK. It will be clamped to the collection length.
+   *     maximum. Specifying a number greater than the length of the collection is OK. It
+   *     will be clamped to the collection length.
    * @param <T> the type of the elements
    * @return a concatenation of the elements in the collection.
    * @see ArrayMethods#implode(Object[])
@@ -615,12 +608,12 @@ public final class CollectionMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} collection
-   * elements using ", " (comma-space) as separator.
+   * PHP-style implode method, concatenating at most {@code limit} collection elements
+   * using ", " (comma-space) as separator.
    *
    * @param collection the collection to implode
-   * @param stringifier a {@code Function} that converts the collection elements
-   *     to strings
+   * @param stringifier a {@code Function} that converts the collection elements to
+   *     strings
    * @param <T> the type of the elements
    * @return a concatenation of the elements in the collection.
    * @see ArrayMethods#implode(Object[])
@@ -632,14 +625,32 @@ public final class CollectionMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} collection
-   * elements using the specified separator.
+   * PHP-style implode method, concatenating at most {@code limit} collection elements
+   * using ", " (comma-space) as separator.
+   *
+   * @param collection the collection to implode
+   * @param stringifier a {@code Function} that converts the collection elements to
+   *     strings
+   * @param separator the string used to separate the elements
+   * @param <T> the type of the elements
+   * @return a concatenation of the elements in the collection.
+   * @see ArrayMethods#implode(Object[])
+   * @see ArrayMethods#implode(Object[], Function)
+   */
+  public static <T> String implode(Collection<T> collection,
+      Function<T, String> stringifier, String separator) {
+    return implode(collection, stringifier, separator, 0, -1);
+  }
+
+  /**
+   * PHP-style implode method, concatenating at most {@code limit} collection elements
+   * using the specified separator.
    *
    * @param collection the collection to implode
    * @param separator the string used to separate the elements
    * @param limit The maximum number of elements to collect. Specify -1 for no
-   *     maximum. Specifying a number greater than the length of the collection is
-   *     OK. It will be clamped to the collection length.
+   *     maximum. Specifying a number greater than the length of the collection is OK. It
+   *     will be clamped to the collection length.
    * @param <T> the type of the elements
    * @return a concatenation of the elements in the collection.
    * @see ArrayMethods#implode(Object[])
@@ -655,16 +666,14 @@ public final class CollectionMethods {
    * PHP-style implode method.
    *
    * @param collection the collection to implode
-   * @param stringifier a {@code Function} that converts the collection elements
-   *     to strings
+   * @param stringifier a {@code Function} that converts the collection elements to
+   *     strings
    * @param separator the string used to separate the elements
-   * @param from the index of the element to begin the concatenation with
-   *     (inclusive)
-   * @param to the index of the element to end the concatenation with
-   *     (exclusive). The specified number will be clamped to
-   *     {@code collection.size()} (i.e. it's OK to specify a number greater than
-   *     {@code collection.size()}). You can specify -1 as a shorthand for
-   *     {@code collection.size()}.
+   * @param from the index of the element to begin the concatenation with (inclusive)
+   * @param to the index of the element to end the concatenation with (exclusive). The
+   *     specified number will be clamped to {@code collection.size()} (i.e. it's OK to
+   *     specify a number greater than {@code collection.size()}). You can specify -1 as a
+   *     shorthand for {@code collection.size()}.
    * @param <T> the type of the elements
    * @return a concatenation of the elements in the collection.
    * @see ArrayMethods#implode(Object[])
@@ -714,9 +723,9 @@ public final class CollectionMethods {
               Set.of(1, 2, 3).getClass())));
 
   /**
-   * Returns {@code true} if the provided collection is a null-repellent collection
-   * like those obtained via {@code List.of(...)} and {@code Set.of(...)}. Note that
-   * if this method returns {@code false}, it does not mean that the collection is
+   * Returns {@code true} if the provided collection is a null-repellent collection like
+   * those obtained via {@code List.of(...)} and {@code Set.of(...)}. Note that if this
+   * method returns {@code false}, it does not mean that the collection is
    * <i>not</i> null-repellent. The only sure thing is that if this method returns
    * {@code true}, the collection is guaranteed not to contain {@code null} values.
    *

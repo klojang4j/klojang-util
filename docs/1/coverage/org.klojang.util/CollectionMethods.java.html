@@ -15,7 +15,7 @@ import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonExceptions.duplicateKey;
 import static org.klojang.check.CommonProperties.*;
 import static org.klojang.check.Tag.*;
-import static org.klojang.util.ArrayMethods.*;
+import static org.klojang.util.ArrayMethods.IMPLODE_SEPARATOR;
 
 /**
  * Methods extending the Java Collection framework.
@@ -90,25 +90,24 @@ public final class CollectionMethods {
    * specified value. The initialization value must not be {@code null}.
    *
    * @param size The desired size of the {@code List}
-   * @param initVal The initial value of the list elements (must not be
-   *     {@code null})
+   * @param initVal The initial value of the list elements (must not be {@code null})
    * @param &lt;E&gt; the type of the elements
    * @return a fixed-size, mutable, initialized {@code List}
    */
   @SuppressWarnings({&quot;unchecked&quot;})
   public static &lt;E&gt; List&lt;E&gt; initializeList(int size, E initVal) {
-<span class="fc" id="L100">    Check.that(size, SIZE).is(gte(), 0);</span>
-<span class="fc" id="L101">    Check.notNull(initVal, &quot;initialization value&quot;);</span>
-<span class="fc" id="L102">    Object[] array = new Object[size];</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">    for (int i = 0; i &lt; size; ++i) {</span>
-<span class="fc" id="L104">      array[i] = initVal;</span>
+<span class="fc" id="L99">    Check.that(size, SIZE).is(gte(), 0);</span>
+<span class="fc" id="L100">    Check.notNull(initVal, &quot;initialization value&quot;);</span>
+<span class="fc" id="L101">    Object[] array = new Object[size];</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">    for (int i = 0; i &lt; size; ++i) {</span>
+<span class="fc" id="L103">      array[i] = initVal;</span>
     }
-<span class="fc" id="L106">    return (List&lt;E&gt;) Arrays.asList(array);</span>
+<span class="fc" id="L105">    return (List&lt;E&gt;) Arrays.asList(array);</span>
   }
 
   /**
-   * Returns a fixed-size, mutable {@code List} with all elements initialized to
-   * values provided by a {@code Supplier}.
+   * Returns a fixed-size, mutable {@code List} with all elements initialized to values
+   * provided by a {@code Supplier}.
    *
    * @param size The desired size of the {@code List}
    * @param initValSupplier The supplier of the initial values
@@ -117,20 +116,19 @@ public final class CollectionMethods {
    */
   @SuppressWarnings({&quot;unchecked&quot;})
   public static &lt;E&gt; List&lt;E&gt; initializeList(int size, Supplier&lt;E&gt; initValSupplier) {
-<span class="fc" id="L120">    Check.that(size, SIZE).is(gte(), 0);</span>
-<span class="fc" id="L121">    Check.notNull(initValSupplier, &quot;supplier&quot;);</span>
-<span class="fc" id="L122">    Object[] array = new Object[size];</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">    for (int i = 0; i &lt; size; ++i) {</span>
-<span class="fc" id="L124">      array[i] = initValSupplier.get();</span>
+<span class="fc" id="L119">    Check.that(size, SIZE).is(gte(), 0);</span>
+<span class="fc" id="L120">    Check.notNull(initValSupplier, &quot;supplier&quot;);</span>
+<span class="fc" id="L121">    Object[] array = new Object[size];</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">    for (int i = 0; i &lt; size; ++i) {</span>
+<span class="fc" id="L123">      array[i] = initValSupplier.get();</span>
     }
-<span class="fc" id="L126">    return (List&lt;E&gt;) Arrays.asList(array);</span>
+<span class="fc" id="L125">    return (List&lt;E&gt;) Arrays.asList(array);</span>
   }
 
   /**
-   * Returns a new {@link ArrayList} initialized with the specified values. The
-   * values are allowed to be {@code null}. The initial capacity will always be at
-   * least the length of the {@code initVals} array, whatever the value of the
-   * {@code capacity} argument.
+   * Returns a new {@link ArrayList} initialized with the specified values. The values are
+   * allowed to be {@code null}. The initial capacity will always be at least the length
+   * of the {@code initVals} array, whatever the value of the {@code capacity} argument.
    *
    * @param capacity The initial capacity of the list
    * @param initVals The values to add to the list
@@ -139,28 +137,27 @@ public final class CollectionMethods {
    */
   @SafeVarargs
   public static &lt;E&gt; List&lt;E&gt; newArrayList(int capacity, E... initVals) {
-<span class="nc" id="L142">    Check.that(capacity, CAPACITY).is(gte(), 0);</span>
-<span class="nc" id="L143">    Check.notNull(initVals, &quot;initVals&quot;);</span>
-<span class="nc bnc" id="L144" title="All 2 branches missed.">    if (initVals.length == 0) {</span>
-<span class="nc" id="L145">      return new ArrayList&lt;&gt;(Math.max(1, capacity));</span>
+<span class="nc" id="L140">    Check.that(capacity, CAPACITY).is(gte(), 0);</span>
+<span class="nc" id="L141">    Check.notNull(initVals, &quot;initVals&quot;);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">    if (initVals.length == 0) {</span>
+<span class="nc" id="L143">      return new ArrayList&lt;&gt;(Math.max(1, capacity));</span>
     }
-<span class="nc" id="L147">    List&lt;E&gt; l = new ArrayList&lt;&gt;(Math.max(capacity, initVals.length));</span>
-<span class="nc" id="L148">    l.addAll(Arrays.asList(initVals));</span>
-<span class="nc" id="L149">    return l;</span>
+<span class="nc" id="L145">    List&lt;E&gt; l = new ArrayList&lt;&gt;(Math.max(capacity, initVals.length));</span>
+<span class="nc" id="L146">    l.addAll(Arrays.asList(initVals));</span>
+<span class="nc" id="L147">    return l;</span>
   }
 
   /**
-   * Returns a {@link HashMap} initialized with the specified key-value pairs. Both
-   * keys and values are allowed to be {@code null}. Keys will be checked for
-   * uniqueness.
+   * Returns a {@link HashMap} initialized with the specified key-value pairs. Both keys
+   * and values are allowed to be {@code null}. Keys will be checked for uniqueness.
    *
    * @param &lt;K&gt; the type of the keys
    * @param &lt;V&gt; the type of the values
    * @param size The expected number of map entries. No rehashing will take place
-   *     until that number is reached. If you specify a number less than the number
-   *     of key-value pairs (half the length of the varargs array), it will be taken
-   *     as a multiplier. For example, 2 would mean that you expect the map to grow
-   *     to about twice the specified number of key-value pairs.
+   *     until that number is reached. If you specify a number less than the number of
+   *     key-value pairs (half the length of the varargs array), it will be taken as a
+   *     multiplier. For example, 2 would mean that you expect the map to grow to about
+   *     twice the specified number of key-value pairs.
    * @param keyClass The class of the keys
    * @param valueClass The class of the values
    * @param kvPairs An array alternating between keys and values
@@ -169,75 +166,75 @@ public final class CollectionMethods {
   @SuppressWarnings(&quot;unchecked&quot;)
   public static &lt;K, V&gt; Map&lt;K, V&gt; newHashMap(
       int size, Class&lt;K&gt; keyClass, Class&lt;V&gt; valueClass, Object... kvPairs) {
-<span class="fc" id="L172">    Check.that(size, CAPACITY).isNot(negative());</span>
-<span class="fc" id="L173">    Check.notNull(kvPairs, &quot;kvPairs&quot;).has(length(), even());</span>
-<span class="pc bpc" id="L174" title="1 of 2 branches missed.">    if (kvPairs.length == 0) {</span>
-<span class="nc" id="L175">      return new HashMap&lt;&gt;(Math.max(1, size));</span>
+<span class="fc" id="L169">    Check.that(size, CAPACITY).isNot(negative());</span>
+<span class="fc" id="L170">    Check.notNull(kvPairs, &quot;kvPairs&quot;).has(length(), even());</span>
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">    if (kvPairs.length == 0) {</span>
+<span class="nc" id="L172">      return new HashMap&lt;&gt;(Math.max(1, size));</span>
     }
     int cap;
-<span class="fc bfc" id="L178" title="All 2 branches covered.">    if (size &lt; kvPairs.length / 2) {</span>
-<span class="fc" id="L179">      cap = Math.max(1, size) * kvPairs.length;</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">    if (size &lt; kvPairs.length / 2) {</span>
+<span class="fc" id="L176">      cap = Math.max(1, size) * kvPairs.length;</span>
     } else {
-<span class="fc" id="L181">      cap = size;</span>
+<span class="fc" id="L178">      cap = size;</span>
     }
-<span class="fc" id="L183">    HashMap&lt;K, V&gt; map = new HashMap&lt;&gt;(1 + cap * 4 / 3);</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">    for (int i = 0; i &lt; kvPairs.length - 1; i += 2) {</span>
-<span class="fc" id="L185">      K key = (K) kvPairs[i];</span>
-<span class="fc" id="L186">      V val = (V) kvPairs[i + 1];</span>
-<span class="fc" id="L187">      Check.that(key).isNot(keyIn(),</span>
+<span class="fc" id="L180">    HashMap&lt;K, V&gt; map = new HashMap&lt;&gt;(1 + cap * 4 / 3);</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">    for (int i = 0; i &lt; kvPairs.length - 1; i += 2) {</span>
+<span class="fc" id="L182">      K key = (K) kvPairs[i];</span>
+<span class="fc" id="L183">      V val = (V) kvPairs[i + 1];</span>
+<span class="fc" id="L184">      Check.that(key).isNot(keyIn(),</span>
           map,
           &quot;duplicate key at position ${0}: ${arg}&quot;,
-<span class="fc" id="L190">          i);</span>
-<span class="pc bpc" id="L191" title="1 of 2 branches missed.">      if (key != null) {</span>
-<span class="fc" id="L192">        Check.that(key, &quot;kvPairs[&quot; + i + &quot;]&quot;).is(instanceOf(), keyClass);</span>
+<span class="fc" id="L187">          i);</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">      if (key != null) {</span>
+<span class="fc" id="L189">        Check.that(key, &quot;kvPairs[&quot; + i + &quot;]&quot;).is(instanceOf(), keyClass);</span>
       }
-<span class="fc bfc" id="L194" title="All 2 branches covered.">      if (val != null) {</span>
-<span class="fc" id="L195">        Check.that(val, &quot;kvPairs[&quot; + (i + 1) + &quot;]&quot;).is(instanceOf(), valueClass);</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">      if (val != null) {</span>
+<span class="fc" id="L192">        Check.that(val, &quot;kvPairs[&quot; + (i + 1) + &quot;]&quot;).is(instanceOf(), valueClass);</span>
       }
-<span class="fc" id="L197">      map.put(key, val);</span>
+<span class="fc" id="L194">      map.put(key, val);</span>
     }
-<span class="fc" id="L199">    return map;</span>
+<span class="fc" id="L196">    return map;</span>
   }
 
   /**
-   * Returns an {@link EnumMap} with all enum constants set to non-null values. The
-   * number of values must exactly equal the number of enum constants, and they are
-   * assigned according to ordinal number. This method throws an
-   * {@link IllegalArgumentException} if the number of values is not exactly equal to
-   * the number of constants in the enum class, or if any of the values is null.
+   * Returns an {@link EnumMap} with all enum constants set to non-null values. The number
+   * of values must exactly equal the number of enum constants, and they are assigned
+   * according to ordinal number. This method throws an {@link IllegalArgumentException}
+   * if the number of values is not exactly equal to the number of constants in the enum
+   * class, or if any of the values is null.
    *
    * @param &lt;K&gt; the key type
    * @param &lt;V&gt; the value type
    * @param enumClass The enum class
    * @param values The values to associate with the enum constants
    * @return a fully-occupied {@code EnumMap} with no null-values
-   * @throws IllegalArgumentException if {@code enumClass} or {@code Values} is
-   *     null, or if any of the provided values is null, or is the number of values
-   *     is not exactly equals to the number of enum constants
+   * @throws IllegalArgumentException if {@code enumClass} or {@code Values} is null,
+   *     or if any of the provided values is null, or is the number of values is not
+   *     exactly equals to the number of enum constants
    */
   @SuppressWarnings(&quot;unchecked&quot;)
   public static &lt;K extends Enum&lt;K&gt;, V&gt; EnumMap&lt;K, V&gt; saturatedEnumMap(
       Class&lt;K&gt; enumClass, V... values) throws IllegalArgumentException {
-<span class="fc" id="L221">    K[] constants = Check.notNull(enumClass, &quot;enumClass&quot;).ok().getEnumConstants();</span>
-<span class="fc" id="L222">    Check.notNull(values, VALUES).has(length(), eq(), constants.length);</span>
-<span class="fc" id="L223">    EnumMap&lt;K, V&gt; map = new EnumMap&lt;&gt;(enumClass);</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">    for (int i = 0; i &lt; constants.length; ++i) {</span>
-<span class="fc" id="L225">      Check.that(values[i]).is(notNull(),</span>
+<span class="fc" id="L218">    K[] constants = Check.notNull(enumClass, &quot;enumClass&quot;).ok().getEnumConstants();</span>
+<span class="fc" id="L219">    Check.notNull(values, VALUES).has(length(), eq(), constants.length);</span>
+<span class="fc" id="L220">    EnumMap&lt;K, V&gt; map = new EnumMap&lt;&gt;(enumClass);</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">    for (int i = 0; i &lt; constants.length; ++i) {</span>
+<span class="fc" id="L222">      Check.that(values[i]).is(notNull(),</span>
           &quot;Illegal null value for key ${0}&quot;,
           constants[i]);
-<span class="fc" id="L228">      map.put(constants[i], values[i]);</span>
+<span class="fc" id="L225">      map.put(constants[i], values[i]);</span>
     }
-<span class="fc" id="L230">    return map;</span>
+<span class="fc" id="L227">    return map;</span>
   }
 
   /**
    * Returns a sublist of the provided list starting with element {@code from} and
    * containing at most {@code length} elements. The returned list is backed by the
-   * original list, so changing its elements will affect the original list as well.
-   * If {@code offset} is negative, it is taken relative to the end of the list. If
-   * {@code length} is negative, the sublist is taken in the opposite direction
-   * &amp;#8212; that is, the element at {@code offset} now becomes the &lt;i&gt;last&lt;/i&gt;
-   * element of the sublist.
+   * original list, so changing its elements will affect the original list as well. If
+   * {@code offset} is negative, it is taken relative to the end of the list. If
+   * {@code length} is negative, the sublist is taken in the opposite direction &amp;#8212;
+   * that is, the element at {@code offset} now becomes the &lt;i&gt;last&lt;/i&gt; element of the
+   * sublist.
    *
    * @param list the {@code List} to extract a sublist from
    * @param offset the start index if the sublist (however, see above)
@@ -246,55 +243,55 @@ public final class CollectionMethods {
    * @return a sublist of the provided list
    */
   public static &lt;T&gt; List&lt;T&gt; sublist(List&lt;T&gt; list, int offset, int length) {
-<span class="fc" id="L249">    Check.notNull(list, LIST);</span>
-<span class="fc" id="L250">    int sz = list.size();</span>
+<span class="fc" id="L246">    Check.notNull(list, LIST);</span>
+<span class="fc" id="L247">    int sz = list.size();</span>
     int from;
-<span class="fc bfc" id="L252" title="All 2 branches covered.">    if (offset &lt; 0) {</span>
-<span class="fc" id="L253">      from = offset + sz;</span>
-<span class="fc" id="L254">      Check.that(from, OFFSET).is(gte(), 0);</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">    if (offset &lt; 0) {</span>
+<span class="fc" id="L250">      from = offset + sz;</span>
+<span class="fc" id="L251">      Check.that(from, OFFSET).is(gte(), 0);</span>
     } else {
-<span class="fc" id="L256">      from = offset;</span>
-<span class="fc" id="L257">      Check.that(from, OFFSET).is(lte(), sz);</span>
+<span class="fc" id="L253">      from = offset;</span>
+<span class="fc" id="L254">      Check.that(from, OFFSET).is(lte(), sz);</span>
     }
     int to;
-<span class="fc bfc" id="L260" title="All 2 branches covered.">    if (length &gt;= 0) {</span>
-<span class="fc" id="L261">      to = from + length;</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">    if (length &gt;= 0) {</span>
+<span class="fc" id="L258">      to = from + length;</span>
     } else {
-<span class="fc" id="L263">      to = from + 1;</span>
-<span class="fc" id="L264">      from = to + length;</span>
-<span class="fc" id="L265">      Check.that(from, &quot;effective from-index&quot;).is(gte(), 0);</span>
+<span class="fc" id="L260">      to = from + 1;</span>
+<span class="fc" id="L261">      from = to + length;</span>
+<span class="fc" id="L262">      Check.that(from, &quot;effective from-index&quot;).is(gte(), 0);</span>
     }
-<span class="fc" id="L267">    Check.that(to, &quot;effective to-index&quot;).is(lte(), sz);</span>
-<span class="fc" id="L268">    return list.subList(from, to);</span>
+<span class="fc" id="L264">    Check.that(to, &quot;effective to-index&quot;).is(lte(), sz);</span>
+<span class="fc" id="L265">    return list.subList(from, to);</span>
   }
 
   /**
-   * Returns a new {@code Map} where keys and values of the input map have traded
-   * places. The specified {@code Map} must not contain duplicate values. An
-   * {@link IllegalArgumentException} is thrown if it does. The returned map is
-   * tightly sized, but modifiable.
+   * Returns a new {@code Map} where keys and values of the input map have traded places.
+   * The specified {@code Map} must not contain duplicate values. An
+   * {@link IllegalArgumentException} is thrown if it does. The returned map is tightly
+   * sized, but modifiable.
    *
-   * @param &lt;K&gt; the type of the keys in the original map, and of the values in
-   *     the returned map
-   * @param &lt;V&gt; the type of the values in the original map, and of the keys in
-   *     the returned map
+   * @param &lt;K&gt; the type of the keys in the original map, and of the values in the
+   *     returned map
+   * @param &lt;V&gt; the type of the values in the original map, and of the keys in the
+   *     returned map
    * @param map The source map
    * @return a new {@code Map} where keys and values are swapped
    */
   public static &lt;K, V&gt; Map&lt;V, K&gt; swap(Map&lt;K, V&gt; map) {
-<span class="fc" id="L285">    return swap(map, () -&gt; new HashMap&lt;&gt;(1 + map.size() * 4 / 3));</span>
+<span class="fc" id="L282">    return swap(map, () -&gt; new HashMap&lt;&gt;(1 + map.size() * 4 / 3));</span>
   }
 
   /**
-   * Returns a new {@code Map} where keys and values of the input map have traded
-   * places. The specified {@code Map} must not contain duplicate values. A
-   * {@link DuplicateValueException} is thrown if it does. {@code null} keys and
-   * values are allowed, however.
+   * Returns a new {@code Map} where keys and values of the input map have traded places.
+   * The specified {@code Map} must not contain duplicate values. A
+   * {@link DuplicateValueException} is thrown if it does. {@code null} keys and values
+   * are allowed, however.
    *
-   * @param &lt;K&gt; the type of the keys in the original map, and of the values in
-   *     the returned map
-   * @param &lt;V&gt; the type of the values in the original map, and of the keys in
-   *     the returned map
+   * @param &lt;K&gt; the type of the keys in the original map, and of the values in the
+   *     returned map
+   * @param &lt;V&gt; the type of the values in the original map, and of the keys in the
+   *     returned map
    * @param map The source map
    * @param mapFactory A supplier of a {@code Map} instance
    * @return a new {@code Map} where keys and values are swapped
@@ -302,11 +299,11 @@ public final class CollectionMethods {
    */
   public static &lt;K, V&gt; Map&lt;V, K&gt; swap(Map&lt;K, V&gt; map,
       Supplier&lt;? extends Map&lt;V, K&gt;&gt; mapFactory) throws DuplicateValueException {
-<span class="fc" id="L305">    Check.notNull(map, MAP);</span>
-<span class="fc" id="L306">    Check.notNull(mapFactory, &quot;mapFactory&quot;);</span>
-<span class="fc" id="L307">    Map&lt;V, K&gt; out = mapFactory.get();</span>
-<span class="fc" id="L308">    map.forEach((k, v) -&gt; out.put(v, k));</span>
-<span class="fc" id="L309">    return Check.that(out).has(mapSize(), eq(), map.size(), duplicateKey()).ok();</span>
+<span class="fc" id="L302">    Check.notNull(map, MAP);</span>
+<span class="fc" id="L303">    Check.notNull(mapFactory, &quot;mapFactory&quot;);</span>
+<span class="fc" id="L304">    Map&lt;V, K&gt; out = mapFactory.get();</span>
+<span class="fc" id="L305">    map.forEach((k, v) -&gt; out.put(v, k));</span>
+<span class="fc" id="L306">    return Check.that(out).has(mapSize(), eq(), map.size(), duplicateKey()).ok();</span>
   }
 
   /**
@@ -315,75 +312,74 @@ public final class CollectionMethods {
    * {@code null} values or duplicate values. An {@link IllegalArgumentException} is
    * thrown if it does.
    *
-   * @param &lt;K&gt; the type of the keys in the original map, and of the values in
-   *     the returned map
-   * @param &lt;V&gt; the type of the values in the original map, and of the keys in
-   *     the returned map
+   * @param &lt;K&gt; the type of the keys in the original map, and of the values in the
+   *     returned map
+   * @param &lt;V&gt; the type of the values in the original map, and of the keys in the
+   *     returned map
    * @param map The source map
    * @return a new {@code Map} where keys and values are swapped
    */
   public static &lt;K, V&gt; Map&lt;V, K&gt; swapAndFreeze(Map&lt;K, V&gt; map) {
-<span class="fc" id="L326">    Map&lt;V, K&gt; out = deepFreeze(map, e -&gt; entry(e.getValue(), e.getKey()));</span>
-<span class="fc" id="L327">    return Check.that(out).has(mapSize(), eq(), map.size(), duplicateKey()).ok();</span>
+<span class="fc" id="L323">    Map&lt;V, K&gt; out = deepFreeze(map, e -&gt; entry(e.getValue(), e.getKey()));</span>
+<span class="fc" id="L324">    return Check.that(out).has(mapSize(), eq(), map.size(), duplicateKey()).ok();</span>
   }
 
   /**
-   * Returns an unmodifiable {@code Map} where the values of the input {@code Map}
-   * have been converted using the specified {@code Function}. The specified
-   * {@code Map} must not contain {@code null} keys, {@code null} values or duplicate
-   * values. An {@link IllegalArgumentException} is thrown if it does.
+   * Returns an unmodifiable {@code Map} where the values of the input {@code Map} have
+   * been converted using the specified {@code Function}. The specified {@code Map} must
+   * not contain {@code null} keys, {@code null} values or duplicate values. An
+   * {@link IllegalArgumentException} is thrown if it does.
    *
    * @param &lt;K&gt; the type of the keys of the input and output {@code Map}
    * @param &lt;V0&gt; the type of the values of the input {@code Map}
    * @param &lt;V1&gt; the type of the values of the output {@code Map}
    * @param src the input {@code Map}
-   * @param valueConverter A {@code Function} that converts the values of the
-   *     input {@code Map}
-   * @return an unmodifiable {@code Map} where the values of the input {@code Map}
-   *     have been converted using the specified {@code Function}
+   * @param valueConverter A {@code Function} that converts the values of the input
+   *     {@code Map}
+   * @return an unmodifiable {@code Map} where the values of the input {@code Map} have
+   *     been converted using the specified {@code Function}
    */
   public static &lt;K, V0, V1&gt; Map&lt;K, V1&gt; freeze(
       Map&lt;K, V0&gt; src, Function&lt;? super V0, ? extends V1&gt; valueConverter) {
-<span class="fc" id="L347">    Check.notNull(src, MAP);</span>
-<span class="fc" id="L348">    Check.notNull(valueConverter, &quot;value converter&quot;);</span>
-<span class="fc" id="L349">    return src.entrySet().stream()</span>
-<span class="fc" id="L350">        .peek(checkEntry())</span>
-<span class="fc" id="L351">        .map(toEntryConverter(valueConverter))</span>
-<span class="fc" id="L352">        .collect(toUnmodifiableMap(key(), value()));</span>
+<span class="fc" id="L344">    Check.notNull(src, MAP);</span>
+<span class="fc" id="L345">    Check.notNull(valueConverter, &quot;value converter&quot;);</span>
+<span class="fc" id="L346">    return src.entrySet().stream()</span>
+<span class="fc" id="L347">        .peek(checkEntry())</span>
+<span class="fc" id="L348">        .map(toEntryConverter(valueConverter))</span>
+<span class="fc" id="L349">        .collect(toUnmodifiableMap(key(), value()));</span>
   }
 
   /**
-   * Returns an unmodifiable {@code Map} where the values of the input {@code Map}
-   * have been converted using the specified {@code BiFunction}. This method passes
-   * both the key and the value to the converter function so you can make the
-   * conversion key-dependent, or so you can mention the key if the conversion
-   * fails.
+   * Returns an unmodifiable {@code Map} where the values of the input {@code Map} have
+   * been converted using the specified {@code BiFunction}. This method passes both the
+   * key and the value to the converter function so you can make the conversion
+   * key-dependent, or so you can mention the key if the conversion fails.
    *
    * @param &lt;K&gt; the type of the keys of the input and output {@code Map}
    * @param &lt;V0&gt; the type of the values of the input {@code Map}
    * @param &lt;V1&gt; the type of the values of the output {@code Map}
    * @param src the input {@code Map}
-   * @param valueConverter A {@code Function} that converts the values of the
-   *     input {@code Map}
-   * @return an unmodifiable {@code Map} where the values of the input {@code Map}
-   *     have been converted using the specified {@code Function}
+   * @param valueConverter A {@code Function} that converts the values of the input
+   *     {@code Map}
+   * @return an unmodifiable {@code Map} where the values of the input {@code Map} have
+   *     been converted using the specified {@code Function}
    */
   public static &lt;K, V0, V1&gt; Map&lt;K, V1&gt; freeze(
       Map&lt;K, V0&gt; src,
       BiFunction&lt;? super K, ? super V0, ? extends V1&gt; valueConverter) {
-<span class="fc" id="L374">    Check.notNull(src, MAP);</span>
-<span class="fc" id="L375">    Check.notNull(valueConverter, &quot;value converter&quot;);</span>
-<span class="fc" id="L376">    return src.entrySet().stream()</span>
-<span class="fc" id="L377">        .peek(checkEntry())</span>
-<span class="fc" id="L378">        .map(toEntryConverter(valueConverter))</span>
-<span class="fc" id="L379">        .collect(toUnmodifiableMap(key(), value()));</span>
+<span class="fc" id="L370">    Check.notNull(src, MAP);</span>
+<span class="fc" id="L371">    Check.notNull(valueConverter, &quot;value converter&quot;);</span>
+<span class="fc" id="L372">    return src.entrySet().stream()</span>
+<span class="fc" id="L373">        .peek(checkEntry())</span>
+<span class="fc" id="L374">        .map(toEntryConverter(valueConverter))</span>
+<span class="fc" id="L375">        .collect(toUnmodifiableMap(key(), value()));</span>
   }
 
   /**
    * Returns an unmodifiable {@code Map} where both keys and values of the input
-   * {@code Map} have been converted using the specified {@code Function}. The output
-   * map may be smaller than the input map if the conversion function does not
-   * generate unique keys.
+   * {@code Map} have been converted using the specified {@code Function}. The output map
+   * may be smaller than the input map if the conversion function does not generate unique
+   * keys.
    *
    * @param src the input {@code Map}
    * @param entryConverter a {@code Function} that produces a new entry from the
@@ -392,93 +388,91 @@ public final class CollectionMethods {
    * @param &lt;V0&gt; the type of the values in the input map
    * @param &lt;K1&gt; the type of the keys in the output map
    * @param &lt;V1&gt; the type of the values in the output map
-   * @return an unmodifiable {@code Map} where the values of the input {@code Map}
-   *     have been converted using the specified {@code Function}
+   * @return an unmodifiable {@code Map} where the values of the input {@code Map} have
+   *     been converted using the specified {@code Function}
    */
   public static &lt;K0, V0, K1, V1&gt; Map&lt;K1, V1&gt; deepFreeze(
       Map&lt;K0, V0&gt; src, Function&lt;Entry&lt;K0, V0&gt;, Entry&lt;K1, V1&gt;&gt; entryConverter) {
-<span class="fc" id="L400">    Check.notNull(src, MAP);</span>
-<span class="fc" id="L401">    Check.notNull(entryConverter, &quot;entry converter&quot;);</span>
-<span class="fc" id="L402">    Map&lt;K1, V1&gt; out = new HashMap&lt;&gt;(1 + src.size() * 4 / 3);</span>
-<span class="fc" id="L403">    src.entrySet().stream()</span>
-<span class="fc" id="L404">        .peek(checkEntry())</span>
-<span class="fc" id="L405">        .map(entryConverter)</span>
-<span class="fc" id="L406">        .forEach(e -&gt; out.put(e.getKey(), e.getValue()));</span>
-<span class="fc" id="L407">    return Map.copyOf(out);</span>
+<span class="fc" id="L396">    Check.notNull(src, MAP);</span>
+<span class="fc" id="L397">    Check.notNull(entryConverter, &quot;entry converter&quot;);</span>
+<span class="fc" id="L398">    Map&lt;K1, V1&gt; out = new HashMap&lt;&gt;(1 + src.size() * 4 / 3);</span>
+<span class="fc" id="L399">    src.entrySet().stream()</span>
+<span class="fc" id="L400">        .peek(checkEntry())</span>
+<span class="fc" id="L401">        .map(entryConverter)</span>
+<span class="fc" id="L402">        .forEach(e -&gt; out.put(e.getKey(), e.getValue()));</span>
+<span class="fc" id="L403">    return Map.copyOf(out);</span>
   }
 
   private static &lt;K, V0, V1&gt; Function&lt;Entry&lt;K, V0&gt;, Entry&lt;K, V1&gt;&gt; toEntryConverter(
       BiFunction&lt;? super K, ? super V0, ? extends V1&gt; fnc) {
-<span class="fc" id="L412">    return e -&gt; entry(e.getKey(), fnc.apply(e.getKey(), e.getValue()));</span>
+<span class="fc" id="L408">    return e -&gt; entry(e.getKey(), fnc.apply(e.getKey(), e.getValue()));</span>
   }
 
   private static &lt;K, V0, V1&gt; Function&lt;Entry&lt;K, V0&gt;, Entry&lt;K, V1&gt;&gt; toEntryConverter(
       Function&lt;? super V0, ? extends V1&gt; fnc) {
-<span class="fc" id="L417">    return e -&gt; entry(e.getKey(), fnc.apply(e.getValue()));</span>
+<span class="fc" id="L413">    return e -&gt; entry(e.getKey(), fnc.apply(e.getValue()));</span>
   }
 
   private static &lt;K, V&gt; Consumer&lt;Entry&lt;K, V&gt;&gt; checkEntry() {
-<span class="fc" id="L421">    return e -&gt;</span>
-<span class="fc" id="L422">        Check.that(e)</span>
-<span class="fc" id="L423">            .has(key(), notNull(), &quot;Illegal null key for value ${0}&quot;, e.getValue())</span>
-<span class="fc" id="L424">            .has(value(), notNull(), &quot;Illegal null value for key ${0}&quot;, e.getKey());</span>
+<span class="fc" id="L417">    return e -&gt;</span>
+<span class="fc" id="L418">        Check.that(e)</span>
+<span class="fc" id="L419">            .has(key(), notNull(), &quot;Illegal null key for value ${0}&quot;, e.getValue())</span>
+<span class="fc" id="L420">            .has(value(), notNull(), &quot;Illegal null value for key ${0}&quot;, e.getKey());</span>
   }
 
   /**
-   * Returns an unmodifiable {@code List} containing the values that result from
-   * applying the specified function to the source list's elements. The conversion
-   * function is allowed to throw a checked exception.
+   * Returns an unmodifiable {@code List} containing the values that result from applying
+   * the specified function to the source list's elements. The conversion function is
+   * allowed to throw a checked exception.
    *
    * @param &lt;T&gt; the type of the elements in the source list
    * @param &lt;U&gt; the type of the elements in the returned list
    * @param &lt;E&gt; the type of exception thrown if the conversion fails
    * @param src the source list
    * @param converter the conversion function
-   * @return an unmodifiable {@code List} containing the values that result from
-   *     applying the specified function to the source list's elements
-   * @throws E the exception potentially being thrown from the conversion
-   *     function
+   * @return an unmodifiable {@code List} containing the values that result from applying
+   *     the specified function to the source list's elements
+   * @throws E the exception potentially being thrown from the conversion function
    */
   @SuppressWarnings(&quot;unchecked&quot;)
   public static &lt;T, U, E extends Throwable&gt; List&lt;U&gt; freeze(
       List&lt;? extends T&gt; src, FallibleFunction&lt;? super T, ? extends U, E&gt; converter)
       throws E {
-<span class="fc" id="L446">    Check.notNull(src, LIST);</span>
-<span class="fc" id="L447">    Check.notNull(converter, CONVERTER);</span>
-<span class="fc" id="L448">    Object[] objs = new Object[src.size()];</span>
-<span class="fc bfc" id="L449" title="All 2 branches covered.">    for (int i = 0; i &lt; src.size(); ++i) {</span>
-<span class="fc" id="L450">      objs[i] = converter.apply(src.get(i));</span>
+<span class="fc" id="L441">    Check.notNull(src, LIST);</span>
+<span class="fc" id="L442">    Check.notNull(converter, CONVERTER);</span>
+<span class="fc" id="L443">    Object[] objs = new Object[src.size()];</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">    for (int i = 0; i &lt; src.size(); ++i) {</span>
+<span class="fc" id="L445">      objs[i] = converter.apply(src.get(i));</span>
     }
-<span class="fc" id="L452">    return (List&lt;U&gt;) List.of(objs);</span>
+<span class="fc" id="L447">    return (List&lt;U&gt;) List.of(objs);</span>
   }
 
   /**
-   * Returns an unmodifiable {@code Set} containing the values that result from
-   * applying the specified function to the source set's elements. The conversion
-   * function is allowed to throw a checked exception.
+   * Returns an unmodifiable {@code Set} containing the values that result from applying
+   * the specified function to the source set's elements. The conversion function is
+   * allowed to throw a checked exception.
    *
    * @param &lt;T&gt; the type of the elements in the source set
    * @param &lt;U&gt; the type of the elements in the returned set
    * @param &lt;E&gt; the type of exception thrown if the conversion fails
    * @param src the source set
    * @param converter the conversion function
-   * @return an unmodifiable {@code Set} containing the values that result from
-   *     applying the
-   * @throws E the exception potentially being thrown from the conversion
-   *     function
+   * @return an unmodifiable {@code Set} containing the values that result from applying
+   *     the
+   * @throws E the exception potentially being thrown from the conversion function
    */
   @SuppressWarnings({&quot;unchecked&quot;})
   public static &lt;T, U, E extends Throwable&gt; Set&lt;U&gt; freeze(
       Set&lt;? extends T&gt; src, FallibleFunction&lt;? super T, ? extends U, E&gt; converter)
       throws E {
-<span class="fc" id="L474">    Check.notNull(src, SET);</span>
-<span class="fc" id="L475">    Check.notNull(converter, CONVERTER);</span>
-<span class="fc" id="L476">    Object[] objs = new Object[src.size()];</span>
-<span class="fc" id="L477">    Iterator&lt;? extends T&gt; iterator = src.iterator();</span>
-<span class="fc bfc" id="L478" title="All 2 branches covered.">    for (int i = 0; i &lt; src.size(); ++i) {</span>
-<span class="fc" id="L479">      objs[i] = converter.apply(iterator.next());</span>
+<span class="fc" id="L468">    Check.notNull(src, SET);</span>
+<span class="fc" id="L469">    Check.notNull(converter, CONVERTER);</span>
+<span class="fc" id="L470">    Object[] objs = new Object[src.size()];</span>
+<span class="fc" id="L471">    Iterator&lt;? extends T&gt; iterator = src.iterator();</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">    for (int i = 0; i &lt; src.size(); ++i) {</span>
+<span class="fc" id="L473">      objs[i] = converter.apply(iterator.next());</span>
     }
-<span class="fc" id="L481">    return (Set&lt;U&gt;) Set.of(objs);</span>
+<span class="fc" id="L475">    return (Set&lt;U&gt;) Set.of(objs);</span>
   }
 
   /**
@@ -496,14 +490,14 @@ public final class CollectionMethods {
    * @param &lt;U&gt; the type of the elements in the returned list
    * @param src the source list
    * @param converter the conversion function
-   * @return an unmodifiable {@code List} containing the values that result from
-   *     applying the specified function to the source collection's elements
+   * @return an unmodifiable {@code List} containing the values that result from applying
+   *     the specified function to the source collection's elements
    */
   public static &lt;T, U&gt; List&lt;U&gt; collectionToList(
       Collection&lt;? extends T&gt; src, Function&lt;? super T, ? extends U&gt; converter) {
-<span class="fc" id="L504">    Check.notNull(src, COLLECTION);</span>
-<span class="fc" id="L505">    Check.notNull(converter, CONVERTER);</span>
-<span class="fc" id="L506">    return src.stream().map(converter).collect(toUnmodifiableList());</span>
+<span class="fc" id="L498">    Check.notNull(src, COLLECTION);</span>
+<span class="fc" id="L499">    Check.notNull(converter, CONVERTER);</span>
+<span class="fc" id="L500">    return src.stream().map(converter).collect(toUnmodifiableList());</span>
   }
 
   /**
@@ -521,19 +515,18 @@ public final class CollectionMethods {
    * @param &lt;U&gt; the type of the elements in the returned list
    * @param src the source list
    * @param converter the conversion function
-   * @return an unmodifiable {@code Set} containing the values that result from
-   *     applying the specified function to the source collection's elements
+   * @return an unmodifiable {@code Set} containing the values that result from applying
+   *     the specified function to the source collection's elements
    */
   public static &lt;T, U&gt; Set&lt;U&gt; collectionToSet(
       Collection&lt;? extends T&gt; src, Function&lt;? super T, ? extends U&gt; converter) {
-<span class="fc" id="L529">    Check.notNull(src, COLLECTION);</span>
-<span class="fc" id="L530">    Check.notNull(converter, CONVERTER);</span>
-<span class="fc" id="L531">    return src.stream().map(converter).collect(toUnmodifiableSet());</span>
+<span class="fc" id="L523">    Check.notNull(src, COLLECTION);</span>
+<span class="fc" id="L524">    Check.notNull(converter, CONVERTER);</span>
+<span class="fc" id="L525">    return src.stream().map(converter).collect(toUnmodifiableSet());</span>
   }
 
   /**
-   * Shortcut method. Returns an unmodifiable map from the specified collection
-   * using:
+   * Shortcut method. Returns an unmodifiable map from the specified collection using:
    *
    * &lt;blockquote&gt; &lt;pre&gt;{@code
    * src.stream().collect(toUnmodifiableMap(keyExtractor, Function.identity()))
@@ -547,15 +540,15 @@ public final class CollectionMethods {
    */
   public static &lt;K, V&gt; Map&lt;K, V&gt; collectionToMap(
       Collection&lt;V&gt; src, Function&lt;? super V, ? extends K&gt; keyExtractor) {
-<span class="fc" id="L550">    Check.notNull(src, COLLECTION);</span>
-<span class="fc" id="L551">    Check.notNull(keyExtractor, &quot;key extractor&quot;);</span>
-<span class="fc" id="L552">    return src.stream().collect(toUnmodifiableMap(keyExtractor,</span>
-<span class="fc" id="L553">        Function.identity()));</span>
+<span class="fc" id="L543">    Check.notNull(src, COLLECTION);</span>
+<span class="fc" id="L544">    Check.notNull(keyExtractor, &quot;key extractor&quot;);</span>
+<span class="fc" id="L545">    return src.stream().collect(toUnmodifiableMap(keyExtractor,</span>
+<span class="fc" id="L546">        Function.identity()));</span>
   }
 
   /**
-   * Shortcut method. Returns the first element that passes the specified test, or
-   * else {@code null}. Shortcut for
+   * Shortcut method. Returns the first element that passes the specified test, or else
+   * {@code null}. Shortcut for
    * {@code collection.stream().filter(test).findFirst().orElse(null)}.
    *
    * @param collection the collection to search
@@ -565,7 +558,7 @@ public final class CollectionMethods {
    */
   public static &lt;T&gt; T findFirst(Collection&lt;T&gt; collection,
       Predicate&lt;? super T&gt; test) {
-<span class="fc" id="L568">    return collection.stream().filter(test).findFirst().orElse(null);</span>
+<span class="fc" id="L561">    return collection.stream().filter(test).findFirst().orElse(null);</span>
   }
 
   /**
@@ -578,12 +571,12 @@ public final class CollectionMethods {
    * @see ArrayMethods#implode(Object[])
    */
   public static &lt;T&gt; String implode(Collection&lt;T&gt; collection) {
-<span class="fc" id="L581">    return implode(collection, IMPLODE_SEPARATOR);</span>
+<span class="fc" id="L574">    return implode(collection, IMPLODE_SEPARATOR);</span>
   }
 
   /**
-   * PHP-style implode method, concatenating the collection elements with the
-   * specified separator.
+   * PHP-style implode method, concatenating the collection elements with the specified
+   * separator.
    *
    * @param collection the collection to implode
    * @param separator the string used to separate the elements
@@ -593,34 +586,34 @@ public final class CollectionMethods {
    * @see ArrayMethods#implode(Object[], String)
    */
   public static &lt;T&gt; String implode(Collection&lt;T&gt; collection, String separator) {
-<span class="fc" id="L596">    Check.notNull(collection);</span>
-<span class="fc" id="L597">    return implode(collection, Objects::toString, separator, 0, -1);</span>
+<span class="fc" id="L589">    Check.notNull(collection);</span>
+<span class="fc" id="L590">    return implode(collection, Objects::toString, separator, 0, -1);</span>
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} collection
-   * elements using &quot;, &quot; (comma-space) as separator.
+   * PHP-style implode method, concatenating at most {@code limit} collection elements
+   * using &quot;, &quot; (comma-space) as separator.
    *
    * @param collection the collection to implode
    * @param limit The maximum number of elements to collect. Specify -1 for no
-   *     maximum. Specifying a number greater than the length of the collection is
-   *     OK. It will be clamped to the collection length.
+   *     maximum. Specifying a number greater than the length of the collection is OK. It
+   *     will be clamped to the collection length.
    * @param &lt;T&gt; the type of the elements
    * @return a concatenation of the elements in the collection.
    * @see ArrayMethods#implode(Object[])
    * @see ArrayMethods#implode(Object[], int)
    */
   public static &lt;T&gt; String implode(Collection&lt;T&gt; collection, int limit) {
-<span class="fc" id="L614">    return implode(collection, IMPLODE_SEPARATOR, limit);</span>
+<span class="fc" id="L607">    return implode(collection, IMPLODE_SEPARATOR, limit);</span>
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} collection
-   * elements using &quot;, &quot; (comma-space) as separator.
+   * PHP-style implode method, concatenating at most {@code limit} collection elements
+   * using &quot;, &quot; (comma-space) as separator.
    *
    * @param collection the collection to implode
-   * @param stringifier a {@code Function} that converts the collection elements
-   *     to strings
+   * @param stringifier a {@code Function} that converts the collection elements to
+   *     strings
    * @param &lt;T&gt; the type of the elements
    * @return a concatenation of the elements in the collection.
    * @see ArrayMethods#implode(Object[])
@@ -628,18 +621,36 @@ public final class CollectionMethods {
    */
   public static &lt;T&gt; String implode(Collection&lt;T&gt; collection,
       Function&lt;T, String&gt; stringifier) {
-<span class="fc" id="L631">    return implode(collection, stringifier, IMPLODE_SEPARATOR, 0, -1);</span>
+<span class="fc" id="L624">    return implode(collection, stringifier, IMPLODE_SEPARATOR, 0, -1);</span>
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} collection
-   * elements using the specified separator.
+   * PHP-style implode method, concatenating at most {@code limit} collection elements
+   * using &quot;, &quot; (comma-space) as separator.
+   *
+   * @param collection the collection to implode
+   * @param stringifier a {@code Function} that converts the collection elements to
+   *     strings
+   * @param separator the string used to separate the elements
+   * @param &lt;T&gt; the type of the elements
+   * @return a concatenation of the elements in the collection.
+   * @see ArrayMethods#implode(Object[])
+   * @see ArrayMethods#implode(Object[], Function)
+   */
+  public static &lt;T&gt; String implode(Collection&lt;T&gt; collection,
+      Function&lt;T, String&gt; stringifier, String separator) {
+<span class="fc" id="L642">    return implode(collection, stringifier, separator, 0, -1);</span>
+  }
+
+  /**
+   * PHP-style implode method, concatenating at most {@code limit} collection elements
+   * using the specified separator.
    *
    * @param collection the collection to implode
    * @param separator the string used to separate the elements
    * @param limit The maximum number of elements to collect. Specify -1 for no
-   *     maximum. Specifying a number greater than the length of the collection is
-   *     OK. It will be clamped to the collection length.
+   *     maximum. Specifying a number greater than the length of the collection is OK. It
+   *     will be clamped to the collection length.
    * @param &lt;T&gt; the type of the elements
    * @return a concatenation of the elements in the collection.
    * @see ArrayMethods#implode(Object[])
@@ -648,23 +659,21 @@ public final class CollectionMethods {
   public static &lt;T&gt; String implode(Collection&lt;T&gt; collection,
       String separator,
       int limit) {
-<span class="fc" id="L651">    return implode(collection, Objects::toString, separator, 0, limit);</span>
+<span class="fc" id="L662">    return implode(collection, Objects::toString, separator, 0, limit);</span>
   }
 
   /**
    * PHP-style implode method.
    *
    * @param collection the collection to implode
-   * @param stringifier a {@code Function} that converts the collection elements
-   *     to strings
+   * @param stringifier a {@code Function} that converts the collection elements to
+   *     strings
    * @param separator the string used to separate the elements
-   * @param from the index of the element to begin the concatenation with
-   *     (inclusive)
-   * @param to the index of the element to end the concatenation with
-   *     (exclusive). The specified number will be clamped to
-   *     {@code collection.size()} (i.e. it's OK to specify a number greater than
-   *     {@code collection.size()}). You can specify -1 as a shorthand for
-   *     {@code collection.size()}.
+   * @param from the index of the element to begin the concatenation with (inclusive)
+   * @param to the index of the element to end the concatenation with (exclusive). The
+   *     specified number will be clamped to {@code collection.size()} (i.e. it's OK to
+   *     specify a number greater than {@code collection.size()}). You can specify -1 as a
+   *     shorthand for {@code collection.size()}.
    * @param &lt;T&gt; the type of the elements
    * @return a concatenation of the elements in the collection.
    * @see ArrayMethods#implode(Object[])
@@ -677,46 +686,46 @@ public final class CollectionMethods {
       String separator,
       int from,
       int to) {
-<span class="fc" id="L680">    int sz = Check.notNull(collection, COLLECTION).ok(Collection::size);</span>
-<span class="fc" id="L681">    Check.notNull(stringifier, STRINGIFIER);</span>
-<span class="fc" id="L682">    Check.notNull(separator, SEPARATOR);</span>
-<span class="fc" id="L683">    Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), sz);</span>
-<span class="fc bfc" id="L684" title="All 2 branches covered.">    int x = to == -1 ? sz : Math.min(to, sz);</span>
-<span class="fc" id="L685">    Check.that(x, &quot;to&quot;).is(gte(), from);</span>
-<span class="fc bfc" id="L686" title="All 2 branches covered.">    if (from == 0) {</span>
-<span class="fc bfc" id="L687" title="All 2 branches covered.">      Stream&lt;T&gt; stream = x == sz</span>
-<span class="fc" id="L688">          ? collection.stream()</span>
-<span class="fc" id="L689">          : collection.stream().limit(x);</span>
-<span class="fc" id="L690">      return stream.map(stringifier).collect(joining(separator));</span>
-<span class="fc bfc" id="L691" title="All 2 branches covered.">    } else if (collection instanceof List) {</span>
-<span class="fc" id="L692">      List&lt;T&gt; sublist = ((List&lt;T&gt;) collection).subList(from, x);</span>
-<span class="fc" id="L693">      return sublist.stream().map(stringifier).collect(joining(separator));</span>
+<span class="fc" id="L689">    int sz = Check.notNull(collection, COLLECTION).ok(Collection::size);</span>
+<span class="fc" id="L690">    Check.notNull(stringifier, STRINGIFIER);</span>
+<span class="fc" id="L691">    Check.notNull(separator, SEPARATOR);</span>
+<span class="fc" id="L692">    Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), sz);</span>
+<span class="fc bfc" id="L693" title="All 2 branches covered.">    int x = to == -1 ? sz : Math.min(to, sz);</span>
+<span class="fc" id="L694">    Check.that(x, &quot;to&quot;).is(gte(), from);</span>
+<span class="fc bfc" id="L695" title="All 2 branches covered.">    if (from == 0) {</span>
+<span class="fc bfc" id="L696" title="All 2 branches covered.">      Stream&lt;T&gt; stream = x == sz</span>
+<span class="fc" id="L697">          ? collection.stream()</span>
+<span class="fc" id="L698">          : collection.stream().limit(x);</span>
+<span class="fc" id="L699">      return stream.map(stringifier).collect(joining(separator));</span>
+<span class="fc bfc" id="L700" title="All 2 branches covered.">    } else if (collection instanceof List) {</span>
+<span class="fc" id="L701">      List&lt;T&gt; sublist = ((List&lt;T&gt;) collection).subList(from, x);</span>
+<span class="fc" id="L702">      return sublist.stream().map(stringifier).collect(joining(separator));</span>
     }
-<span class="fc" id="L695">    Stream stream = Arrays.stream(collection.toArray(), from, x);</span>
-<span class="fc" id="L696">    return (String) stream.map(stringifier).collect(joining(separator));</span>
+<span class="fc" id="L704">    Stream stream = Arrays.stream(collection.toArray(), from, x);</span>
+<span class="fc" id="L705">    return (String) stream.map(stringifier).collect(joining(separator));</span>
   }
 
-<span class="fc" id="L699">  private static final Set&lt;Class&gt; NULL_REPELLERS =</span>
+<span class="fc" id="L708">  private static final Set&lt;Class&gt; NULL_REPELLERS =</span>
       // Actually, List.of(1) and List.of(1, 2) currently have the same type, but
       // better safe than sorry. They will anyhow be de-duplicated when entering
       // the HashSet
-<span class="fc" id="L703">      Set.copyOf(new HashSet&lt;&gt;(</span>
-<span class="fc" id="L704">          Arrays.asList(</span>
-<span class="fc" id="L705">              Collections.emptyList().getClass(),</span>
-<span class="fc" id="L706">              Collections.emptySet().getClass(),</span>
-<span class="fc" id="L707">              List.of().getClass(),</span>
-<span class="fc" id="L708">              List.of(1).getClass(),</span>
-<span class="fc" id="L709">              List.of(1, 2).getClass(),</span>
-<span class="fc" id="L710">              List.of(1, 2, 3).getClass(),</span>
-<span class="fc" id="L711">              Set.of().getClass(),</span>
-<span class="fc" id="L712">              Set.of(1).getClass(),</span>
-<span class="fc" id="L713">              Set.of(1, 2).getClass(),</span>
-<span class="fc" id="L714">              Set.of(1, 2, 3).getClass())));</span>
+<span class="fc" id="L712">      Set.copyOf(new HashSet&lt;&gt;(</span>
+<span class="fc" id="L713">          Arrays.asList(</span>
+<span class="fc" id="L714">              Collections.emptyList().getClass(),</span>
+<span class="fc" id="L715">              Collections.emptySet().getClass(),</span>
+<span class="fc" id="L716">              List.of().getClass(),</span>
+<span class="fc" id="L717">              List.of(1).getClass(),</span>
+<span class="fc" id="L718">              List.of(1, 2).getClass(),</span>
+<span class="fc" id="L719">              List.of(1, 2, 3).getClass(),</span>
+<span class="fc" id="L720">              Set.of().getClass(),</span>
+<span class="fc" id="L721">              Set.of(1).getClass(),</span>
+<span class="fc" id="L722">              Set.of(1, 2).getClass(),</span>
+<span class="fc" id="L723">              Set.of(1, 2, 3).getClass())));</span>
 
   /**
-   * Returns {@code true} if the provided collection is a null-repellent collection
-   * like those obtained via {@code List.of(...)} and {@code Set.of(...)}. Note that
-   * if this method returns {@code false}, it does not mean that the collection is
+   * Returns {@code true} if the provided collection is a null-repellent collection like
+   * those obtained via {@code List.of(...)} and {@code Set.of(...)}. Note that if this
+   * method returns {@code false}, it does not mean that the collection is
    * &lt;i&gt;not&lt;/i&gt; null-repellent. The only sure thing is that if this method returns
    * {@code true}, the collection is guaranteed not to contain {@code null} values.
    *
@@ -724,7 +733,7 @@ public final class CollectionMethods {
    * @return {@code true} if the provided collection is a null-repellent collection
    */
   public static boolean isNullRepellent(Collection&lt;?&gt; c) {
-<span class="fc" id="L727">    return NULL_REPELLERS.contains(c.getClass());</span>
+<span class="fc" id="L736">    return NULL_REPELLERS.contains(c.getClass());</span>
   }
 
 }
