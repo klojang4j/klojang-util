@@ -38,9 +38,14 @@ public final class ArrayMethods {
   public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
   /**
-   * A zero-length int array.
+   * A zero-length {@code int} array.
    */
   public static final int[] EMPTY_INT_ARRAY = new int[0];
+
+  /**
+   * A zero-length {@code long} array.
+   */
+  public static final long[] EMPTY_LONG_ARRAY = new long[0];
 
   /**
    * Default separator for {@code ArrayMethods.implode} and
@@ -346,7 +351,8 @@ public final class ArrayMethods {
    *     element that passed the specified test, or {@code null} if no element passed the
    *     test
    */
-  public static <T, R> Result<R> find(T[] array,
+  public static <T, R> Result<R> find(
+      T[] array,
       Predicate<T> test,
       Function<T, R> property) {
     Check.notNull(array, ARRAY);
@@ -570,7 +576,8 @@ public final class ArrayMethods {
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, Function, String, int, int)
    */
-  public static String implodeInts(int[] array,
+  public static String implodeInts(
+      int[] array,
       IntFunction<String> stringifier,
       String separator,
       int from,
@@ -626,7 +633,8 @@ public final class ArrayMethods {
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, String)
    */
-  public static String implodeAny(Object array,
+  public static String implodeAny(
+      Object array,
       Function<Object, String> stringifier) {
     return implodeAny(array, stringifier, IMPLODE_SEPARATOR, 0, -1);
   }
@@ -683,7 +691,8 @@ public final class ArrayMethods {
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, Function, String, int, int)
    */
-  public static String implodeAny(Object array,
+  public static String implodeAny(
+      Object array,
       Function<Object, String> stringifier,
       String separator,
       int from,
@@ -774,7 +783,8 @@ public final class ArrayMethods {
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, int)
    */
-  public static <T> String implode(T[] array,
+  public static <T> String implode(
+      T[] array,
       Function<T, String> stringifier,
       String separator) {
     return implode(array, stringifier, separator, 0, -1);
@@ -814,7 +824,8 @@ public final class ArrayMethods {
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, Function, String, int, int)
    */
-  public static <T> String implode(T[] array,
+  public static <T> String implode(
+      T[] array,
       Function<T, String> stringifier,
       String separator,
       int from,

@@ -16,7 +16,7 @@ Klojang Util,org.klojang.util,ExceptionMethods,22,308,3,25,6,57,4,25,1,14
 Klojang Util,org.klojang.util,CollectionMethods,49,932,4,40,10,166,5,64,2,45
 Klojang Util,org.klojang.util,Tuple2,0,35,0,0,0,7,0,5,0,5
 Klojang Util,org.klojang.util,InvokeException,0,35,0,0,0,7,0,3,0,3
-Klojang Util,org.klojang.util,ArrayMethods,79,1180,8,60,16,222,16,102,10,74
+Klojang Util,org.klojang.util,ArrayMethods,79,1183,8,60,16,223,16,102,10,74
 Klojang Util,org.klojang.util,AnyTuple2,6,43,2,6,0,6,4,7,2,5
 Klojang Util,org.klojang.util.collection,IntArrayList,30,737,5,51,8,163,5,69,1,45
 Klojang Util,org.klojang.util.collection,UnmodifiableIntList,2,290,1,19,1,62,1,46,0,37
