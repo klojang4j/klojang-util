@@ -325,7 +325,7 @@ public final class ArrayMethods {
    * @param test the test
    * @param <T> the type of the array elements
    * @return the first array element that passes the specified test, or
-   *     {@link Result#notAvailable()} if no element passed the test.
+   * {@link Result#notAvailable()} if no element passed the test.
    */
   public static <T> Result<T> find(T[] array, Predicate<T> test) {
     return find(array, test, identity());
@@ -348,22 +348,22 @@ public final class ArrayMethods {
    * @param <T> the type of the array elements
    * @param <R> the type of the value extracted from the array element
    * @return the {@code Result} containing the value extracted from the first array
-   *     element that passed the specified test, or {@code null} if no element passed the
-   *     test
+   * element that passed the specified test, or {@code null} if no element passed the
+   * test
    */
   public static <T, R> Result<R> find(
-      T[] array,
-      Predicate<T> test,
-      Function<T, R> property) {
+        T[] array,
+        Predicate<T> test,
+        Function<T, R> property) {
     Check.notNull(array, ARRAY);
     Check.notNull(test, TEST);
     Check.notNull(property, PROPERTY);
     return Arrays.stream(array)
-        .filter(test)
-        .map(property)
-        .map(Result::of)
-        .findFirst()
-        .orElse(Result.notAvailable());
+          .filter(test)
+          .map(property)
+          .map(Result::of)
+          .findFirst()
+          .orElse(Result.notAvailable());
   }
 
   /**
@@ -373,16 +373,16 @@ public final class ArrayMethods {
    * @param array the array
    * @param test the test
    * @return the first array element that passes the specified test, or an empty
-   *     {@code OptionalInt} if no element passed the test
+   * {@code OptionalInt} if no element passed the test
    */
   public static OptionalInt find(int[] array, IntPredicate test) {
     Check.notNull(array, ARRAY);
     Check.notNull(test, TEST);
     return Arrays.stream(array)
-        .filter(test)
-        .mapToObj(OptionalInt::of)
-        .findFirst()
-        .orElse(OptionalInt.empty());
+          .filter(test)
+          .mapToObj(OptionalInt::of)
+          .findFirst()
+          .orElse(OptionalInt.empty());
   }
 
   /**
@@ -453,14 +453,14 @@ public final class ArrayMethods {
   }
 
   private static final Map<Class<?>, ToIntFunction<Object>> hashCoders =
-      Map.of(
-          int[].class, obj -> Arrays.hashCode((int[]) obj),
-          long[].class, obj -> Arrays.hashCode((long[]) obj),
-          double[].class, obj -> Arrays.hashCode((double[]) obj),
-          float[].class, obj -> Arrays.hashCode((float[]) obj),
-          char[].class, obj -> Arrays.hashCode((char[]) obj),
-          short[].class, obj -> Arrays.hashCode((short[]) obj),
-          byte[].class, obj -> Arrays.hashCode((byte[]) obj));
+        Map.of(
+              int[].class, obj -> Arrays.hashCode((int[]) obj),
+              long[].class, obj -> Arrays.hashCode((long[]) obj),
+              double[].class, obj -> Arrays.hashCode((double[]) obj),
+              float[].class, obj -> Arrays.hashCode((float[]) obj),
+              char[].class, obj -> Arrays.hashCode((char[]) obj),
+              short[].class, obj -> Arrays.hashCode((short[]) obj),
+              byte[].class, obj -> Arrays.hashCode((byte[]) obj));
 
   /**
    * Returns the hash code of an array. Allows you to retrieve the hash code of an array
@@ -522,10 +522,9 @@ public final class ArrayMethods {
    * " (comma+space) as separator.
    *
    * @param array the array to implode
-   * @param limit The maximum number of elements to collect. The specified number will
-   *     be clamped to {@code array.length} (i.e. it's OK to specify a number greater than
-   *     {@code array.length}). You can specify -1 as a shorthand for
-   *     {@code array.length}.
+   * @param limit The maximum number of elements to collect. The specified number will be
+   * clamped to {@code array.length} (i.e. it's OK to specify a number greater than
+   * {@code array.length}). You can specify -1 as a shorthand for {@code array.length}.
    * @return a concatenation of the elements in the array.
    */
   public static String implodeInts(int[] array, int limit) {
@@ -537,8 +536,7 @@ public final class ArrayMethods {
    * " (comma+space) as separator.
    *
    * @param array the array to implode
-   * @param stringifier A {@code Function} that converts the array elements to
-   *     strings
+   * @param stringifier A {@code Function} that converts the array elements to strings
    * @return a concatenation of the elements in the array.
    */
   public static String implodeInts(int[] array, IntFunction<String> stringifier) {
@@ -551,10 +549,9 @@ public final class ArrayMethods {
    *
    * @param array the array to implode
    * @param separator the string used to separate the elements
-   * @param limit The maximum number of elements to collect. The specified number will
-   *     be clamped to {@code array.length} (i.e. it's OK to specify a number greater than
-   *     {@code array.length}). You can specify -1 as a shorthand for
-   *     {@code array.length}.
+   * @param limit The maximum number of elements to collect. The specified number will be
+   * clamped to {@code array.length} (i.e. it's OK to specify a number greater than
+   * {@code array.length}). You can specify -1 as a shorthand for {@code array.length}.
    * @return a concatenation of the elements in the array.
    */
   public static String implodeInts(int[] array, String separator, int limit) {
@@ -565,31 +562,30 @@ public final class ArrayMethods {
    * PHP-style implode method, optimized for {@code int[]} arrays.
    *
    * @param array the array to implode
-   * @param stringifier A {@code Function} that converts the array elements to
-   *     strings
+   * @param stringifier A {@code Function} that converts the array elements to strings
    * @param separator the string used to separate the elements
    * @param from The index of the element to begin the concatenation with (inclusive)
    * @param to The index of the element to end the concatenation with (exclusive). The
-   *     specified number will be clamped to {@code array.length} (i.e. it's OK to specify
-   *     a number greater than {@code array.length}). You can specify -1 as a shorthand
-   *     for {@code array.length}.
+   * specified number will be clamped to {@code array.length} (i.e. it's OK to specify a
+   * number greater than {@code array.length}). You can specify -1 as a shorthand for
+   * {@code array.length}.
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, Function, String, int, int)
    */
   public static String implodeInts(
-      int[] array,
-      IntFunction<String> stringifier,
-      String separator,
-      int from,
-      int to) {
+        int[] array,
+        IntFunction<String> stringifier,
+        String separator,
+        int from,
+        int to) {
     Check.notNull(array, ARRAY);
     Check.notNull(separator, SEPARATOR);
     Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), array.length);
     int x = to == -1 ? array.length : Math.min(to, array.length);
     Check.that(x, TO_INDEX).is(gte(), from);
     return Arrays.stream(array, from, x)
-        .mapToObj(stringifier)
-        .collect(joining(separator));
+          .mapToObj(stringifier)
+          .collect(joining(separator));
   }
 
   /**
@@ -628,15 +624,34 @@ public final class ArrayMethods {
    * is thrown if {@code array} is not an array.
    *
    * @param array the array to implode
-   * @param stringifier A {@code Function} that converts the array elements to
-   *     strings
+   * @param stringifier A {@code Function} that converts the array elements to strings
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, String)
    */
   public static String implodeAny(
-      Object array,
-      Function<Object, String> stringifier) {
+        Object array,
+        Function<Object, String> stringifier) {
     return implodeAny(array, stringifier, IMPLODE_SEPARATOR, 0, -1);
+  }
+
+
+  /**
+   * PHP-style implode method, concatenating the array elements using ", " (comma+space)
+   * as separator. This method is primarily meant to implode primitive arrays, but you
+   * <i>can</i> use it to implode any type of array. An {@link IllegalArgumentException}
+   * is thrown if {@code array} is not an array.
+   *
+   * @param array the array to implode
+   * @param stringifier A {@code Function} that converts the array elements to strings
+   * @param separator the string used to separate the elements
+   * @return a concatenation of the elements in the array.
+   * @see CollectionMethods#implode(Collection, String)
+   */
+  public static String implodeAny(
+        Object array,
+        Function<Object, String> stringifier,
+        String separator) {
+    return implodeAny(array, stringifier, separator, 0, -1);
   }
 
   /**
@@ -646,10 +661,9 @@ public final class ArrayMethods {
    * {@link IllegalArgumentException} is thrown if {@code array} is not an array.
    *
    * @param array the array to implode
-   * @param limit The maximum number of elements to collect. The specified number will
-   *     be clamped to {@code array.length} (i.e. it's OK to specify a number greater than
-   *     {@code array.length}). You can specify -1 as a shorthand for
-   *     {@code array.length}.
+   * @param limit The maximum number of elements to collect. The specified number will be
+   * clamped to {@code array.length} (i.e. it's OK to specify a number greater than
+   * {@code array.length}). You can specify -1 as a shorthand for {@code array.length}.
    * @return a concatenation of the elements in the array.
    */
   public static String implodeAny(Object array, int limit) {
@@ -664,10 +678,9 @@ public final class ArrayMethods {
    *
    * @param array the array to implode
    * @param separator the string used to separate the elements
-   * @param limit The maximum number of elements to collect. The specified number will
-   *     be clamped to {@code array.length} (i.e. it's OK to specify a number greater than
-   *     {@code array.length}). You can specify -1 as a shorthand for
-   *     {@code array.length}.
+   * @param limit The maximum number of elements to collect. The specified number will be
+   * clamped to {@code array.length} (i.e. it's OK to specify a number greater than
+   * {@code array.length}). You can specify -1 as a shorthand for {@code array.length}.
    * @return a concatenation of the elements in the array.
    */
   public static String implodeAny(Object array, String separator, int limit) {
@@ -680,35 +693,34 @@ public final class ArrayMethods {
    * {@link IllegalArgumentException} is thrown if {@code array} is not an array.
    *
    * @param array the array to implode
-   * @param stringifier A {@code Function} that converts the array elements to
-   *     strings
+   * @param stringifier A {@code Function} that converts the array elements to strings
    * @param separator the string used to separate the elements
    * @param from The index of the element to begin the concatenation with (inclusive)
    * @param to The index of the element to end the concatenation with (exclusive). The
-   *     specified number will be clamped to {@code array.length} (i.e. it's OK to specify
-   *     a number greater than {@code array.length}). You can specify -1 as a shorthand
-   *     for {@code array.length}.
+   * specified number will be clamped to {@code array.length} (i.e. it's OK to specify a
+   * number greater than {@code array.length}). You can specify -1 as a shorthand for
+   * {@code array.length}.
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, Function, String, int, int)
    */
   public static String implodeAny(
-      Object array,
-      Function<Object, String> stringifier,
-      String separator,
-      int from,
-      int to) {
+        Object array,
+        Function<Object, String> stringifier,
+        String separator,
+        int from,
+        int to) {
     int len = Check.notNull(array, ARRAY)
-        .is(array())
-        .ok(InvokeMethods::getArrayLength);
+          .is(array())
+          .ok(InvokeMethods::getArrayLength);
     Check.notNull(stringifier, STRINGIFIER);
     Check.notNull(separator, SEPARATOR);
     Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), len);
     int x = to == -1 ? len : Math.min(to, len);
     Check.that(x, TO_INDEX).is(gte(), from);
     return IntStream.range(from, x)
-        .mapToObj(i -> getArrayElement(array, i))
-        .map(stringifier)
-        .collect(joining(separator));
+          .mapToObj(i -> getArrayElement(array, i))
+          .map(stringifier)
+          .collect(joining(separator));
   }
 
   /**
@@ -744,10 +756,9 @@ public final class ArrayMethods {
    * " (comma+space) as separator.
    *
    * @param array the array to implode
-   * @param limit The maximum number of elements to collect. The specified number will
-   *     be clamped to {@code array.length} (i.e. it's OK to specify a number greater than
-   *     {@code array.length}). You can specify -1 as a shorthand for
-   *     {@code array.length}.
+   * @param limit The maximum number of elements to collect. The specified number will be
+   * clamped to {@code array.length} (i.e. it's OK to specify a number greater than
+   * {@code array.length}). You can specify -1 as a shorthand for {@code array.length}.
    * @param <T> the type of the array elements
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, int)
@@ -761,8 +772,7 @@ public final class ArrayMethods {
    * " (comma+space) as separator.
    *
    * @param array the array to implode
-   * @param stringifier A {@code Function} that converts the array elements to
-   *     strings
+   * @param stringifier A {@code Function} that converts the array elements to strings
    * @param <T> the type of the array elements
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, int)
@@ -776,17 +786,16 @@ public final class ArrayMethods {
    * " (comma+space) as separator.
    *
    * @param array the array to implode
-   * @param stringifier A {@code Function} that converts the array elements to
-   *     strings
+   * @param stringifier A {@code Function} that converts the array elements to strings
    * @param separator the string used to separate the elements
    * @param <T> the type of the array elements
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, int)
    */
   public static <T> String implode(
-      T[] array,
-      Function<T, String> stringifier,
-      String separator) {
+        T[] array,
+        Function<T, String> stringifier,
+        String separator) {
     return implode(array, stringifier, separator, 0, -1);
   }
 
@@ -796,10 +805,9 @@ public final class ArrayMethods {
    *
    * @param array the array to implode
    * @param separator the string used to separate the elements
-   * @param limit The maximum number of elements to collect. The specified number will
-   *     be clamped to {@code array.length} (i.e. it's OK to specify a number greater than
-   *     {@code array.length}). You can specify -1 as a shorthand for
-   *     {@code array.length}.
+   * @param limit The maximum number of elements to collect. The specified number will be
+   * clamped to {@code array.length} (i.e. it's OK to specify a number greater than
+   * {@code array.length}). You can specify -1 as a shorthand for {@code array.length}.
    * @param <T> the type of the array elements
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, String, int)
@@ -812,24 +820,23 @@ public final class ArrayMethods {
    * PHP-style implode method.
    *
    * @param array the array to implode
-   * @param stringifier A {@code Function} that converts the array elements to
-   *     strings
+   * @param stringifier A {@code Function} that converts the array elements to strings
    * @param separator the string used to separate the elements
    * @param from The index of the element to begin the concatenation with (inclusive)
    * @param to The index of the element to end the concatenation with (exclusive). The
-   *     specified number will be clamped to {@code array.length} (i.e. it's OK to specify
-   *     a number greater than {@code array.length}). You can specify -1 as a shorthand
-   *     for {@code array.length}.
+   * specified number will be clamped to {@code array.length} (i.e. it's OK to specify a
+   * number greater than {@code array.length}). You can specify -1 as a shorthand for
+   * {@code array.length}.
    * @param <T> the type of the array elements
    * @return a concatenation of the elements in the array.
    * @see CollectionMethods#implode(Collection, Function, String, int, int)
    */
   public static <T> String implode(
-      T[] array,
-      Function<T, String> stringifier,
-      String separator,
-      int from,
-      int to) {
+        T[] array,
+        Function<T, String> stringifier,
+        String separator,
+        int from,
+        int to) {
     Check.notNull(array, ARRAY);
     Check.notNull(stringifier, STRINGIFIER);
     Check.notNull(separator, SEPARATOR);
@@ -837,8 +844,8 @@ public final class ArrayMethods {
     int x = to == -1 ? array.length : Math.min(to, array.length);
     Check.that(x, TO_INDEX).is(gte(), from);
     return Arrays.stream(array, from, x)
-        .map(stringifier)
-        .collect(joining(separator));
+          .map(stringifier)
+          .collect(joining(separator));
   }
 
   /**
@@ -916,7 +923,7 @@ public final class ArrayMethods {
    * @param obj the object to prefix
    * @param <T> the type of the array elements and the object to be prefixed
    * @return a new array containing the specified object and the elements of the specified
-   *     array
+   * array
    */
   public static <T> T[] prefix(T[] array, T obj) {
     Check.notNull(array, ARRAY);
@@ -935,7 +942,7 @@ public final class ArrayMethods {
    * @param moreObjs more objects to prefix
    * @param <T> the type of the array elements and the object to be prefixed
    * @return a new array containing the specified objects and the elements of the
-   *     specified array
+   * specified array
    */
   @SafeVarargs
   public static <T> T[] prefix(T[] array, T obj0, T obj1, T... moreObjs) {
@@ -1034,8 +1041,8 @@ public final class ArrayMethods {
    * Converts an {@code Integer} array to an {@code int} array.
    *
    * @param values the {@code Integer} array
-   * @param dfault The {@code int} value to convert {@code null} elements in the
-   *     source array to
+   * @param dfault The {@code int} value to convert {@code null} elements in the source
+   * array to
    * @return the {@code int} array
    */
   public static int[] unbox(Integer[] values, int dfault) {

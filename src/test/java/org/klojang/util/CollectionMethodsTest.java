@@ -37,11 +37,11 @@ public class CollectionMethodsTest {
   }
 
   @Test
-  public void listity00() {
+  public void listify00() {
     assertEquals(Collections.singletonList(null), listify(null));
     assertEquals(List.of("Hello World"), listify("Hello World"));
     assertEquals(List.of("Hello", "World"),
-        listify(new String[]{"Hello", "World"}));
+          listify(new String[]{"Hello", "World"}));
     Object obj = new Object();
     assertEquals(Collections.singletonList(obj), listify(obj));
     assertEquals(List.of(1, 2, 3, 4, 5), listify(new int[]{1, 2, 3, 4, 5}));
@@ -49,19 +49,19 @@ public class CollectionMethodsTest {
     assertEquals(List.of(1L, 2L, 3L, 4L, 5L), listify(new long[]{1, 2, 3, 4, 5}));
     assertEquals(List.of(1F, 2F, 3F, 4F, 5F), listify(new float[]{1, 2, 3, 4, 5}));
     assertEquals(List.of((short) 1, (short) 2, (short) 3),
-        listify(new short[]{1, 2, 3}));
+          listify(new short[]{1, 2, 3}));
     assertEquals(List.of((byte) 1, (byte) 2, (byte) 3),
-        listify(new byte[]{1, 2, 3}));
+          listify(new byte[]{1, 2, 3}));
     assertEquals(List.of((char) 1, (char) 2, (char) 3),
-        listify(new char[]{1, 2, 3}));
+          listify(new char[]{1, 2, 3}));
     Set<Integer> s = new LinkedHashSet<>();
     s.add(1);
     s.add(2);
     s.add(3);
     assertEquals(List.of(1, 2, 3), listify(s));
     assertEquals(
-        List.of(Boolean.TRUE, Boolean.FALSE, Boolean.TRUE),
-        listify(new boolean[]{true, false, true}));
+          List.of(Boolean.TRUE, Boolean.FALSE, Boolean.TRUE),
+          listify(new boolean[]{true, false, true}));
     List l = new ArrayList();
     l.add(10);
     assertSame(l, listify(l));
@@ -140,10 +140,10 @@ public class CollectionMethodsTest {
   @Test
   public void implode03() {
     Collection<Class<?>> coll =
-        Arrays.asList(StringMethods.class, ArrayMethods.class, ClassMethods.class);
+          Arrays.asList(StringMethods.class, ArrayMethods.class, ClassMethods.class);
     assertEquals(
-        "StringMethods, ArrayMethods, ClassMethods",
-        implode(coll, ClassMethods::simpleClassName));
+          "StringMethods, ArrayMethods, ClassMethods",
+          implode(coll, ClassMethods::simpleClassName));
   }
 
   @Test
@@ -222,16 +222,16 @@ public class CollectionMethodsTest {
   }
 
   @Test
-  public void initializeMap00() {
+  public void newHashMap00() {
     Map<String, Integer> m = newHashMap(10,
-        String.class,
-        Integer.class,
-        "a",
-        1,
-        "b",
-        2,
-        "c",
-        null);
+          String.class,
+          Integer.class,
+          "a",
+          1,
+          "b",
+          2,
+          "c",
+          null);
     assertEquals(3, m.size());
     assertEquals(Integer.valueOf(1), m.get("a"));
     assertEquals(Integer.valueOf(2), m.get("b"));
@@ -240,16 +240,16 @@ public class CollectionMethodsTest {
   }
 
   @Test
-  public void initializeMap01() {
+  public void newHashMap01() {
     Map<String, Integer> m = newHashMap(1,
-        String.class,
-        Integer.class,
-        "a",
-        1,
-        "b",
-        2,
-        "c",
-        null);
+          String.class,
+          Integer.class,
+          "a",
+          1,
+          "b",
+          2,
+          "c",
+          null);
     assertEquals(3, m.size());
     assertEquals(Integer.valueOf(1), m.get("a"));
     assertEquals(Integer.valueOf(2), m.get("b"));
@@ -258,78 +258,85 @@ public class CollectionMethodsTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void initializeMap02() {
+  public void newHashMap02() {
     int badSize = -3;
     newHashMap(badSize,
-        String.class,
-        Object.class,
-        "a",
-        new File("/"),
-        "b",
-        2,
-        "c",
-        null);
+          String.class,
+          Object.class,
+          "a",
+          new File("/"),
+          "b",
+          2,
+          "c",
+          null);
+  }
+
+  public void initializeMap03() {
+    Map<?, ?> map = CollectionMethods.initializeMap("foo", 2, "bar", 3);
+    assertEquals(2, map.size());
+    assertEquals(2, (int) map.get("foo"));
+    assertEquals(3, (int) map.get("bar"));
   }
 
   @Test
   public void freeze00() {
     Map<String, Integer> src =
-        newHashMap(10, String.class, Integer.class, "foo", 1, "bar", 2, "baz", 3);
+          newHashMap(10, String.class, Integer.class, "foo", 1, "bar", 2, "baz", 3);
     Map<String, String> map0 = freeze(src, String::valueOf);
     Map<String, String> expected0 = Map.of("foo", "1", "bar", "2", "baz", "3");
     Map<String, Short> map1 = freeze(src, i -> (short) (i * 3));
     Map<String, Short> expected1 = Map.of("foo",
-        (short) 3,
-        "bar",
-        (short) 6,
-        "baz",
-        (short) 9);
+          (short) 3,
+          "bar",
+          (short) 6,
+          "baz",
+          (short) 9);
     assertEquals(expected1, map1);
   }
 
   @Test
   public void freeze01() {
     Map<Integer, Integer> src =
-        newHashMap(10,
-            Integer.class,
-            Integer.class,
-            1,
-            1,
-            2,
-            2,
-            3,
-            3,
-            4,
-            4,
-            5,
-            5,
-            6,
-            6);
+          newHashMap(10,
+                Integer.class,
+                Integer.class,
+                1,
+                1,
+                2,
+                2,
+                3,
+                3,
+                4,
+                4,
+                5,
+                5,
+                6,
+                6);
     Map<Integer, Integer> out =
-        freeze(
-            src,
-            (k, v) -> {
-              if (k % 3 == 0) {
-                return k;
-              }
-              return v * 2;
-            });
+          freeze(
+                src,
+                (k, v) -> {
+                  if (k % 3 == 0) {
+                    return k;
+                  }
+                  return v * 2;
+                });
     Map<Integer, Integer> expected =
-        newHashMap(10,
-            Integer.class,
-            Integer.class,
-            1,
-            2,
-            2,
-            4,
-            3,
-            3,
-            4,
-            8,
-            5,
-            10,
-            6,
-            6);
+          newHashMap(10,
+                Integer.class,
+                Integer.class,
+                1,
+                2,
+                2,
+                4,
+                3,
+                3,
+                4,
+                8,
+                5,
+                10,
+                6,
+                6);
     assertEquals(expected, out);
   }
 
@@ -348,21 +355,21 @@ public class CollectionMethodsTest {
   @Test(expected = FileNotFoundException.class)
   public void freeze04() throws FileNotFoundException {
     freeze(
-        Set.of(1, 2, 3),
-        i -> {
-          if (i == 2) {
-            throw new FileNotFoundException();
-          }
-          return 1;
-        });
+          Set.of(1, 2, 3),
+          i -> {
+            if (i == 2) {
+              throw new FileNotFoundException();
+            }
+            return 1;
+          });
   }
 
   @Test
   public void deepFreeze00() {
     Map<Integer, String> src =
-        newHashMap(10, Integer.class, String.class, 1, "foo", 2, "bar", 3, "baz");
+          newHashMap(10, Integer.class, String.class, 1, "foo", 2, "bar", 3, "baz");
     Map<Integer, Integer> out = deepFreeze(src,
-        e -> Map.entry(e.getValue().length(), e.getKey()));
+          e -> Map.entry(e.getValue().length(), e.getKey()));
     assertEquals(1, out.size());
     assertTrue(out.containsKey(3));
   }
@@ -434,17 +441,17 @@ public class CollectionMethodsTest {
   @Test
   public void saturatedEnumMap00() {
     Map<DayOfWeek, String> m =
-        saturatedEnumMap(
-            DayOfWeek.class,
-            "monday",
-            "tuesday",
-            "wednesday",
-            "thursday",
-            "friday",
-            "saturday",
-            "sunday");
+          saturatedEnumMap(
+                DayOfWeek.class,
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday");
     Arrays.stream(DayOfWeek.values())
-        .forEach(dow -> assertEquals(dow.name().toLowerCase(), m.get(dow)));
+          .forEach(dow -> assertEquals(dow.name().toLowerCase(), m.get(dow)));
   }
 
   @Test(expected = IllegalArgumentException.class)
