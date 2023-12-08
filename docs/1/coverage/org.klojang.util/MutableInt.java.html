@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MutableInt.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Util</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util</a> &gt; <span class="el_source">MutableInt.java</span></div><h1>MutableInt.java</h1><pre class="source lang-java linenums">package org.klojang.util;
+
+/**
+ * The ubiquitous mutable-integer class.
+ */
+public final class MutableInt {
+
+  private int i;
+
+  /**
+   * Instantiates a {@code MutableInt} with an initial value of 0 (zero).
+   */
+<span class="fc" id="L13">  public MutableInt() {}</span>
+
+  /**
+   * Instantiates a {@code MutableInt} with the specified initial value.
+   *
+   * @param value The initial value of this instance
+   */
+<span class="fc" id="L20">  public MutableInt(int value) {</span>
+<span class="fc" id="L21">    i = value;</span>
+<span class="fc" id="L22">  }</span>
+
+  /**
+   * Instantiates a {@code MutableInt} initialized to the current value of another
+   * instance.
+   *
+   * @param other The instance used to initialize this instance.
+   */
+<span class="fc" id="L30">  public MutableInt(MutableInt other) {</span>
+<span class="fc" id="L31">    i = other.i;</span>
+<span class="fc" id="L32">  }</span>
+
+  /**
+   * Returns the current value of this {@code MutableInt}.
+   *
+   * @return The current value of this {@code MutableInt}
+   */
+  public int get() {
+<span class="fc" id="L40">    return i;</span>
+  }
+
+  /**
+   * Corresponds to the {@code ++} postfix operator ({@code i++}).
+   *
+   * @return The original value (before incrementation)
+   */
+  public int pp() {
+<span class="fc" id="L49">    return i++;</span>
+  }
+
+  /**
+   * Corresponds to the {@code ++} prefix operator ({@code ++i}).
+   *
+   * @return The incremented value (after incrementation)
+   */
+  public int ppi() {
+<span class="fc" id="L58">    return ++i;</span>
+  }
+
+  /**
+   * Corresponds to the {@code --} postfix operator ({@code i--}).
+   *
+   * @return The original value
+   */
+  public int mm() {
+<span class="fc" id="L67">    return i--;</span>
+  }
+
+  /**
+   * Corresponds to the {@code --} prefix operator ({@code --i}).
+   *
+   * @return The decremented value
+   */
+  public int mmi() {
+<span class="fc" id="L76">    return --i;</span>
+  }
+
+  /**
+   * Corresponds to the {@code +=} operation.
+   *
+   * @param j The value to add
+   * @return The new value
+   */
+  public int plusIs(int j) {
+<span class="fc" id="L86">    return i += j;</span>
+  }
+
+  /**
+   * Corresponds to the {@code +=} operation.
+   *
+   * @param other The value the add
+   * @return The new value
+   */
+  public int plusIs(MutableInt other) {
+<span class="fc" id="L96">    return i += other.i;</span>
+  }
+
+  /**
+   * Corresponds to the {@code -=} (minus-is) operation.
+   *
+   * @param j The value to subtract
+   * @return The new value
+   */
+  public int minIs(int j) {
+<span class="fc" id="L106">    return i -= j;</span>
+  }
+
+  /**
+   * Corresponds to the {@code -=} (minus-is) operation.
+   *
+   * @param other The value to subtract
+   * @return The new value
+   */
+  public int minIs(MutableInt other) {
+<span class="fc" id="L116">    return i -= other.i;</span>
+  }
+
+  /**
+   * Corresponds to the assignment operation ({@code i = j}).
+   *
+   * @param j The value to assign to this {@code MutableInt}
+   * @return The new value
+   */
+  public int set(int j) {
+<span class="fc" id="L126">    return i = j;</span>
+  }
+
+  /**
+   * Corresponds to the assignment operation ({@code i = j}).
+   *
+   * @param other The value to assign to this {@code MutableInt}
+   * @return The new value
+   */
+  public int set(MutableInt other) {
+<span class="fc" id="L136">    return i = other.i;</span>
+  }
+
+  /**
+   * Corresponds to the {@code ==} (equals) operation.
+   *
+   * @param j The value to compare this instance with
+   * @return {@code true} if equal, {@code false} otherwise
+   */
+  public boolean eq(int j) {
+<span class="fc bfc" id="L146" title="All 2 branches covered.">    return i == j;</span>
+  }
+
+  /**
+   * Corresponds to the {@code ==} (equals) operation.
+   *
+   * @param other The value to compare this instance with
+   * @return {@code true} if equal, {@code false} otherwise
+   */
+  public boolean eq(MutableInt other) {
+<span class="fc bfc" id="L156" title="All 2 branches covered.">    return i == other.i;</span>
+  }
+
+  /**
+   * Corresponds to the {@code !=} (not equals) operation.
+   *
+   * @param j The value to compare this instance with
+   * @return {@code true} if not equal, {@code false} otherwise
+   */
+  public boolean ne(int j) {
+<span class="fc bfc" id="L166" title="All 2 branches covered.">    return i != j;</span>
+  }
+
+  /**
+   * Corresponds to the {@code !=} (not equals) operation.
+   *
+   * @param other The value to compare this instance with
+   * @return {@code true} if equal, {@code false} otherwise
+   */
+  public boolean ne(MutableInt other) {
+<span class="fc bfc" id="L176" title="All 2 branches covered.">    return i != other.i;</span>
+  }
+
+  /**
+   * Corresponds to the {@code &gt;} (greater than) operation.
+   *
+   * @param j The value to compare this instance with
+   * @return {@code true} if this instance has a value greater than the specified
+   *     value, {@code false} otherwise
+   */
+  public boolean gt(int j) {
+<span class="fc bfc" id="L187" title="All 2 branches covered.">    return i &gt; j;</span>
+  }
+
+  /**
+   * Corresponds to the {@code &gt;} (greater than) operation.
+   *
+   * @param other The value to compare this instance with
+   * @return {@code true} if this instance has a value greater than the specified
+   *     value, {@code false} otherwise
+   */
+  public boolean gt(MutableInt other) {
+<span class="fc bfc" id="L198" title="All 2 branches covered.">    return i &gt; other.i;</span>
+  }
+
+  /**
+   * Corresponds to the {@code &lt;} (less than) operation.
+   *
+   * @param j The value to compare this instance with
+   * @return {@code true} if this instance has a value less than the specified value,
+   *     {@code false} otherwise
+   */
+  public boolean lt(int j) {
+<span class="fc bfc" id="L209" title="All 2 branches covered.">    return i &lt; j;</span>
+  }
+
+  /**
+   * Corresponds to the {@code &lt;} (less than) operation.
+   *
+   * @param other The value to compare this instance with
+   * @return {@code true} if this instance has a value less than the specified value,
+   *     {@code false} otherwise
+   */
+  public boolean lt(MutableInt other) {
+<span class="fc bfc" id="L220" title="All 2 branches covered.">    return i &lt; other.i;</span>
+  }
+
+  /**
+   * Corresponds to the {@code &gt;=} (greater or equal) operation.
+   *
+   * @param j The value to compare this instance with
+   * @return {@code true} if this instance has a value greater than, or equal to the
+   *     specified value, {@code false} otherwise
+   */
+  public boolean gte(int j) {
+<span class="fc bfc" id="L231" title="All 2 branches covered.">    return i &gt;= j;</span>
+  }
+
+  /**
+   * Corresponds to the {@code &gt;=} (greater or equal) operation.
+   *
+   * @param other The value to compare this instance with
+   * @return {@code true} if this instance has a value greater than, or equal to the
+   *     specified value, {@code false} otherwise
+   */
+  public boolean gte(MutableInt other) {
+<span class="fc bfc" id="L242" title="All 2 branches covered.">    return i &gt;= other.i;</span>
+  }
+
+  /**
+   * Corresponds to the {@code &lt;=} (less or equal) operation.
+   *
+   * @param j The value to compare this instance with
+   * @return {@code true} if this instance has a value less than, or equal to the
+   *     specified value, {@code false} otherwise
+   */
+  public boolean lte(int j) {
+<span class="fc bfc" id="L253" title="All 2 branches covered.">    return i &lt;= j;</span>
+  }
+
+  /**
+   * Corresponds to the {@code &lt;=} (less or equal) operation.
+   *
+   * @param other The value to compare this instance with
+   * @return {@code true} if this instance has a value less than, or equal to the
+   *     specified value, {@code false} otherwise
+   */
+  public boolean lte(MutableInt other) {
+<span class="fc bfc" id="L264" title="All 2 branches covered.">    return i &lt;= other.i;</span>
+  }
+
+  /**
+   * Sets the value to 0 (zero).
+   *
+   * @return 0 (zero)
+   */
+  public int reset() {
+<span class="fc" id="L273">    return i = 0;</span>
+  }
+
+  /**
+   * Returns the current value of this instance
+   * @return the current value of this instance
+   */
+  @Override
+  public int hashCode() {
+<span class="fc" id="L282">    return i;</span>
+  }
+
+  /**
+   * Returns true if {@code obj} is a {@code MutableInt}, {@link Integer}, {@link
+   * Short} or {@link Byte} with the same value as this {@code MutableInt}, {@code
+   * false otherwise}.
+   *
+   * @param obj The value to compare this instance with
+   * @return Whether this {@code MutableInt} is equal to the specified value
+   */
+  @Override
+  public boolean equals(Object obj) {
+<span class="fc bfc" id="L295" title="All 2 branches covered.">    if (this == obj) {</span>
+<span class="fc" id="L296">      return true;</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">    } else if (obj == null) {</span>
+<span class="fc" id="L298">      return false;</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">    } else if (obj instanceof MutableInt other) {</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">      return i == other.i;</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">    } else if (obj instanceof Integer x) {</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">      return i == x;</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">    } else if (obj instanceof Short x) {</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">      return i == x;</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">    } else if (obj instanceof Byte x) {</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">      return i == x;</span>
+    }
+<span class="fc" id="L308">    return false;</span>
+  }
+
+  /**
+   * Returns the string representation of the current value.
+   * @return the string representation of the current value
+   */
+  @Override
+  public String toString() {
+<span class="fc" id="L317">    return String.valueOf(i);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

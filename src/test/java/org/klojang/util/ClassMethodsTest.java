@@ -1,19 +1,15 @@
 package org.klojang.util;
 
+import org.junit.Test;
+
 import java.io.File;
-import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.function.Function;
 
-import org.junit.Test;
-import org.klojang.util.ClassMethods;
-import org.klojang.util.CollectionMethods;
-
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertNull;
 import static org.klojang.util.ArrayMethods.doubles;
 import static org.klojang.util.ClassMethods.*;
 
@@ -49,23 +45,27 @@ public class ClassMethodsTest {
   @Test
   public void getAllInterfaces00() {
     Set<Class<?>> expected = Set.of(NavigableSet.class,
-        Cloneable.class,
-        Serializable.class,
-        SortedSet.class,
-        Set.class,
-        Collection.class,
-        Iterable.class);
+          Cloneable.class,
+          Serializable.class,
+          SortedSet.class,
+          Set.class,
+          SequencedSet.class,
+          SequencedCollection.class,
+          Collection.class,
+          Iterable.class);
     Set<Class<?>> actual = ClassMethods.getAllInterfaces(TreeSet.class);
-    // System.out.println(implode(actual.toArray(), "\n"));
+    // System.out.println(implode(actual, "\n"));
     assertEquals(expected, actual);
   }
 
   @Test
   public void getAllInterfaces01() {
     Set<Class<?>> expected = Set.of(SortedSet.class,
-        Set.class,
-        Collection.class,
-        Iterable.class);
+          Set.class,
+          Collection.class,
+          SequencedCollection.class,
+          SequencedSet.class,
+          Iterable.class);
     Set<Class<?>> actual = ClassMethods.getAllInterfaces(NavigableSet.class);
     // System.out.println(implode(actual.toArray(), "\n"));
     assertEquals(expected, actual);
@@ -84,7 +84,7 @@ public class ClassMethodsTest {
   public void describe00() {
     assertEquals("null", ClassMethods.describe(null));
     assertEquals("ArrayList[5]",
-        ClassMethods.describe(CollectionMethods.initializeList(5, "foo")));
+          ClassMethods.describe(CollectionMethods.initializeList(5, "foo")));
     assertEquals("SetN[5]", ClassMethods.describe(Set.of(1, 2, 3, 4, 5)));
     assertEquals("MapN[2]", ClassMethods.describe(Map.of("foo", 1, "bar", 2)));
     assertEquals("double[4]", ClassMethods.describe(doubles(1.56, 0, 2.3, 4.8)));
