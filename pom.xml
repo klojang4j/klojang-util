@@ -7,7 +7,7 @@
 
     <groupId>org.klojang</groupId>
     <artifactId>klojang-util</artifactId>
-    <version>1.1.5</version>
+    <version>1.1.6</version>
     <packaging>jar</packaging>
 
     <name>Klojang Util</name>
@@ -85,7 +85,7 @@
         <!-- *** Check for updates: mvn versions:display-dependency-updates   *** -->
         <!-- *** Check dependencies: mvn dependency:analyze                   *** -->
         <!-- ==================================================================== -->
-        <klojang-check.version>2.1.4</klojang-check.version>
+        <klojang-check.version>3.0.0-jdk21</klojang-check.version>
         <junit.version>4.13.2</junit.version>
     </properties>
 
@@ -228,19 +228,19 @@
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>docs/1/api</directory>
+                            <directory>docs/api</directory>
                             <includes>
                                 <include>**/*</include>
                             </includes>
                         </fileset>
                         <fileset>
-                            <directory>docs/1/coverage</directory>
+                            <directory>docs/coverage</directory>
                             <includes>
                                 <include>**/*</include>
                             </includes>
                         </fileset>
                         <fileset>
-                            <directory>docs/1/vulnerabilities</directory>
+                            <directory>docs/vulnerabilities</directory>
                             <includes>
                                 <include>**/*</include>
                             </includes>
@@ -304,6 +304,7 @@
                 <version>${owasp-plugin.version}</version>
                 <configuration>
                     <failBuildOnCVSS>1</failBuildOnCVSS>
+                    <nvdApiKey>29bb9b20-8dba-4ae7-94b4-6656e154e6e1</nvdApiKey>
                 </configuration>
                 <executions>
                     <execution>
@@ -377,7 +378,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>docs/1/api</outputDirectory>
+                            <outputDirectory>docs/api</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target/apidocs</directory>
@@ -392,7 +393,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>docs/1/coverage</outputDirectory>
+                            <outputDirectory>docs/coverage</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target/site/jacoco</directory>
@@ -407,7 +408,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>docs/1/vulnerabilities</outputDirectory>
+                            <outputDirectory>docs/vulnerabilities</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target</directory>

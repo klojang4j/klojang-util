@@ -1,0 +1,1 @@
+tagSearchIndex = [{"l":"Constant Field Values","h":"","u":"constant-values.html"},{"l":"Examples:","h":"org.klojang.util.StringMethods.ellipsis(Object, int)","d":"Section","u":"org.klojang.util/org/klojang/util/StringMethods.html#examples--heading"},{"l":"Serialized Form","h":"","u":"serialized-form.html"}];updateSearchResults();
