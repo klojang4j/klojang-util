@@ -7,7 +7,7 @@
 
     <groupId>org.klojang</groupId>
     <artifactId>klojang-util</artifactId>
-    <version>1.1.6</version>
+    <version>1.1.7</version>
     <packaging>jar</packaging>
 
     <name>Klojang Util</name>
@@ -85,7 +85,7 @@
         <!-- *** Check for updates: mvn versions:display-dependency-updates   *** -->
         <!-- *** Check dependencies: mvn dependency:analyze                   *** -->
         <!-- ==================================================================== -->
-        <klojang-check.version>3.0.0-jdk21</klojang-check.version>
+        <klojang-check.version>3.0.2-jdk21</klojang-check.version>
         <junit.version>4.13.2</junit.version>
     </properties>
 
