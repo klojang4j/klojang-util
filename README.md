@@ -10,14 +10,14 @@ To use Klojang Check, add the following dependency to your Maven POM file:
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-util</artifactId>
-    <version>1.1.6</version>
+    <version>1.1.7</version>
 </dependency>
 ```
 
 or Gradle build script:
 
 ```
-implementation group: 'org.klojang', name: 'klojang-util', version: '1.1.6'
+implementation group: 'org.klojang', name: 'klojang-util', version: '1.1.7'
 ```
 
 ## Documentation
