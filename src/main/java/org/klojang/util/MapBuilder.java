@@ -2,7 +2,7 @@ package org.klojang.util;
 
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
-import org.klojang.check.aux.Result;
+import org.klojang.check.extra.Result;
 
 import java.util.*;
 

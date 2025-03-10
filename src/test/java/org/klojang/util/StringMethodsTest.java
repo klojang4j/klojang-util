@@ -390,45 +390,45 @@ public class StringMethodsTest {
   }
 
   @Test
-  public void substr00() {
-    assertEquals("ever", substr("whatever", -4));
-    assertEquals("ever", substr("whatever", 4));
-    assertEquals("tever", substr("whatever", -5));
-    assertEquals("ver", substr("whatever", 5));
+  public void substring00() {
+    assertEquals("ever", substring("whatever", -4));
+    assertEquals("ever", substring("whatever", 4));
+    assertEquals("tever", substring("whatever", -5));
+    assertEquals("ver", substring("whatever", 5));
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void substr01() {
-    substr("", -1);
+  public void substring01() {
+    substring("", -1);
   }
 
   @Test
-  public void substr02() {
-    assertEquals("", substr("", 0, 0));
-    assertEquals("what", substr("whatever", 0, 4));
-    assertEquals("ever", substr("whatever", -4, 4));
-    assertEquals("eve", substr("whatever", -4, 3));
-    assertEquals("e", substr("whatever", -4, 1));
-    assertEquals("e", substr("whatever", 4, 1));
-    assertEquals("", substr("whatever", 0, 0));
-    assertEquals("", substr("whatever", 1, 0));
-    assertEquals("", substr("whatever", 7, 0));
-    assertEquals("r", substr("whatever", 7, 1));
+  public void substring02() {
+    assertEquals("", substring("", 0, 0));
+    assertEquals("what", substring("whatever", 0, 4));
+    assertEquals("ever", substring("whatever", -4, 4));
+    assertEquals("eve", substring("whatever", -4, 3));
+    assertEquals("e", substring("whatever", -4, 1));
+    assertEquals("e", substring("whatever", 4, 1));
+    assertEquals("", substring("whatever", 0, 0));
+    assertEquals("", substring("whatever", 1, 0));
+    assertEquals("", substring("whatever", 7, 0));
+    assertEquals("r", substring("whatever", 7, 1));
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void substr03() {
-    substr("whatever", 250, 3);
+  public void substring03() {
+    substring("whatever", 250, 3);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void substr04() {
-    substr("whatever", -4, 250);
+  public void substring04() {
+    substring("whatever", -4, 250);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void substr05() {
-    substr("whatever", -250, 4);
+  public void substring05() {
+    substring("whatever", -250, 4);
   }
 
   @Test
@@ -456,20 +456,20 @@ public class StringMethodsTest {
   }
 
   @Test
-  public void substr06() {
-    assertEquals("w", substr("whatever", 0, -1));
-    assertEquals("h", substr("whatever", 1, -1));
-    assertEquals("ha", substr("whatever", 2, -2));
-    assertEquals("hate", substr("whatever", 4, -4));
-    assertEquals("r", substr("whatever", 7, -1));
-    assertEquals("r", substr("whatever", -1, -1));
-    assertEquals("er", substr("whatever", -1, -2));
-    assertEquals("eve", substr("whatever", -2, -3));
+  public void substring06() {
+    assertEquals("w", substring("whatever", 0, -1));
+    assertEquals("h", substring("whatever", 1, -1));
+    assertEquals("ha", substring("whatever", 2, -2));
+    assertEquals("hate", substring("whatever", 4, -4));
+    assertEquals("r", substring("whatever", 7, -1));
+    assertEquals("r", substring("whatever", -1, -1));
+    assertEquals("er", substring("whatever", -1, -2));
+    assertEquals("eve", substring("whatever", -2, -3));
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void substr07() {
-    substr("whatever", 2, -100);
+  public void substring07() {
+    substring("whatever", 2, -100);
   }
 
   @Test
@@ -543,13 +543,13 @@ public class StringMethodsTest {
   }
 
   @Test
-  public void substrTo00() {
+  public void substringOnTo00() {
     String subject = "012345678901234567890123";
     assertEquals("012", substringOnTo(subject, "012", 1));
     assertEquals("0123456789012", substringOnTo(subject, "012", 2));
     assertEquals("01234567890123456789012", substringOnTo(subject, "012", 3));
     assertEquals(subject, substringOnTo(subject, "3", 3));
-    assertNotSame(subject, substringOnTo(subject, "3", 3));
+    assertSame(subject, substringOnTo(subject, "3", 3));
     assertSame(subject, substringOnTo(subject, "012", 4));
     assertEquals("01", substringOnTo(subject, "1", 1));
     assertEquals("012", substringOnTo(subject, "12", 1));
@@ -564,45 +564,45 @@ public class StringMethodsTest {
   }
 
   @Test
-  public void substrFrom00() {
+  public void substringFrom00() {
     String subject = "012345678901234567890123";
-    String s = substrFrom(subject, "012", 1);
-    assertEquals(subject, substrFrom(subject, "012", 1));
-    assertNotSame(subject, substrFrom(subject, "012", 1));
-    assertSame(subject, substrFrom(subject, "FOO", 1));
-    assertEquals("01234567890123", substrFrom(subject, "012", 2));
-    assertEquals("0123", substrFrom(subject, "012", 3));
-    assertSame(subject, substrFrom(subject, "012", 4));
-    assertEquals("12345678901234567890123", substrFrom(subject, "1", 1));
-    assertEquals("12345678901234567890123", substrFrom(subject, "12", 1));
-    assertSame(subject, substrFrom(subject, "012", -4));
-    assertEquals(subject, substrFrom(subject, "012", -3));
-    assertNotSame(subject, substrFrom(subject, "012", -3));
-    assertEquals("01234567890123", substrFrom(subject, "012", -2));
-    assertEquals("0123", substrFrom(subject, "012", -1));
-    assertEquals("", substrFrom(null, "abc", 2));
-    assertEquals(".lang.String", substrFrom(String.class, ".", 1));
-    assertEquals("lang.String", substrFrom(String.class, "lang", 1));
-    assertEquals(".String", substrFrom(String.class, ".", 2));
+    String s = substringFrom(subject, "012", 1);
+    assertEquals(subject, substringFrom(subject, "012", 1));
+    assertSame(subject, substringFrom(subject, "012", 1));
+    assertSame(subject, substringFrom(subject, "FOO", 1));
+    assertEquals("01234567890123", substringFrom(subject, "012", 2));
+    assertEquals("0123", substringFrom(subject, "012", 3));
+    assertSame(subject, substringFrom(subject, "012", 4));
+    assertEquals("12345678901234567890123", substringFrom(subject, "1", 1));
+    assertEquals("12345678901234567890123", substringFrom(subject, "12", 1));
+    assertSame(subject, substringFrom(subject, "012", -4));
+    assertEquals(subject, substringFrom(subject, "012", -3));
+    assertSame(subject, substringFrom(subject, "012", -3));
+    assertEquals("01234567890123", substringFrom(subject, "012", -2));
+    assertEquals("0123", substringFrom(subject, "012", -1));
+    assertEquals("", substringFrom(null, "abc", 2));
+    assertEquals(".lang.String", substringFrom(String.class, ".", 1));
+    assertEquals("lang.String", substringFrom(String.class, "lang", 1));
+    assertEquals(".String", substringFrom(String.class, ".", 2));
   }
 
   @Test
-  public void substrAfter00() {
+  public void substringAfter00() {
     String subject = "012345678901234567890123";
-    assertEquals("345678901234567890123", substrAfter(subject, "012", 1));
-    assertEquals("34567890123", substrAfter(subject, "012", 2));
-    assertEquals("3", substrAfter(subject, "012", 3));
-    assertEquals("", substrAfter(subject, "0123", 3));
-    assertSame(subject, substrAfter(subject, "012", 4));
-    assertSame(subject, substrAfter(subject, "012", -4));
-    assertEquals("345678901234567890123", substrAfter(subject, "012", -3));
-    assertEquals("34567890123", substrAfter(subject, "012", -2));
-    assertEquals("3", substrAfter(subject, "012", -1));
-    assertEquals("", substrAfter(subject, "0123", -1));
-    assertEquals("", substrAfter(null, "abc", 2));
-    assertEquals("lang.String", substrAfter(String.class, ".", 1));
-    assertEquals(".String", substrAfter(String.class, "lang", 1));
-    assertEquals("String", substrAfter(String.class, ".", 2));
+    assertEquals("345678901234567890123", substringAfter(subject, "012", 1));
+    assertEquals("34567890123", substringAfter(subject, "012", 2));
+    assertEquals("3", substringAfter(subject, "012", 3));
+    assertEquals("", substringAfter(subject, "0123", 3));
+    assertSame(subject, substringAfter(subject, "012", 4));
+    assertSame(subject, substringAfter(subject, "012", -4));
+    assertEquals("345678901234567890123", substringAfter(subject, "012", -3));
+    assertEquals("34567890123", substringAfter(subject, "012", -2));
+    assertEquals("3", substringAfter(subject, "012", -1));
+    assertEquals("", substringAfter(subject, "0123", -1));
+    assertEquals("", substringAfter(null, "abc", 2));
+    assertEquals("lang.String", substringAfter(String.class, ".", 1));
+    assertEquals(".String", substringAfter(String.class, "lang", 1));
+    assertEquals("String", substringAfter(String.class, ".", 2));
   }
 
   @Test

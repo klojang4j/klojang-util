@@ -1,7 +1,7 @@
 package org.klojang.util;
 
 import org.junit.Test;
-import org.klojang.check.aux.DuplicateValueException;
+import org.klojang.check.extra.DuplicateValueException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -217,7 +217,7 @@ public class CollectionMethodsTest {
   @Test
   public void initializeList04() {
     MutableInt provider = new MutableInt(10);
-    List<Integer> l = initializeList(5, provider::pp);
+    List<Integer> l = initializeList(5, provider::getAndIncrement);
     assertEquals(List.of(10, 11, 12, 13, 14), l);
   }
 

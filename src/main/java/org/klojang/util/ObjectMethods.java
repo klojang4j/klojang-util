@@ -2,11 +2,11 @@ package org.klojang.util;
 
 import org.klojang.check.Check;
 import org.klojang.check.CommonChecks;
-import org.klojang.check.aux.Emptyable;
-import org.klojang.check.aux.Result;
+import org.klojang.check.extra.Emptyable;
+import org.klojang.check.extra.Result;
 import org.klojang.check.fallible.FallibleSupplier;
-import org.klojang.check.relation.IntRelation;
-import org.klojang.check.relation.Relation;
+import org.klojang.check.types.IntRelation;
+import org.klojang.check.types.Relation;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -753,7 +753,7 @@ public class ObjectMethods {
    * @param arg the argument
    * @return the argument itself if not empty, else {@code null}
    */
-  public static <T> T e2n(T arg) {
+  public static <T> T emptyToNull(T arg) {
     return isEmpty(arg) ? null : arg;
   }
 
@@ -764,7 +764,7 @@ public class ObjectMethods {
    * @param arg an argument of type {@code String}
    * @return the argument or the default value of the corresponding primitive type
    */
-  public static String n2e(String arg) {
+  public static String nullToEmpty(String arg) {
     return ifNull(arg, EMPTY_STRING);
   }
 
@@ -775,7 +775,7 @@ public class ObjectMethods {
    * @param arg an argument of type {@code List}
    * @return the argument or the default value of the corresponding primitive type
    */
-  public static <T> List<T> n2e(List<T> arg) {
+  public static <T> List<T> nullToEmpty(List<T> arg) {
     return ifNull(arg, Collections.emptyList());
   }
 
@@ -786,7 +786,7 @@ public class ObjectMethods {
    * @param arg an argument of type {@code List}
    * @return the argument or the default value of the corresponding primitive type
    */
-  public static <T> Set<T> n2e(Set<T> arg) {
+  public static <T> Set<T> nullToEmpty(Set<T> arg) {
     return ifNull(arg, Collections.emptySet());
   }
 
@@ -797,7 +797,7 @@ public class ObjectMethods {
    * @param arg an argument of type {@code List}
    * @return the argument or the default value of the corresponding primitive type
    */
-  public static <K, V> Map<K, V> n2e(Map<K, V> arg) {
+  public static <K, V> Map<K, V> nullToEmpty(Map<K, V> arg) {
     return ifNull(arg, Collections.emptyMap());
   }
 
@@ -807,7 +807,7 @@ public class ObjectMethods {
    * @param arg an argument of type {@code Integer}
    * @return the argument or the default value of the corresponding primitive type
    */
-  public static Integer n2e(Integer arg) {
+  public static Integer nullToZero(Integer arg) {
     return ifNull(arg, 0);
   }
 
@@ -817,7 +817,7 @@ public class ObjectMethods {
    * @param arg an argument of type {@code Double}
    * @return the argument or the default value of the corresponding primitive type
    */
-  public static Double n2e(Double arg) {
+  public static Double nullToZero(Double arg) {
     return ifNull(arg, 0D);
   }
 
@@ -827,7 +827,7 @@ public class ObjectMethods {
    * @param arg an argument of type {@code Long}
    * @return the argument or the default value of the corresponding primitive type
    */
-  public static Long n2e(Long arg) {
+  public static Long nullToZero(Long arg) {
     return ifNull(arg, 0L);
   }
 
@@ -837,7 +837,7 @@ public class ObjectMethods {
    * @param arg an argument of type {@code Float}
    * @return the argument or the default value of the corresponding primitive type
    */
-  public static Float n2e(Float arg) {
+  public static Float nullToZero(Float arg) {
     return ifNull(arg, 0F);
   }
 
@@ -847,7 +847,7 @@ public class ObjectMethods {
    * @param arg an argument of type {@code Short}
    * @return the argument or the default value of the corresponding primitive type
    */
-  public static Short n2e(Short arg) {
+  public static Short nullToZero(Short arg) {
     return ifNull(arg, (short) 0);
   }
 
@@ -857,7 +857,7 @@ public class ObjectMethods {
    * @param arg an argument of type {@code Byte}
    * @return the argument or the default value of the corresponding primitive type
    */
-  public static Byte n2e(Byte arg) {
+  public static Byte nullToZero(Byte arg) {
     return ifNull(arg, (byte) 0);
   }
 
@@ -867,7 +867,7 @@ public class ObjectMethods {
    * @param arg an argument of type {@code Byte}
    * @return the argument or the default value of the corresponding primitive type
    */
-  public static Character n2e(Character arg) {
+  public static Character nullToZero(Character arg) {
     return ifNull(arg, '\0');
   }
 
@@ -877,7 +877,7 @@ public class ObjectMethods {
    * @param arg an argument of type {@code Byte}
    * @return the argument or the default value of the corresponding primitive type
    */
-  public static Boolean n2e(Boolean arg) {
+  public static Boolean nullToFalse(Boolean arg) {
     return ifNull(arg, Boolean.FALSE);
   }
 
@@ -921,8 +921,8 @@ public class ObjectMethods {
   }
 
   private static boolean setsEqual(Set set0, Set set1) {
-    Set s0 = (Set) set0.stream().map(ObjectMethods::e2n).collect(toSet());
-    Set s1 = (Set) set1.stream().map(ObjectMethods::e2n).collect(toSet());
+    Set s0 = (Set) set0.stream().map(ObjectMethods::emptyToNull).collect(toSet());
+    Set s1 = (Set) set1.stream().map(ObjectMethods::emptyToNull).collect(toSet());
     if (s0.size() != s1.size()) {
       return false;
     } else if (s0.equals(s1)) {

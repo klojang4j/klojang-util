@@ -1,7 +1,7 @@
 package org.klojang.util;
 
 import org.junit.Test;
-import org.klojang.check.aux.Result;
+import org.klojang.check.extra.Result;
 import org.klojang.util.collection.IntList;
 
 import java.io.File;
@@ -87,7 +87,7 @@ public class ObjectMethodsTest {
   }
 
   @Test
-  public void e2nEquals00() {
+  public void emptyToNullEquals00() {
     assertTrue(e2nEquals(null, null));
     assertTrue(e2nEquals(null, ""));
     assertTrue(e2nEquals("", null));
@@ -105,7 +105,7 @@ public class ObjectMethodsTest {
   }
 
   @Test
-  public void e2nHashCode00() {
+  public void emptyToNullHashCode00() {
     assertEquals(0, e2nHashCode(null));
     assertEquals(0, e2nHashCode(""));
     assertEquals(0, e2nHashCode(List.of()));
@@ -125,7 +125,7 @@ public class ObjectMethodsTest {
   }
 
   @Test
-  public void e2nTypedHashCode00() {
+  public void emptyToNullTypedHashCode00() {
     assertEquals(0, e2nTypedHashCode(null));
     assertEquals(7, e2nTypedHashCode(7));
     assertEquals(String.class.hashCode(), e2nTypedHashCode(""));
@@ -152,7 +152,7 @@ public class ObjectMethodsTest {
   }
 
   @Test
-  public void e2nHash00() {
+  public void emptyToNullHash00() {
     assertEquals(0, e2nHash(null));
     assertEquals(31 + 1, e2nHash(1));
     assertEquals((31 + 1) * 31 + 0, e2nHash(1, ""));
@@ -226,7 +226,7 @@ public class ObjectMethodsTest {
   }
 
   @Test
-  public void e2nDeepEquals00() {
+  public void emptyToNullDeepEquals00() {
     assertTrue(e2nDeepEquals(null, ""));
     assertTrue(e2nDeepEquals(null, null));
     assertTrue(e2nDeepEquals(null, new Enum[0]));
@@ -270,7 +270,7 @@ public class ObjectMethodsTest {
   }
 
   @Test // behaviour with sets (pretty extreme edge cases)
-  public void e2nDeepEquals01() {
+  public void emptyToNullDeepEquals01() {
 
     Set subsubset1 = setOf("John");
     Set subsubset2 = setOf("John", null);
@@ -310,44 +310,44 @@ public class ObjectMethodsTest {
   }
 
   @Test
-  public void n2e00() {
-    assertTrue(n2e((String) null).equals(""));
-    assertTrue(n2e((List) null).equals(List.of()));
-    assertTrue(n2e((Set) null).equals(Set.of()));
-    assertTrue(n2e((Map) null).equals(Map.of()));
-    assertTrue(n2e((Integer) null) == 0);
-    assertTrue(n2e((Double) null) == 0D);
-    assertTrue(n2e((Long) null) == 0L);
-    assertTrue(n2e((Float) null) == 0F);
-    assertTrue(n2e((Short) null) == (short) 0);
-    assertTrue(n2e((Byte) null) == (byte) 0);
-    assertTrue(n2e((Character) null) == '\0');
-    assertTrue(n2e((Boolean) null) == false);
-    assertTrue(n2e(2) == 2);
-    assertTrue(n2e(2.0) == 2D);
-    assertTrue(n2e(2L) == 2L);
-    assertTrue(n2e(2.0F) == 2F);
-    assertTrue(n2e((short) 2) == (short) 2);
-    assertTrue(n2e((byte) 2) == (byte) 2);
+  public void nullToEmpty00() {
+    assertTrue(nullToEmpty((String) null).equals(""));
+    assertTrue(nullToEmpty((List) null).equals(List.of()));
+    assertTrue(nullToEmpty((Set) null).equals(Set.of()));
+    assertTrue(nullToEmpty((Map) null).equals(Map.of()));
+    assertTrue(nullToZero((Integer) null) == 0);
+    assertTrue(nullToZero((Double) null) == 0D);
+    assertTrue(nullToZero((Long) null) == 0L);
+    assertTrue(nullToZero((Float) null) == 0F);
+    assertTrue(nullToZero((Short) null) == (short) 0);
+    assertTrue(nullToZero((Byte) null) == (byte) 0);
+    assertTrue(nullToZero((Character) null) == '\0');
+    assertTrue(nullToFalse((Boolean) null) == false);
+    assertTrue(nullToZero(2) == 2);
+    assertTrue(nullToZero(2.0) == 2D);
+    assertTrue(nullToZero(2L) == 2L);
+    assertTrue(nullToZero(2.0F) == 2F);
+    assertTrue(nullToZero((short) 2) == (short) 2);
+    assertTrue(nullToZero((byte) 2) == (byte) 2);
   }
 
   @Test
-  public void e2n00() {
-    assertNull(e2n(""));
-    assertNull(e2n(List.of()));
-    assertNull(e2n(Set.of()));
-    assertNull(e2n(Map.of()));
-    assertNull(e2n(EMPTY_STRING_ARRAY));
-    assertNull(e2n(new int[0]));
-    assertNull(e2n(new char[0]));
+  public void emptyToNull00() {
+    assertNull(emptyToNull(""));
+    assertNull(emptyToNull(List.of()));
+    assertNull(emptyToNull(Set.of()));
+    assertNull(emptyToNull(Map.of()));
+    assertNull(emptyToNull(EMPTY_STRING_ARRAY));
+    assertNull(emptyToNull(new int[0]));
+    assertNull(emptyToNull(new char[0]));
 
-    assertNotNull(e2n("foo"));
-    assertNotNull(e2n(List.of("foo")));
-    assertNotNull(e2n(Set.of("foo")));
-    assertNotNull(e2n(Map.of("foo", "bar")));
-    assertNotNull(e2n(pack("foo", "bar")));
-    assertNotNull(e2n(ints(1, 2, 3)));
-    assertNotNull(e2n(chars('a', 'b', 'c')));
+    assertNotNull(emptyToNull("foo"));
+    assertNotNull(emptyToNull(List.of("foo")));
+    assertNotNull(emptyToNull(Set.of("foo")));
+    assertNotNull(emptyToNull(Map.of("foo", "bar")));
+    assertNotNull(emptyToNull(pack("foo", "bar")));
+    assertNotNull(emptyToNull(ints(1, 2, 3)));
+    assertNotNull(emptyToNull(chars('a', 'b', 'c')));
   }
 
   @Test

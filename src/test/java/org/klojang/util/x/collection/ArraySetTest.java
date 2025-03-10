@@ -1,9 +1,8 @@
 package org.klojang.util.x.collection;
 
 import org.junit.Test;
-import org.klojang.check.aux.DuplicateValueException;
+import org.klojang.check.extra.DuplicateValueException;
 import org.klojang.util.MutableInt;
-import org.klojang.util.x.collection.ArraySet;
 
 import java.util.*;
 
@@ -83,7 +82,7 @@ public class ArraySetTest {
     ArraySet<Integer> set = ArraySet.copyOf(List.of(0, 1, 2, 3, 4, 5), true);
     MutableInt mi = new MutableInt();
     for (Iterator<Integer> itr = set.iterator(); itr.hasNext(); ) {
-      assertEquals(mi.pp(), (int) itr.next());
+      assertEquals(mi.getAndIncrement(), (int) itr.next());
     }
   }
 

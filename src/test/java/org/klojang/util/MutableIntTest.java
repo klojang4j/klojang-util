@@ -1,40 +1,39 @@
 package org.klojang.util;
 
 import org.junit.Test;
-import org.klojang.util.MutableInt;
 
 import static org.junit.Assert.*;
 
 public class MutableIntTest {
 
   @Test
-  public void pp00() {
+  public void getAndIncrement200() {
     MutableInt i = new MutableInt();
-    int j = i.pp();
+    int j = i.getAndIncrement();
     assertEquals(0, j);
     assertEquals(1, i.get());
   }
 
   @Test
-  public void ppi00() {
+  public void incrementAndGet00() {
     MutableInt i = new MutableInt(7);
-    int j = i.ppi();
+    int j = i.incrementAndGet();
     assertEquals(8, j);
     assertEquals(8, i.get());
   }
 
   @Test
-  public void mm00() {
+  public void getAndDecrement00() {
     MutableInt i = new MutableInt();
-    int j = i.mm();
+    int j = i.getAndDecrement();
     assertEquals(0, j);
     assertEquals(-1, i.get());
   }
 
   @Test
-  public void mmi00() {
+  public void decrementAndGet00() {
     MutableInt i = new MutableInt(7);
-    int j = i.mmi();
+    int j = i.decrementAndGet();
     assertEquals(6, j);
     assertEquals(6, i.get());
   }
@@ -51,12 +50,12 @@ public class MutableIntTest {
   }
 
   @Test
-  public void minIs00() {
+  public void minusIs00() {
     MutableInt i = new MutableInt(7);
-    int j = i.minIs(2);
+    int j = i.minusIs(2);
     assertEquals(5, j);
     assertEquals(5, i.get());
-    j = i.minIs(new MutableInt(i));
+    j = i.minusIs(new MutableInt(i));
     assertEquals(0, j);
     assertEquals(0, i.get());
   }

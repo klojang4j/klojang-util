@@ -12,7 +12,6 @@ import java.util.Map;
  * @param second The second component of the 2-tuple
  * @param &lt;T&gt; The type of the first component
  * @param &lt;U&gt; The type of the second component
- * @see AnyTuple2
  */
 public record Tuple2&lt;T, U&gt;(T first, U second) {
 
@@ -26,7 +25,7 @@ public record Tuple2&lt;T, U&gt;(T first, U second) {
    * @return A {@code Tuple2} instance containing the specified values
    */
   public static &lt;T, U&gt; Tuple2&lt;T, U&gt; of(T first, U second) {
-<span class="fc" id="L29">    return new Tuple2&lt;&gt;(first, second);</span>
+<span class="fc" id="L28">    return new Tuple2&lt;&gt;(first, second);</span>
   }
 
   /**
@@ -35,10 +34,10 @@ public record Tuple2&lt;T, U&gt;(T first, U second) {
    * @param first The first component of the 2-tuple
    * @param second The second component of the 2-tuple
    */
-<span class="fc" id="L38">  public Tuple2(T first, U second) {</span>
-<span class="fc" id="L39">    this.first = Check.notNull(first, &quot;first component&quot;).ok();</span>
-<span class="fc" id="L40">    this.second = Check.notNull(second, &quot;second component&quot;).ok();</span>
-<span class="fc" id="L41">  }</span>
+<span class="fc" id="L37">  public Tuple2(T first, U second) {</span>
+<span class="fc" id="L38">    this.first = Check.notNull(first, &quot;first component&quot;).ok();</span>
+<span class="fc" id="L39">    this.second = Check.notNull(second, &quot;second component&quot;).ok();</span>
+<span class="fc" id="L40">  }</span>
 
   /**
    * Converts this instance to an immutable {@code Map} entry.
@@ -46,7 +45,7 @@ public record Tuple2&lt;T, U&gt;(T first, U second) {
    * @return an immutable {@code Map} entry
    */
   public Map.Entry&lt;T, U&gt; toEntry() {
-<span class="fc" id="L49">    return new AbstractMap.SimpleImmutableEntry&lt;&gt;(first, second);</span>
+<span class="fc" id="L48">    return new AbstractMap.SimpleImmutableEntry&lt;&gt;(first, second);</span>
   }
 
 }

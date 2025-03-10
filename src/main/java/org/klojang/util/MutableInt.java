@@ -1,7 +1,7 @@
 package org.klojang.util;
 
 /**
- * The ubiquitous mutable-integer class.
+ * The mutable-integer class.
  */
 public final class MutableInt {
 
@@ -45,7 +45,7 @@ public final class MutableInt {
    *
    * @return The original value (before incrementation)
    */
-  public int pp() {
+  public int getAndIncrement() {
     return i++;
   }
 
@@ -54,7 +54,7 @@ public final class MutableInt {
    *
    * @return The incremented value (after incrementation)
    */
-  public int ppi() {
+  public int incrementAndGet() {
     return ++i;
   }
 
@@ -63,7 +63,7 @@ public final class MutableInt {
    *
    * @return The original value
    */
-  public int mm() {
+  public int getAndDecrement() {
     return i--;
   }
 
@@ -72,7 +72,7 @@ public final class MutableInt {
    *
    * @return The decremented value
    */
-  public int mmi() {
+  public int decrementAndGet() {
     return --i;
   }
 
@@ -102,7 +102,7 @@ public final class MutableInt {
    * @param j The value to subtract
    * @return The new value
    */
-  public int minIs(int j) {
+  public int minusIs(int j) {
     return i -= j;
   }
 
@@ -112,7 +112,7 @@ public final class MutableInt {
    * @param other The value to subtract
    * @return The new value
    */
-  public int minIs(MutableInt other) {
+  public int minusIs(MutableInt other) {
     return i -= other.i;
   }
 

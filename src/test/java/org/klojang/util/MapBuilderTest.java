@@ -1,7 +1,7 @@
 package org.klojang.util;
 
 import org.junit.Test;
-import org.klojang.check.aux.Result;
+import org.klojang.check.extra.Result;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -15,13 +15,13 @@ public class MapBuilderTest {
   public void set00() {
     MapBuilder mb = new MapBuilder();
     mb.set("person.address.street", "12 Revolutionary Rd.")
-          .set("person.address.state", "CA")
-          .set("person.firstName", "John")
-          .set("person.lastName", "Smith")
-          .set("person.born", LocalDate.of(1967, 4, 4));
+        .set("person.address.state", "CA")
+        .set("person.firstName", "John")
+        .set("person.lastName", "Smith")
+        .set("person.born", LocalDate.of(1967, 4, 4));
     String expected =
-          "{person={address={street=12 Revolutionary Rd., state=CA}, firstName=John, lastName=Smith,"
-                + " born=1967-04-04}}";
+        "{person={address={street=12 Revolutionary Rd., state=CA}, firstName=John, lastName=Smith,"
+            + " born=1967-04-04}}";
     assertEquals(expected, mb.build().toString());
   }
 
@@ -29,14 +29,14 @@ public class MapBuilderTest {
   public void set01() {
     MapBuilder mb = new MapBuilder();
     mb
-          .set("person.address.street", "12 Revolutionary Rd.")
-          .set("person.address.state", null)
-          .set("person.firstName", "John")
-          .set("person.lastName", null)
-          .set("person.born", LocalDate.of(1967, 4, 4));
+        .set("person.address.street", "12 Revolutionary Rd.")
+        .set("person.address.state", null)
+        .set("person.firstName", "John")
+        .set("person.lastName", null)
+        .set("person.born", LocalDate.of(1967, 4, 4));
     String expected =
-          "{person={address={street=12 Revolutionary Rd., state=null}, firstName=John, "
-                + "lastName=null, born=1967-04-04}}";
+        "{person={address={street=12 Revolutionary Rd., state=null}, firstName=John, "
+            + "lastName=null, born=1967-04-04}}";
     assertEquals(expected, mb.build().toString());
   }
 
@@ -44,16 +44,16 @@ public class MapBuilderTest {
   public void set02() {
     MapBuilder mb = new MapBuilder();
     mb
-          .set("person.address.street", "12 Revolutionary Rd.")
-          .set("person.address.street.foo", "bar");
+        .set("person.address.street", "12 Revolutionary Rd.")
+        .set("person.address.street.foo", "bar");
   }
 
   @Test(expected = PathBlockedException.class)
   public void set03() {
     MapBuilder mb = new MapBuilder();
     mb
-          .set("person.address.street", null)
-          .set("person.address.street", null);
+        .set("person.address.street", null)
+        .set("person.address.street", null);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -72,17 +72,17 @@ public class MapBuilderTest {
   public void set06() {
     MapBuilder mb = new MapBuilder();
     mb
-          .set("person.address", "foo")
-          .set("person.address.street", "Sunset Blvd");
+        .set("person.address", "foo")
+        .set("person.address.street", "Sunset Blvd");
   }
 
   @Test // do we make the null -> _NULL_ -> null round trip?
   public void set07() {
     MapBuilder mb = new MapBuilder();
     mb
-          .set("foo.bar.teapot", null)
-          .set("foo.bar.fun", true)
-          .set("foo.bar.number", 8);
+        .set("foo.bar.teapot", null)
+        .set("foo.bar.fun", true)
+        .set("foo.bar.number", 8);
     Map<String, Object> nested = new HashMap<>();
     nested.put("teapot", null);
     nested.put("fun", true);
@@ -98,9 +98,9 @@ public class MapBuilderTest {
     assertEquals("foo", mb.poll("person.address.street").get());
     assertEquals(Map.of("street", "foo"), mb.poll("person.address").get());
     assertEquals(Map.of("address", Map.of("street", "foo")),
-          mb.poll("person").get());
+        mb.poll("person").get());
     assertEquals(Result.notAvailable(),
-          mb.poll("person.address.street.teapot.coffee"));
+        mb.poll("person.address.street.teapot.coffee"));
     assertEquals(Result.notAvailable(), mb.poll("person.address.street.teapot"));
     assertEquals(Result.notAvailable(), mb.poll("person.address.teapot"));
     assertEquals(Result.notAvailable(), mb.poll("person.teapot"));
@@ -119,15 +119,15 @@ public class MapBuilderTest {
   public void in00() {
     MapBuilder mb = new MapBuilder();
     mb.in("person")
-          .set("firstName", "John")
-          .set("lastName", "Smith")
-          .set("born", LocalDate.of(1967, 4, 4))
-          .in("address")
-          .set("street", "12 Revolutionary Rd.")
-          .set("state", "CA");
+        .set("firstName", "John")
+        .set("lastName", "Smith")
+        .set("born", LocalDate.of(1967, 4, 4))
+        .in("address")
+        .set("street", "12 Revolutionary Rd.")
+        .set("state", "CA");
     String expected =
-          "{person={firstName=John, lastName=Smith, born=1967-04-04, address={street=12 "
-                + "Revolutionary Rd., state=CA}}}";
+        "{person={firstName=John, lastName=Smith, born=1967-04-04, address={street=12 "
+            + "Revolutionary Rd., state=CA}}}";
     assertEquals(expected, mb.build().toString());
   }
 
@@ -149,7 +149,7 @@ public class MapBuilderTest {
     mb.set("foo.bar.bozo", "teapot");
     mb.in("foo.bar").set("ping", "pong");
     Map<String, Object> expected = Map.of("foo",
-          Map.of("bar", Map.of("bozo", "teapot", "ping", "pong")));
+        Map.of("bar", Map.of("bozo", "teapot", "ping", "pong")));
     assertEquals(expected, mb.build());
   }
 
@@ -166,12 +166,12 @@ public class MapBuilderTest {
         .set("big", "bang");
     //@formatter:on
     Map<String, Object> expected = Map.of("foo",
-          Map.of("bar", Map.of(
-                "bozo", "teapot",
-                "ping", "pong",
-                "boom", "bam",
-                "physics", Map.of("big", "bang")
-          )));
+        Map.of("bar", Map.of(
+            "bozo", "teapot",
+            "ping", "pong",
+            "boom", "bam",
+            "physics", Map.of("big", "bang")
+        )));
     assertEquals(expected, mb.build());
   }
 
@@ -180,32 +180,32 @@ public class MapBuilderTest {
     MapBuilder mb = new MapBuilder();
     mb.set("foo.bar.bozo", "teapot");
     mb
-          .in("foo.bar")
-          .set("ping", "pong")
-          .set("boom", "bam")
-          .in("bozo");
+        .in("foo.bar")
+        .set("ping", "pong")
+        .set("boom", "bam")
+        .in("bozo");
   }
 
   @Test
   public void up00() {
     MapBuilder mb = new MapBuilder();
     mb.in("person.address")
-          .set("street", "Sunset Blvd")
-          .up("person")
-          .set("firstName", "John");
+        .set("street", "Sunset Blvd")
+        .up("person")
+        .set("firstName", "John");
     assertEquals("{person={address={street=Sunset Blvd}, firstName=John}}",
-          mb.build().toString());
+        mb.build().toString());
   }
 
   @Test
   public void up01() {
     MapBuilder mb = new MapBuilder();
     mb.in("person.address")
-          .set("street", "Sunset Blvd")
-          .up("person")
-          .set("firstName", "John");
+        .set("street", "Sunset Blvd")
+        .up("person")
+        .set("firstName", "John");
     Map expected = Map.of("person",
-          Map.of("firstName", "John", "address", Map.of("street", "Sunset Blvd")));
+        Map.of("firstName", "John", "address", Map.of("street", "Sunset Blvd")));
     assertEquals(expected, mb.build());
   }
 
@@ -214,8 +214,8 @@ public class MapBuilderTest {
     MapBuilder mb = new MapBuilder();
     try {
       mb.in("person.address")
-            .set("street", "Sunset Blvd")
-            .up("teapot");
+          .set("street", "Sunset Blvd")
+          .up("teapot");
     } catch (IllegalArgumentException e) {
       System.out.println(e.getMessage());
       throw e;
@@ -237,16 +237,16 @@ public class MapBuilderTest {
   public void up04() {
     MapBuilder mb = new MapBuilder();
     mb.in("department.manager.address")
-          .set("street", "Sunset Blvd")
-          .up("manager")
-          .up("department")
-          .set("foo", "bar");
+        .set("street", "Sunset Blvd")
+        .up("manager")
+        .up("department")
+        .set("foo", "bar");
     Map<String, Object> expected = Map.of(
-          "department",
-          Map.of("foo",
-                "bar",
-                "manager",
-                Map.of("address", Map.of("street", "Sunset Blvd")))
+        "department",
+        Map.of("foo",
+            "bar",
+            "manager",
+            Map.of("address", Map.of("street", "Sunset Blvd")))
     );
     assertEquals(expected, mb.build());
   }
@@ -255,16 +255,16 @@ public class MapBuilderTest {
   public void up05() {
     MapBuilder mb = new MapBuilder();
     mb.in("department.manager.address")
-          .set("street", "Sunset Blvd")
-          .up("manager")
-          .up("department")
-          .up(null)
-          .set("foo", "bar");
+        .set("street", "Sunset Blvd")
+        .up("manager")
+        .up("department")
+        .up(null)
+        .set("foo", "bar");
     Map<String, Object> expected = Map.of(
-          "foo", "bar",
-          "department",
-          Map.of("manager",
-                Map.of("address", Map.of("street", "Sunset Blvd")))
+        "foo", "bar",
+        "department",
+        Map.of("manager",
+            Map.of("address", Map.of("street", "Sunset Blvd")))
     );
     assertEquals(expected, mb.build());
   }
@@ -273,16 +273,16 @@ public class MapBuilderTest {
   public void up06() {
     MapBuilder mb = new MapBuilder();
     mb.in("department.manager.address")
-          .set("street", "Sunset Blvd")
-          .up("manager")
-          .up("department")
-          .up(null)
-          .set("foo", "bar");
+        .set("street", "Sunset Blvd")
+        .up("manager")
+        .up("department")
+        .up(null)
+        .set("foo", "bar");
     Map<String, Object> expected = Map.of(
-          "foo", "bar",
-          "department",
-          Map.of("manager",
-                Map.of("address", Map.of("street", "Sunset Blvd")))
+        "foo", "bar",
+        "department",
+        Map.of("manager",
+            Map.of("address", Map.of("street", "Sunset Blvd")))
     );
     assertEquals(expected, mb.build());
   }
@@ -291,11 +291,11 @@ public class MapBuilderTest {
   public void reset00() {
     MapBuilder mb = new MapBuilder();
     mb.in("person.address")
-          .set("street", "Sunset Blvd")
-          .root()
-          .set("firstName", "John");
+        .set("street", "Sunset Blvd")
+        .root()
+        .set("firstName", "John");
     assertEquals("{person={address={street=Sunset Blvd}}, firstName=John}",
-          mb.build().toString());
+        mb.build().toString());
   }
 
   public void reset01() {
@@ -464,16 +464,16 @@ public class MapBuilderTest {
   @Test
   public void sourceMap00() {
     Map<String, Object> source = Map.of("foo",
-          Map.of("teapot", "coffee"),
-          "bar",
-          true);
+        Map.of("teapot", "coffee"),
+        "bar",
+        true);
     MapBuilder mb = new MapBuilder(source);
     assertEquals(source, mb.build());
     mb.set("ping", 1).set("pong", false);
     Map<String, Object> expected = Map.of("foo",
-          Map.of("teapot", "coffee"),
-          "bar",
-          true, "ping", 1, "pong", false);
+        Map.of("teapot", "coffee"),
+        "bar",
+        true, "ping", 1, "pong", false);
     assertEquals(expected, mb.build());
   }
 
@@ -511,11 +511,11 @@ public class MapBuilderTest {
   public void jump00() {
     MapBuilder mb = new MapBuilder();
     mb
-          .set("department.person.address.street", "Main St.")
-          .set("department.person.address.state", "CA")
-          .set("department.person.firstName", "John")
-          .set("car.brand.name", "BMW")
-          .set("person.born", LocalDate.of(1967, 4, 4));
+        .set("department.person.address.street", "Main St.")
+        .set("department.person.address.state", "CA")
+        .set("department.person.firstName", "John")
+        .set("car.brand.name", "BMW")
+        .set("person.born", LocalDate.of(1967, 4, 4));
     mb = mb.jump("department.person");
     assertEquals("department.person", mb.where());
     mb = mb.jump("car.brand");

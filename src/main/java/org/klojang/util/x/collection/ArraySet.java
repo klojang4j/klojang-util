@@ -1,16 +1,16 @@
 package org.klojang.util.x.collection;
 
+import org.klojang.check.Check;
+import org.klojang.check.extra.DuplicateValueException;
+import org.klojang.util.ArrayMethods;
+
 import java.util.*;
 
-import org.klojang.check.Check;
-import org.klojang.check.aux.DuplicateValueException;
-import org.klojang.util.ArrayMethods;
-import static org.klojang.util.InvokeMethods.*;
-
 import static org.klojang.check.CommonChecks.*;
-import static org.klojang.check.aux.DuplicateValueException.Usage.ELEMENT;
+import static org.klojang.check.extra.DuplicateValueException.Usage.ELEMENT;
 import static org.klojang.util.ArrayMethods.EMPTY_OBJECT_ARRAY;
 import static org.klojang.util.ArrayMethods.implode;
+import static org.klojang.util.InvokeMethods.newArray;
 
 public final class ArraySet<E> extends ImmutableSet<E> {
 

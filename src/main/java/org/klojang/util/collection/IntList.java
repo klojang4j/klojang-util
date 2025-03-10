@@ -1,7 +1,7 @@
 package org.klojang.util.collection;
 
 import org.klojang.check.Check;
-import org.klojang.check.aux.Emptyable;
+import org.klojang.check.extra.Emptyable;
 import org.klojang.check.fallible.FallibleIntConsumer;
 
 import java.util.Arrays;

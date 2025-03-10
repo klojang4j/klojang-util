@@ -2,7 +2,7 @@ package org.klojang.util;
 
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
-import org.klojang.check.aux.Emptyable;
+import org.klojang.check.extra.Emptyable;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

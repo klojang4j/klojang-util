@@ -1,7 +1,7 @@
 package org.klojang.util;
 
 import org.klojang.check.Check;
-import org.klojang.check.aux.DuplicateValueException;
+import org.klojang.check.extra.DuplicateValueException;
 import org.klojang.check.fallible.FallibleFunction;
 
 import java.util.*;

@@ -46,7 +46,7 @@ public class IOMethods {
    */
   public static String getContents(String path) {
 <span class="fc" id="L48">    Check.notNull(path, PATH);</span>
-<span class="fc" id="L49">    File f = Check.that(new File(path)).is(regularFile()).ok();</span>
+<span class="fc" id="L49">    File f = Check.that(new File(path)).is(file()).ok();</span>
 <span class="fc" id="L50">    try (FileInputStream fis = new FileInputStream(f)) {</span>
 <span class="fc" id="L51">      return getContents(fis);</span>
 <span class="nc" id="L52">    } catch (IOException e) {</span>
