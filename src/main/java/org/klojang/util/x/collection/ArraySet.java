@@ -49,7 +49,7 @@ public final class ArraySet<E> extends ImmutableSet<E> {
   }
 
   public static <E> ArraySet<E> copyOf(List<E> values, boolean trust) {
-    if (values.size() == 0) {
+    if (values.isEmpty()) {
       return empty();
     } else if (trust) {
       return new ArraySet<>(values.toArray());
@@ -128,6 +128,7 @@ public final class ArraySet<E> extends ImmutableSet<E> {
     return objs;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public <T> T[] toArray(T[] a) {
     Check.notNull(a);
@@ -158,31 +159,19 @@ public final class ArraySet<E> extends ImmutableSet<E> {
   }
 
   @Override
-  @SuppressWarnings({"unchecked"})
+  @SuppressWarnings({"rawtypes"})
   public boolean equals(Object o) {
     if (this == o) {
       return true;
-    }
-    if (o instanceof ArraySet other) {
-      int len = other.elems.length;
-      if (elems.length == len) {
-        for (int i = 0; i < len; ++i) {
-          if (!elems[i].equals(other.elems[i])) {
-            return false;
-          }
-        }
-        return true;
-      }
-      return false;
-    }
-    if (o instanceof Set s) {
-      Iterator<E> itr = s.iterator();
+    } else if (o instanceof ArraySet other) {
+      return Arrays.equals(elems, other.elems);
+    } else if (o instanceof Set s && size() == s.size()) {
       for (Object e : elems) {
-        if (!itr.hasNext() || !e.equals(itr.next())) {
+        if (!s.contains(e)) {
           return false;
         }
       }
-      return !itr.hasNext();
+      return true;
     }
     return false;
   }

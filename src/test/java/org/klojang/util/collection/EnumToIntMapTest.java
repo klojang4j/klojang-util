@@ -1,29 +1,20 @@
 package org.klojang.util.collection;
 
-import static java.time.DayOfWeek.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.klojang.util.ArrayMethods.ints;
-import static org.klojang.util.collection.EnumToIntMapTest.TestEnum.BLACK;
-import static org.klojang.util.collection.EnumToIntMapTest.TestEnum.BLUE;
-import static org.klojang.util.collection.EnumToIntMapTest.TestEnum.GREEN;
-import static org.klojang.util.collection.EnumToIntMapTest.TestEnum.ORANGE;
-import static org.klojang.util.collection.EnumToIntMapTest.TestEnum.RED;
-import static java.util.AbstractMap.*;
+import org.junit.Test;
+import org.klojang.util.MutableInt;
 
 import java.time.DayOfWeek;
-import java.time.Month;
 import java.util.*;
 
-import org.junit.Test;
-import org.klojang.util.collection.EnumToIntMap;
-import org.klojang.util.collection.IntList;
-import org.klojang.util.MutableInt;
+import static java.time.DayOfWeek.*;
+import static java.util.AbstractMap.Entry;
+import static java.util.AbstractMap.SimpleImmutableEntry;
+import static org.junit.Assert.*;
+import static org.klojang.util.collection.EnumToIntMapTest.TestEnum.*;
 
 public class EnumToIntMapTest {
 
-  public static enum TestEnum {
+  public enum TestEnum {
     RED,
     BLUE,
     ORANGE,
@@ -60,7 +51,7 @@ public class EnumToIntMapTest {
 
   @Test
   public void EnumToIntMap04() {
-    EnumToIntMap<TestEnum> map = new EnumToIntMap<>(TestEnum.class, 0);
+    EnumToIntMap<TestEnum> map = new EnumToIntMap<>(TestEnum.class);
     assertTrue(map.isEmpty());
   }
 
@@ -74,12 +65,6 @@ public class EnumToIntMapTest {
     assertEquals(9, map.get(BLACK));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void put02() {
-    EnumToIntMap<TestEnum> map = new EnumToIntMap<>(TestEnum.class, 1000);
-    map.put(RED, 1000);
-  }
-
   @Test
   public void containsKey01() {
     EnumToIntMap<TestEnum> map = new EnumToIntMap<>(TestEnum.class);
@@ -90,14 +75,6 @@ public class EnumToIntMapTest {
     assertFalse(map.containsKey(BLUE));
     assertFalse(map.containsKey(ORANGE));
     assertFalse(map.containsKey(GREEN));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void containsValue01() {
-    EnumToIntMap<TestEnum> map = new EnumToIntMap<>(TestEnum.class, 1000);
-    map.put(RED, 7);
-    map.put(BLACK, 9);
-    map.containsValue(1000);
   }
 
   @Test
@@ -113,58 +90,28 @@ public class EnumToIntMapTest {
 
   @Test
   public void putAll01() {
-    EnumToIntMap<TestEnum> map1 = new EnumToIntMap<>(TestEnum.class, -999);
-    EnumToIntMap<TestEnum> map2 = new EnumToIntMap<>(TestEnum.class, +999);
+    EnumToIntMap<TestEnum> map1 = new EnumToIntMap<>(TestEnum.class);
+    EnumToIntMap<TestEnum> map2 = new EnumToIntMap<>(TestEnum.class);
     map1.put(RED, 7);
     map1.put(BLACK, 9);
     map1.put(BLACK, 11);
     map1.put(GREEN, 100);
     map2.putAll(map1);
-    assertTrue(map2.equals(map2));
+    assertTrue(map1.equals(map2));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void putAll02() {
-    EnumToIntMap<TestEnum> map1 = new EnumToIntMap<>(TestEnum.class, 5);
-    EnumToIntMap<TestEnum> map2 = new EnumToIntMap<>(TestEnum.class, 6);
-    map1.put(RED, 6);
-    map2.putAll(map1);
-  }
-
-  @Test
+   @Test
   public void putAll03() {
-    EnumToIntMap<TestEnum> map1 = new EnumToIntMap<>(TestEnum.class, 5);
-    EnumToIntMap<TestEnum> map2 = new EnumToIntMap<>(TestEnum.class, 6);
+    EnumToIntMap<TestEnum> map1 = new EnumToIntMap<>(TestEnum.class);
+    EnumToIntMap<TestEnum> map2 = new EnumToIntMap<>(TestEnum.class);
     map1.put(RED, 7);
     map2.putAll(map1);
     assertEquals(map1, map2);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void putAll04() {
-    EnumToIntMap<DayOfWeek> map0 = new EnumToIntMap<>(DayOfWeek.class);
-    assertEquals(Integer.MIN_VALUE, map0.keyAbsentValue());
-    map0.put(MONDAY, 2);
-    map0.put(THURSDAY, 33);
-    map0.put(SATURDAY, 37);
-    EnumToIntMap<DayOfWeek> map1 = new EnumToIntMap<>(DayOfWeek.class, 33);
-    assertEquals(33, map1.keyAbsentValue());
-    map1.putAll(map0);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void putAll05() {
-    EnumToIntMap map0 = new EnumToIntMap(DayOfWeek.class);
-    map0.put(MONDAY, 2);
-    map0.put(THURSDAY, 33);
-    map0.put(SATURDAY, 37);
-    EnumToIntMap map1 = new EnumToIntMap(Month.class);
-    map1.putAll(map0);
-  }
-
-  @Test
+   @Test
   public void values00() {
-    EnumToIntMap<TestEnum> map1 = new EnumToIntMap<>(TestEnum.class, -999);
+    EnumToIntMap<TestEnum> map1 = new EnumToIntMap<>(TestEnum.class);
     map1.put(RED, 7);
     map1.put(BLACK, 9);
     map1.put(BLACK, 11);
@@ -182,7 +129,7 @@ public class EnumToIntMapTest {
 
   @Test
   public void intValues00() {
-    EnumToIntMap<TestEnum> map1 = new EnumToIntMap<>(TestEnum.class, -999);
+    EnumToIntMap<TestEnum> map1 = new EnumToIntMap<>(TestEnum.class);
     map1.put(RED, 7);
     map1.put(BLACK, 9);
     map1.put(BLACK, 11);
@@ -238,17 +185,17 @@ public class EnumToIntMapTest {
 
   @Test
   public void constructor01() {
-    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class, -100);
+    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class);
     map.put(MONDAY, 2);
     map.put(THURSDAY, 33);
     map.put(SATURDAY, 37);
-    EnumToIntMap<DayOfWeek> copy = new EnumToIntMap<>(map, 101);
+    EnumToIntMap<DayOfWeek> copy = new EnumToIntMap<>(map);
     assertEquals(map, copy);
   }
 
   @Test
   public void clear00() {
-    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class, -100);
+    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class);
     assertEquals(0, map.size());
     assertTrue(map.isEmpty());
     map.put(MONDAY, 2);
@@ -263,7 +210,7 @@ public class EnumToIntMapTest {
 
   @Test
   public void keySet00() {
-    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class, -100);
+    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class);
     map.put(MONDAY, 2);
     map.put(THURSDAY, 33);
     map.put(SATURDAY, 37);
@@ -272,7 +219,7 @@ public class EnumToIntMapTest {
 
   @Test
   public void entrySet00() {
-    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class, -100);
+    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class);
     map.put(MONDAY, 2);
     map.put(THURSDAY, 33);
     map.put(SATURDAY, 37);
@@ -285,7 +232,7 @@ public class EnumToIntMapTest {
 
   @Test
   public void getOrDefault00() {
-    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class, -100);
+    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class);
     map.put(MONDAY, 2);
     map.put(THURSDAY, 33);
     map.put(SATURDAY, 37);
@@ -295,7 +242,7 @@ public class EnumToIntMapTest {
 
   @Test
   public void forEach00() {
-    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class, -100);
+    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class);
     map.put(MONDAY, 100);
     map.put(THURSDAY, 200);
     map.put(SATURDAY, 300);
@@ -306,25 +253,12 @@ public class EnumToIntMapTest {
 
   @Test
   public void toGenericMap00() {
-    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class, -100);
+    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class);
     map.put(MONDAY, 100);
     map.put(THURSDAY, 200);
     map.put(SATURDAY, 300);
     assertEquals(Map.of(MONDAY, 100, THURSDAY, 200, SATURDAY, 300),
         map.toGenericMap());
-  }
-
-  @Test
-  public void putGenericMap00() {
-    EnumToIntMap<DayOfWeek> map0 = new EnumToIntMap<>(DayOfWeek.class);
-    assertEquals(DayOfWeek.class, map0.enumClass());
-    assertEquals(Integer.MIN_VALUE, map0.keyAbsentValue());
-    map0.putAll(Map.of(MONDAY, 100, THURSDAY, 200, SATURDAY, 300));
-    EnumToIntMap<DayOfWeek> map1 = new EnumToIntMap<>(DayOfWeek.class, -100);
-    map1.put(MONDAY, 100);
-    map1.put(THURSDAY, 200);
-    map1.put(SATURDAY, 300);
-    assertEquals(map0, map1);
   }
 
   @Test
@@ -336,13 +270,5 @@ public class EnumToIntMapTest {
     assertEquals("[MONDAY=1, THURSDAY=2, SATURDAY=3]", map.toString());
   }
 
-  @Test
-  public void hashCode00() {
-    EnumToIntMap<DayOfWeek> map = new EnumToIntMap<>(DayOfWeek.class);
-    map.put(MONDAY, 1);
-    map.put(THURSDAY, 2);
-    map.put(SATURDAY, 3);
-    assertEquals(map.entrySet().hashCode(), map.hashCode());
-  }
 
 }
