@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SaturatedEnumToIntMap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Util</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util.collection</a> &gt; <span class="el_source">SaturatedEnumToIntMap.java</span></div><h1>SaturatedEnumToIntMap.java</h1><pre class="source lang-java linenums">package org.klojang.util.collection;
+
+import org.klojang.check.Check;
+import org.klojang.check.extra.Emptyable;
+import org.klojang.util.CollectionMethods;
+import org.klojang.util.x.collection.ArraySet;
+
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.ObjIntConsumer;
+import java.util.function.ToIntFunction;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static java.util.AbstractMap.SimpleImmutableEntry;
+import static org.klojang.check.CommonChecks.gt;
+import static org.klojang.check.CommonProperties.length;
+import static org.klojang.util.ObjectMethods.ifNull;
+
+/**
+ * An enum-to-int map. The map is backed by an int array with the same length as the number of constants in
+ * the {@code enum} class. All constructors immediately saturate the map with all enum constants and there is
+ * no way to remove keys from the map. These two preconditions make {@code SaturatedEnumToIntMap} just as
+ * efficient as a regular {@link EnumMap}, with the added benefit that it obviates the need for unboxing and
+ * boxing in the {@code get()} and {@code put()} operations.
+ *
+ * @param &lt;K&gt; the type of the enum class
+ * @author Ayco Holleman
+ * @see EnumToIntMap
+ */
+public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptyable {
+
+  private final Class&lt;K&gt; enumClass;
+  private final int[] data;
+
+  /**
+   * Creates a {@code SaturatedEnumToIntMap}. The map's values are initialized to 0 (zero).
+   *
+   * @param enumClass the type of the enum class
+   */
+  public SaturatedEnumToIntMap(Class&lt;K&gt; enumClass) {
+<span class="fc" id="L42">    this(enumClass, 0);</span>
+<span class="fc" id="L43">  }</span>
+
+  /**
+   * Creates a {@code SaturatedEnumToIntMap}. The map's values are initialized to the specified initial
+   * value.
+   *
+   * @param enumClass the type of the enum class
+   * @param initialValue the initial value for all enum constants
+   */
+  public SaturatedEnumToIntMap(Class&lt;K&gt; enumClass, int initialValue) {
+<span class="fc" id="L53">    this(enumClass, k -&gt; initialValue);</span>
+<span class="fc" id="L54">  }</span>
+
+  /**
+   * Creates an {@code EnumToIntMap} saturated with all enum constants of the specified enum class. The map's
+   * values are initialized using the provided function, which takes an enum constant and returns the initial
+   * value for the enum constant.
+   *
+   * @param enumClass the type of the enum class
+   * @param initializer a function that initializes the map's values
+   */
+<span class="fc" id="L64">  public SaturatedEnumToIntMap(Class&lt;K&gt; enumClass, ToIntFunction&lt;K&gt; initializer) {</span>
+<span class="fc" id="L65">    Check.notNull(enumClass, &quot;enum class&quot;);</span>
+<span class="fc" id="L66">    Check.notNull(initializer, &quot;initializer&quot;);</span>
+<span class="fc" id="L67">    K[] keys = enumClass.getEnumConstants();</span>
+<span class="fc" id="L68">    Check.that(keys).has(length(), gt(), 0, &quot;empty enums not supported&quot;);</span>
+<span class="fc" id="L69">    this.enumClass = enumClass;</span>
+<span class="fc" id="L70">    this.data = new int[keys.length];</span>
+<span class="fc" id="L71">    IntStream.range(0, keys.length).forEach(i -&gt; data[i] = initializer.applyAsInt(keys[i]));</span>
+<span class="fc" id="L72">  }</span>
+
+  /**
+   * Instantiates a new {@code EnumToIntMap} with the same key-value mappings as the specified
+   * {@code EnumToIntMap}.
+   *
+   * @param other the {@code EnumToIntMap} whose key-value mappings to copy
+   */
+<span class="fc" id="L80">  public SaturatedEnumToIntMap(SaturatedEnumToIntMap&lt;K&gt; other) {</span>
+<span class="fc" id="L81">    Check.notNull(other);</span>
+<span class="fc" id="L82">    this.enumClass = other.enumClass;</span>
+<span class="fc" id="L83">    int len = other.enumClass.getEnumConstants().length;</span>
+<span class="fc" id="L84">    this.data = new int[len];</span>
+<span class="fc" id="L85">    System.arraycopy(other.data, 0, this.data, 0, len);</span>
+<span class="fc" id="L86">  }</span>
+
+  /**
+   * Returns the type of the keys in this map.
+   *
+   * @return the type of the keys in this map
+   */
+  public Class&lt;K&gt; keyType() {
+<span class="nc" id="L94">    return enumClass;</span>
+  }
+
+  /**
+   * Always returns {@code true} (all enum constants will always be present in the map).
+   *
+   * @param key the enum constant
+   * @return {@code true}
+   * @see Map#containsKey(Object)
+   */
+  public boolean containsKey(K key) {
+<span class="fc" id="L105">    return true;</span>
+  }
+
+  /**
+   * Returns {@code true} if this map contains the specified value.
+   *
+   * @param val the value to search for
+   * @return whether the map contains the value
+   * @see Map#containsValue(Object)
+   */
+  public boolean containsValue(int val) {
+<span class="nc bnc" id="L116" title="All 2 branches missed.">    return Arrays.stream(data).anyMatch(v -&gt; v == val);</span>
+  }
+
+  /**
+   * Returns the value to which the specified enum constant is mapped.
+   *
+   * @param key the key whose associated value is to be returned
+   * @return the value to which the specified key is mapped
+   * @see Map#get(Object)
+   */
+  public int get(K key) {
+<span class="fc" id="L127">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc" id="L128">    return data[key.ordinal()];</span>
+  }
+
+  /**
+   * Associates the specified value with the specified key in this map.
+   *
+   * @param key the key
+   * @param val the value enum constant yet.
+   * @see Map#put(Object, Object)
+   */
+  public int put(K key, int val) {
+<span class="fc" id="L139">    int origVal = get(key);</span>
+<span class="fc" id="L140">    data[key.ordinal()] = val;</span>
+<span class="fc" id="L141">    return origVal;</span>
+  }
+
+  /**
+   * Like {@code put()}, but provides a fluent API for adding entries to the map.
+   *
+   * @param key the key
+   * @param val the value
+   * @return This instance
+   */
+  public SaturatedEnumToIntMap&lt;K&gt; set(K key, int val) {
+<span class="fc" id="L152">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc" id="L153">    data[key.ordinal()] = val;</span>
+<span class="fc" id="L154">    return this;</span>
+  }
+
+  /**
+   * Increments the value currently associated with the specified key.
+   *
+   * @param key the key
+   * @return the new value associated with the key
+   */
+  public int increment(K key) {
+<span class="nc" id="L164">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="nc" id="L165">    int x = data[key.ordinal()] + 1;</span>
+<span class="nc" id="L166">    return data[key.ordinal()] = x;</span>
+  }
+
+  /**
+   * Adds the specified value to the value currently associated with the specified key.
+   *
+   * @param key the key
+   * @param val the value to add to the value currently associated with the key
+   * @return the new value associated with the key
+   */
+  public int add(K key, int val) {
+<span class="nc" id="L177">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="nc" id="L178">    int x = data[key.ordinal()] + val;</span>
+<span class="nc" id="L179">    return data[key.ordinal()] = x;</span>
+  }
+
+  /**
+   * Multiplies the value currently associated with the specified key with the specified value.
+   *
+   * @param key the key
+   * @param val the value to multiply with which to multiply the value currently associated with the key
+   * @return the new value associated with the key
+   */
+  public int multiply(K key, int val) {
+<span class="nc" id="L190">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="nc" id="L191">    int x = data[key.ordinal()] * val;</span>
+<span class="nc" id="L192">    return data[key.ordinal()] = x;</span>
+  }
+
+  /**
+   * Adds all entries of the specified map to this map, overwriting any previous values.
+   *
+   * @param other the {@code EnumToIntMap} whose key-value mappings to copy
+   */
+  public void putAll(SaturatedEnumToIntMap&lt;K&gt; other) {
+<span class="fc" id="L201">    Check.notNull(other);</span>
+<span class="fc" id="L202">    other.forEach(this::assign);</span>
+<span class="fc" id="L203">  }</span>
+
+  /**
+   * Adds all entries of the specified map to this map. This method acts as a bridge to fully-generic map
+   * implementations.
+   *
+   * @param other the {@code Map} whose key-value mappings to copy
+   * @param nullValue the {@code int} value to use for {@code null} values in the source map
+   */
+  public void putAll(Map&lt;K, Integer&gt; other, int nullValue) {
+<span class="nc" id="L213">    Check.notNull(other);</span>
+<span class="nc" id="L214">    other.forEach((k, v) -&gt; assign(k, ifNull(v, nullValue)));</span>
+<span class="nc" id="L215">  }</span>
+
+  /**
+   * Converts this map to a fully-generic version of this map.
+   *
+   * @return a fully-generic version of this map
+   */
+  public EnumMap&lt;K, Integer&gt; toGenericMap() {
+<span class="fc" id="L223">    EnumMap&lt;K, Integer&gt; map = new EnumMap&lt;&gt;(enumClass);</span>
+<span class="fc" id="L224">    streamKeys().forEach(k -&gt; map.put(k, data[k.ordinal()]));</span>
+<span class="fc" id="L225">    return map;</span>
+  }
+
+  /**
+   * Returns a {@link Set} view of the keys contained in this map. The {@code Set} maintains the order of the
+   * enum constants, and can be iterated over quickly, but is inefficient for typical set operations such as
+   * {@link Set#contains(Object) constains()}.
+   *
+   * @return a Set view of the keys contained in this map
+   * @see Map#keySet()
+   */
+  public Set&lt;K&gt; keySet() {
+<span class="fc" id="L237">    return ArraySet.of(enumClass.getEnumConstants(), true);</span>
+  }
+
+  /**
+   * Returns a {@code Collection} view of the values contained in this map.
+   *
+   * @return a {@code Collection} view of the values contained in this map
+   * @see Map#values()
+   */
+  public Collection&lt;Integer&gt; values() {
+<span class="fc" id="L247">    return Arrays.stream(data).boxed().toList();</span>
+  }
+
+  /**
+   * Returns an {@code IntList} containing the values of this map.
+   *
+   * @return an {@code IntList} containing the values of this map
+   */
+  public IntList intValues() {
+<span class="fc" id="L256">    return IntList.ofElements(data);</span>
+  }
+
+  /**
+   * Returns a Set view of the mappings contained in this map.
+   *
+   * @return a set view of the mappings contained in this map
+   * @see Map#entrySet()
+   */
+  @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+  public Set&lt;Map.Entry&lt;K, Integer&gt;&gt; entrySet() {
+<span class="fc" id="L267">    SimpleImmutableEntry[] entries = streamKeys()</span>
+<span class="fc" id="L268">        .map(k -&gt; new SimpleImmutableEntry(k, data[k.ordinal()]))</span>
+<span class="fc" id="L269">        .toArray(SimpleImmutableEntry[]::new);</span>
+<span class="fc" id="L270">    return ArraySet.of(entries, true);</span>
+  }
+
+  /**
+   * Performs the given action for each entry in this map until all entries have been processed or the action
+   * throws an exception.
+   *
+   * @param action the action to be performed for each entry
+   * @see Map#forEach(BiConsumer)
+   */
+  public void forEach(ObjIntConsumer&lt;K&gt; action) {
+<span class="fc" id="L281">    streamKeys().forEach(k -&gt; action.accept(k, data[k.ordinal()]));</span>
+<span class="fc" id="L282">  }</span>
+
+  /**
+   * Always returns {@code false}.
+   *
+   * @return {@code false}
+   */
+  @Override
+  public boolean isEmpty() {
+<span class="fc" id="L291">    return false;</span>
+  }
+
+  /**
+   * Returns the number of key-value mappings in this map.
+   *
+   * @return the number of key-value mappings in this map
+   * @see Map#size()
+   */
+  public int size() {
+<span class="fc" id="L301">    return data.length;</span>
+  }
+
+  /**
+   * Returns {@code true} if the argument is an {@code EnumToIntMap} for the same enum class and if it
+   * contains the same key-value mappings. The two maps need
+   * &lt;i&gt;not&lt;/i&gt; have the same &lt;i&gt;key-absent-value&lt;/i&gt; value.
+   */
+  @Override
+  public boolean equals(Object obj) {
+<span class="pc bpc" id="L311" title="1 of 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L312">      return true;</span>
+<span class="pc bpc" id="L313" title="2 of 4 branches missed.">    } else if (obj instanceof SaturatedEnumToIntMap&lt;?&gt; that &amp;&amp; enumClass == that.enumClass) {</span>
+<span class="fc" id="L314">      return Arrays.equals(this.data, that.data);</span>
+    }
+<span class="nc" id="L316">    return false;</span>
+  }
+
+  public int hashCode() {
+<span class="nc" id="L320">    return Arrays.hashCode(data);</span>
+  }
+
+  @Override
+  public String toString() {
+<span class="fc" id="L325">    return '[' + CollectionMethods.implode(entrySet()) + ']';</span>
+  }
+
+  private Stream&lt;K&gt; streamKeys() {
+<span class="fc" id="L329">    return Arrays.stream(enumClass.getEnumConstants());</span>
+  }
+
+  private void assign(K key, int val) {
+<span class="fc" id="L333">    data[key.ordinal()] = val;</span>
+<span class="fc" id="L334">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

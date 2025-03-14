@@ -42,11 +42,11 @@ public class EnumToIntMapTest {
     EnumToIntMap<TestEnum> map = new EnumToIntMap<>(TestEnum.class,
         k -> k.name().length());
     assertEquals(TestEnum.values().length, map.size());
-    assertEquals(3, map.get(RED));
-    assertEquals(4, map.get(BLUE));
-    assertEquals(6, map.get(ORANGE));
-    assertEquals(5, map.get(GREEN));
-    assertEquals(5, map.get(BLACK));
+    assertEquals(3, map.get(RED).getAsInt());
+    assertEquals(4, map.get(BLUE).getAsInt());
+    assertEquals(6, map.get(ORANGE).getAsInt());
+    assertEquals(5, map.get(GREEN).getAsInt());
+    assertEquals(5, map.get(BLACK).getAsInt());
   }
 
   @Test
@@ -61,8 +61,8 @@ public class EnumToIntMapTest {
     map.put(RED, 7);
     map.put(BLACK, 9);
     assertEquals(2, map.size());
-    assertEquals(7, map.get(RED));
-    assertEquals(9, map.get(BLACK));
+    assertEquals(7, map.get(RED).getAsInt());
+    assertEquals(9, map.get(BLACK).getAsInt());
   }
 
   @Test
@@ -138,11 +138,11 @@ public class EnumToIntMapTest {
     map1.put(ORANGE, 102);
     map1.put(BLUE, 102);
     map1.remove(BLACK);
-    IntList il = map1.intValues();
-    il.sort();
-    assertEquals(4, il.size());
-    assertEquals(7, il.get(0));
-    assertEquals(102, il.get(1));
+    IntList intList = new IntArrayList(map1.intValues());
+    intList.sort();
+    assertEquals(4, intList.size());
+    assertEquals(7, intList.get(0));
+    assertEquals(102, intList.get(1));
   }
 
   @Test

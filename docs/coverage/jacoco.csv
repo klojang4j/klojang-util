@@ -22,7 +22,7 @@ Klojang Util,org.klojang.util,Path.new Iterator() {...},0,42,0,4,0,5,0,5,0,3
 Klojang Util,org.klojang.util,ExceptionMethods,22,308,3,25,6,57,4,25,1,14
 Klojang Util,org.klojang.util,InvokeException,0,35,0,0,0,7,0,3,0,3
 Klojang Util,org.klojang.util.collection,UnmodifiableIntList,2,290,1,19,1,62,1,46,0,37
-Klojang Util,org.klojang.util.collection,SaturatedEnumToIntMap,383,0,8,0,75,0,44,0,40,0
-Klojang Util,org.klojang.util.collection,EnumToIntMap,65,431,8,16,9,76,14,39,7,34
+Klojang Util,org.klojang.util.collection,SaturatedEnumToIntMap,104,266,5,3,17,53,13,27,9,27
+Klojang Util,org.klojang.util.collection,EnumToIntMap,66,420,7,17,10,79,14,38,8,32
 Klojang Util,org.klojang.util.collection,IntArrayList,30,737,5,51,8,163,5,69,1,45
 Klojang Util,org.klojang.util.collection,IntList,27,169,8,4,8,30,6,10,1,9

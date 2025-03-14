@@ -26,9 +26,8 @@ public final class ArraySet<E> extends ImmutableSet<E> {
 
   /*
    * If trusted, the provided array is supposed to be internally generated, going out
-   * of scope immediately, and known to contain unique values only. All bets are off
-   * if this is not the case!!!! In that case the array will be swallowed rather than
-   * copied into the ArraySet.
+   * of scope immediately, and _known_ to contain unique values only. All bets are off
+   * if this is not the case!!
    */
   public static <E> ArraySet<E> of(E[] values, boolean trust) {
     if (values.length == 0) {
@@ -95,27 +94,14 @@ public final class ArraySet<E> extends ImmutableSet<E> {
   }
 
   @Override
-  public boolean containsAll(Collection<?> c) {
-    return new HashSet<>(this).containsAll(c);
+  @SuppressWarnings("unchecked")
+  public Iterator<E> iterator() {
+    return (Iterator<E>) List.of(elems).iterator();
   }
 
   @Override
-  public Iterator<E> iterator() {
-    return new Iterator<>() {
-      private int i = 0;
-
-      @Override
-      public boolean hasNext() {
-        return i < elems.length;
-      }
-
-      @Override
-      @SuppressWarnings({"unchecked"})
-      public E next() {
-        Check.that(i).is(lt(), size(), NoSuchElementException::new);
-        return (E) elems[i++];
-      }
-    };
+  public boolean containsAll(Collection<?> c) {
+    return new HashSet<>(this).containsAll(c);
   }
 
   @Override
@@ -128,8 +114,8 @@ public final class ArraySet<E> extends ImmutableSet<E> {
     return objs;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
+  @SuppressWarnings("unchecked")
   public <T> T[] toArray(T[] a) {
     Check.notNull(a);
     int sz = elems.length;

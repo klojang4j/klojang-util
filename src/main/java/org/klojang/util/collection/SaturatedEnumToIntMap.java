@@ -20,10 +20,13 @@ import static org.klojang.util.ObjectMethods.ifNull;
 /**
  * An enum-to-int map. The map is backed by an int array with the same length as the number of constants in
  * the {@code enum} class. All constructors immediately saturate the map with all enum constants and there is
- * no way to remove keys from the map.
+ * no way to remove keys from the map. These two preconditions make {@code SaturatedEnumToIntMap} just as
+ * efficient as a regular {@link EnumMap}, with the added benefit that it obviates the need for unboxing and
+ * boxing in the {@code get()} and {@code put()} operations.
  *
  * @param <K> the type of the enum class
  * @author Ayco Holleman
+ * @see EnumToIntMap
  */
 public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable {
 
@@ -82,7 +85,12 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
     System.arraycopy(other.data, 0, this.data, 0, len);
   }
 
-  public Class<K> getEnumClass() {
+  /**
+   * Returns the type of the keys in this map.
+   *
+   * @return the type of the keys in this map
+   */
+  public Class<K> keyType() {
     return enumClass;
   }
 
@@ -90,7 +98,7 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
    * Always returns {@code true} (all enum constants will always be present in the map).
    *
    * @param key the enum constant
-   * @return whether the map contains an entry for the enum constant
+   * @return {@code true}
    * @see Map#containsKey(Object)
    */
   public boolean containsKey(K key) {
@@ -109,10 +117,7 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
   }
 
   /**
-   * Returns the value to which the specified enum constant is mapped, or {@code -1} if this map contains no
-   * mapping for the key. (A regular {@code Map} would return {@code null} in the latter case.)
-   * <b>Only use this method if you are absolutely certain that {@code -1}  is an "impossible" value.</b> In
-   * principle, you should always use {@link #getOrDefault(Enum, int) getOrDefault()}.
+   * Returns the value to which the specified enum constant is mapped.
    *
    * @param key the key whose associated value is to be returned
    * @return the value to which the specified key is mapped
@@ -124,28 +129,16 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
   }
 
   /**
-   * Throws an {@link UnsupportedOperationException}. Since all enum constants will always be present in the
-   * map, there is no use for this method.
-   *
-   * @param key the key to retrieve the value of.
-   * @param dfault the integer to return if the map did not contain the key
-   * @return the value associated with the key or {@code dfault}
-   * @see Map#getOrDefault(Object, Object)
-   */
-  public int getOrDefault(K key, int dfault) {
-    throw new UnsupportedOperationException();
-  }
-
-  /**
    * Associates the specified value with the specified key in this map.
    *
    * @param key the key
    * @param val the value enum constant yet.
    * @see Map#put(Object, Object)
    */
-  public void put(K key, int val) {
-    Check.notNull(key, "key");
+  public int put(K key, int val) {
+    int origVal = get(key);
     data[key.ordinal()] = val;
+    return origVal;
   }
 
   /**
@@ -161,22 +154,41 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
     return this;
   }
 
-  public int incrementAndGet(K key) {
+  /**
+   * Increments the value currently associated with the specified key.
+   *
+   * @param key the key
+   * @return the new value associated with the key
+   */
+  public int increment(K key) {
     Check.notNull(key, "key");
     int x = data[key.ordinal()] + 1;
     return data[key.ordinal()] = x;
   }
 
-  public int getAndIncrement(K key) {
-    Check.notNull(key, "key");
-    int x = data[key.ordinal()];
-    data[key.ordinal()] = x + 1;
-    return x;
-  }
-
+  /**
+   * Adds the specified value to the value currently associated with the specified key.
+   *
+   * @param key the key
+   * @param val the value to add to the value currently associated with the key
+   * @return the new value associated with the key
+   */
   public int add(K key, int val) {
     Check.notNull(key, "key");
     int x = data[key.ordinal()] + val;
+    return data[key.ordinal()] = x;
+  }
+
+  /**
+   * Multiplies the value currently associated with the specified key with the specified value.
+   *
+   * @param key the key
+   * @param val the value to multiply with which to multiply the value currently associated with the key
+   * @return the new value associated with the key
+   */
+  public int multiply(K key, int val) {
+    Check.notNull(key, "key");
+    int x = data[key.ordinal()] * val;
     return data[key.ordinal()] = x;
   }
 
@@ -203,7 +215,7 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
   }
 
   /**
-   * Returns a fully-generic version of this map.
+   * Converts this map to a fully-generic version of this map.
    *
    * @return a fully-generic version of this map
    */
@@ -214,23 +226,15 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
   }
 
   /**
-   * Throws an {@link UnsupportedOperationException}.
-   *
-   * @param key the key
-   * @see Map#remove(Object)
-   */
-  public void remove(K key) {
-    throw new UnsupportedOperationException();
-  }
-
-  /**
-   * Returns a {@link Set} view of the keys contained in this map.
+   * Returns a {@link Set} view of the keys contained in this map. The {@code Set} maintains the order of the
+   * enum constants, and can be iterated over quickly, but is inefficient for typical set operations such as
+   * {@link Set#contains(Object) constains()}.
    *
    * @return a Set view of the keys contained in this map
    * @see Map#keySet()
    */
   public Set<K> keySet() {
-    return Set.of(enumClass.getEnumConstants());
+    return ArraySet.of(enumClass.getEnumConstants(), true);
   }
 
   /**
@@ -240,7 +244,7 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
    * @see Map#values()
    */
   public Collection<Integer> values() {
-    return streamValues().boxed().toList();
+    return Arrays.stream(data).boxed().toList();
   }
 
   /**
@@ -267,16 +271,6 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
   }
 
   /**
-   * Always returns {@code false}.
-   *
-   * @return {@code false}
-   * @see Map#isEmpty()
-   */
-  public boolean isEmpty() {
-    return false;
-  }
-
-  /**
    * Performs the given action for each entry in this map until all entries have been processed or the action
    * throws an exception.
    *
@@ -288,12 +282,13 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
   }
 
   /**
-   * Throws an {@link UnsupportedOperationException}.
+   * Always returns {@code false}.
    *
-   * @see Map#clear()
+   * @return {@code false}
    */
-  public void clear() {
-    throw new UnsupportedOperationException();
+  @Override
+  public boolean isEmpty() {
+    return false;
   }
 
   /**
@@ -328,10 +323,6 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
   @Override
   public String toString() {
     return '[' + CollectionMethods.implode(entrySet()) + ']';
-  }
-
-  private IntStream streamValues() {
-    return Arrays.stream(data);
   }
 
   private Stream<K> streamKeys() {

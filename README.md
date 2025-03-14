@@ -10,14 +10,14 @@ To use _Klojang Util_, add the following dependency to your Maven POM file:
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-util</artifactId>
-    <version>21.2.0</version>
+    <version>21.3.0</version>
 </dependency>
 ```
 
 or Gradle build script:
 
 ```
-implementation group: 'org.klojang', name: 'klojang-util', version: '21.2.0'
+implementation group: 'org.klojang', name: 'klojang-util', version: '21.3.0'
 ```
 
 ## Documentation

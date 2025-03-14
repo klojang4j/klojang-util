@@ -2,6 +2,7 @@
 
 import org.klojang.check.Check;
 import org.klojang.check.extra.Emptyable;
+import org.klojang.util.ClassMethods;
 import org.klojang.util.CollectionMethods;
 import org.klojang.util.x.collection.ArraySet;
 
@@ -13,38 +14,39 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.AbstractMap.SimpleImmutableEntry;
-import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.klojang.check.CommonChecks.gt;
-import static org.klojang.check.CommonProperties.length;
 import static org.klojang.util.ObjectMethods.ifNull;
 
 /**
  * An enum-to-int map. The map is backed by an int array with the same length as the number of constants in
- * the {@code enum} class.
+ * the {@code enum} class. Although {@code EnumToIntMap} loosely mimics the behaviour and interface of the
+ * {@link Map} interface, it obviously does not, and cannot implement the {@code Map} interface. Some methods
+ * &lt;i&gt;need&lt;/i&gt; to behave differently due to the fact that the type of the values in the map is a primitive
+ * type ({@code int}).
  *
  * @param &lt;K&gt; the type of the enum class
  * @author Ayco Holleman
  */
 public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptyable {
 
-  private final K[] keys;
+  private final Class&lt;K&gt; enumClass;
   private final int[] data;
-  private final boolean[] nulls;
+  private final boolean[] isNull;
 
   /**
    * Creates an empty {@code EnumToIntMap} for the specified {@code enum} class.
    *
    * @param enumClass the type of the enum class
    */
-<span class="fc" id="L39">  public EnumToIntMap(Class&lt;K&gt; enumClass) {</span>
-<span class="fc" id="L40">    Check.notNull(enumClass, &quot;enum class&quot;);</span>
-<span class="fc" id="L41">    K[] keys = enumClass.getEnumConstants();</span>
-<span class="fc" id="L42">    Check.that(keys).has(length(), gt(), 0, &quot;empty enums not supported&quot;);</span>
-<span class="fc" id="L43">    this.keys = keys;</span>
-<span class="fc" id="L44">    this.data = new int[keys.length];</span>
-<span class="fc" id="L45">    this.nulls = new boolean[keys.length];</span>
-<span class="fc" id="L46">    Arrays.fill(nulls, true);</span>
-<span class="fc" id="L47">  }</span>
+<span class="fc" id="L41">  public EnumToIntMap(Class&lt;K&gt; enumClass) {</span>
+<span class="fc" id="L42">    Check.notNull(enumClass, &quot;enum class&quot;);</span>
+<span class="fc" id="L43">    int len = enumClass.getEnumConstants().length;</span>
+<span class="fc" id="L44">    Check.that(len).is(gt(), 0, &quot;empty enums not supported&quot;);</span>
+<span class="fc" id="L45">    this.enumClass = enumClass;</span>
+<span class="fc" id="L46">    this.data = new int[len];</span>
+<span class="fc" id="L47">    this.isNull = new boolean[len];</span>
+<span class="fc" id="L48">    Arrays.fill(isNull, true);</span>
+<span class="fc" id="L49">  }</span>
 
   /**
    * Creates an {@code EnumToIntMap} saturated with all enum constants of the specified enum class. The map's
@@ -54,8 +56,8 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @param initialValue the initial value for all enum constants
    */
   public EnumToIntMap(Class&lt;K&gt; enumClass, int initialValue) {
-<span class="nc" id="L57">    this(enumClass, k -&gt; initialValue);</span>
-<span class="nc" id="L58">  }</span>
+<span class="nc" id="L59">    this(enumClass, k -&gt; initialValue);</span>
+<span class="nc" id="L60">  }</span>
 
   /**
    * Creates an {@code EnumToIntMap} saturated with all enum constants of the specified enum class. The map's
@@ -65,17 +67,18 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @param enumClass the type of the enum class
    * @param initializer a function called to initialize the map's values
    */
-<span class="fc" id="L68">  public EnumToIntMap(Class&lt;K&gt; enumClass, ToIntFunction&lt;K&gt; initializer) {</span>
-<span class="fc" id="L69">    Check.notNull(enumClass, &quot;enum class&quot;);</span>
-<span class="fc" id="L70">    Check.notNull(initializer, &quot;initializer&quot;);</span>
-<span class="fc" id="L71">    K[] keys = enumClass.getEnumConstants();</span>
-<span class="fc" id="L72">    Check.that(keys).has(length(), gt(), 0, &quot;empty enums not supported&quot;);</span>
-<span class="fc" id="L73">    this.keys = keys;</span>
-<span class="fc" id="L74">    this.data = new int[keys.length];</span>
-<span class="fc" id="L75">    this.nulls = new boolean[keys.length];</span>
-<span class="fc" id="L76">    IntStream.range(0, keys.length).forEach(i -&gt; data[i] = initializer.applyAsInt(keys[i]));</span>
+<span class="fc" id="L70">  public EnumToIntMap(Class&lt;K&gt; enumClass, ToIntFunction&lt;K&gt; initializer) {</span>
+<span class="fc" id="L71">    Check.notNull(enumClass, &quot;enum class&quot;);</span>
+<span class="fc" id="L72">    Check.notNull(initializer, &quot;initializer&quot;);</span>
+<span class="fc" id="L73">    K[] keys = enumClass.getEnumConstants();</span>
+<span class="fc" id="L74">    int len = keys.length;</span>
+<span class="fc" id="L75">    Check.that(len).is(gt(), 0, &quot;empty enums not supported&quot;);</span>
+<span class="fc" id="L76">    this.enumClass = enumClass;</span>
+<span class="fc" id="L77">    this.data = new int[len];</span>
+<span class="fc" id="L78">    this.isNull = new boolean[len];</span>
+<span class="fc" id="L79">    IntStream.range(0, len).forEach(i -&gt; data[i] = initializer.applyAsInt(keys[i]));</span>
     // no need to fill nulls array
-<span class="fc" id="L78">  }</span>
+<span class="fc" id="L81">  }</span>
 
   /**
    * Instantiates a new {@code EnumToIntMap} with the same key-value mappings as the specified
@@ -83,15 +86,24 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    *
    * @param other the {@code EnumToIntMap} whose key-value mappings to copy
    */
-<span class="fc" id="L86">  public EnumToIntMap(EnumToIntMap&lt;K&gt; other) {</span>
-<span class="fc" id="L87">    Check.notNull(other);</span>
-<span class="fc" id="L88">    K[] keys = other.keys;</span>
-<span class="fc" id="L89">    this.keys = keys;</span>
-<span class="fc" id="L90">    this.data = new int[keys.length];</span>
-<span class="fc" id="L91">    this.nulls = new boolean[keys.length];</span>
-<span class="fc" id="L92">    System.arraycopy(other.data, 0, this.data, 0, keys.length);</span>
-<span class="fc" id="L93">    System.arraycopy(other.nulls, 0, this.nulls, 0, keys.length);</span>
-<span class="fc" id="L94">  }</span>
+<span class="fc" id="L89">  public EnumToIntMap(EnumToIntMap&lt;K&gt; other) {</span>
+<span class="fc" id="L90">    Check.notNull(other);</span>
+<span class="fc" id="L91">    this.enumClass = other.enumClass;</span>
+<span class="fc" id="L92">    int len = other.data.length;</span>
+<span class="fc" id="L93">    this.data = new int[len];</span>
+<span class="fc" id="L94">    this.isNull = new boolean[len];</span>
+<span class="fc" id="L95">    System.arraycopy(other.data, 0, this.data, 0, len);</span>
+<span class="fc" id="L96">    System.arraycopy(other.isNull, 0, this.isNull, 0, len);</span>
+<span class="fc" id="L97">  }</span>
+
+  /**
+   * Returns the type of the keys in this map.
+   *
+   * @return the type of the keys in this map
+   */
+  public Class&lt;K&gt; keyType() {
+<span class="nc" id="L105">    return enumClass;</span>
+  }
 
   /**
    * Returns {@code true} if this map contains a mapping for the specified key.
@@ -101,8 +113,8 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#containsKey(Object)
    */
   public boolean containsKey(K key) {
-<span class="fc" id="L104">    Check.notNull(key, &quot;key&quot;);</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">    return !nulls[key.ordinal()];</span>
+<span class="fc" id="L116">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">    return !isNull[key.ordinal()];</span>
   }
 
   /**
@@ -113,34 +125,23 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#containsValue(Object)
    */
   public boolean containsValue(int val) {
-<span class="nc bnc" id="L116" title="All 2 branches missed.">    return streamValues().anyMatch(v -&gt; v == val);</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">    return streamValues().anyMatch(v -&gt; v == val);</span>
   }
 
   /**
-   * Returns the value to which the specified enum constant is mapped, or {@code -1} if this map contains no
-   * mapping for the key. (A regular {@code Map} would return {@code null} in the latter case.)
-   * &lt;b&gt;Only use this method if you are absolutely certain that {@code -1}  is an &quot;impossible&quot; value.&lt;/b&gt; In
-   * principle, you should always use {@link #getOrDefault(Enum, int) getOrDefault()}.
+   * Returns an {@code OptionalInt} containing the value to which the specified enum constant is mapped, or an
+   * empty {@code OptionalInt} if this map contains no mapping for the key. (A regular {@code Map} would
+   * return {@code null} in the latter case.)
    *
    * @param key the key whose associated value is to be returned
    * @return the value to which the specified key is mapped
    * @see Map#get(Object)
    */
-  public int get(K key) {
-<span class="fc" id="L130">    Check.notNull(key, &quot;key&quot;);</span>
-<span class="pc bpc" id="L131" title="1 of 2 branches missed.">    return nulls[key.ordinal()] ? -1 : data[key.ordinal()];</span>
-  }
-
-  /**
-   * Alias for {@link #getOrDefault(Enum, int) getOrDefault()}.
-   *
-   * @param key the key to retrieve the value of.
-   * @param dfault the integer to return if the map did not contain the key
-   * @return the value associated with the key or {@code dfault}
-   * @see Map#getOrDefault(Object, Object)
-   */
-  public int get(K key, int dfault) {
-<span class="fc bfc" id="L143" title="All 2 branches covered.">    return containsKey(key) ? data[key.ordinal()] : dfault;</span>
+  public OptionalInt get(K key) {
+<span class="fc" id="L141">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">    return isNull[key.ordinal()]</span>
+<span class="fc" id="L143">        ? OptionalInt.empty()</span>
+<span class="fc" id="L144">        : OptionalInt.of(data[key.ordinal()]);</span>
   }
 
   /**
@@ -153,7 +154,7 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#getOrDefault(Object, Object)
    */
   public int getOrDefault(K key, int dfault) {
-<span class="fc" id="L156">    return get(key, dfault);</span>
+<span class="fc" id="L157">    return get(key).orElse(dfault);</span>
   }
 
   /**
@@ -163,10 +164,12 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @param val the value enum constant yet.
    * @see Map#put(Object, Object)
    */
-  public void put(K key, int val) {
-<span class="fc" id="L167">    Check.notNull(key, &quot;key&quot;);</span>
-<span class="fc" id="L168">    assign(key, val);</span>
-<span class="fc" id="L169">  }</span>
+  public OptionalInt put(K key, int val) {
+<span class="fc" id="L168">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc" id="L169">    OptionalInt origVal = get(key);</span>
+<span class="fc" id="L170">    assign(key, val);</span>
+<span class="fc" id="L171">    return origVal;</span>
+  }
 
   /**
    * Like {@code put()}, but provides a fluent API for adding entries to the map.
@@ -176,9 +179,9 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @return this instance
    */
   public EnumToIntMap&lt;K&gt; set(K key, int val) {
-<span class="fc" id="L179">    Check.notNull(key, &quot;key&quot;);</span>
-<span class="fc" id="L180">    assign(key, val);</span>
-<span class="fc" id="L181">    return this;</span>
+<span class="fc" id="L182">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc" id="L183">    assign(key, val);</span>
+<span class="fc" id="L184">    return this;</span>
   }
 
   /**
@@ -189,9 +192,9 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @param other the {@code EnumToIntMap} whose key-value mappings to copy
    */
   public void putAll(EnumToIntMap&lt;K&gt; other) {
-<span class="fc" id="L192">    Check.notNull(other);</span>
-<span class="fc" id="L193">    other.forEach(this::assign);</span>
-<span class="fc" id="L194">  }</span>
+<span class="fc" id="L195">    Check.notNull(other);</span>
+<span class="fc" id="L196">    other.forEach(this::assign);</span>
+<span class="fc" id="L197">  }</span>
 
   /**
    * Adds all entries of the specified map to this map. This method acts as a bridge to fully-generic map
@@ -201,41 +204,49 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @param nullValue the {@code int} value to use for {@code null} values in the source map
    */
   public void putAll(Map&lt;K, Integer&gt; other, int nullValue) {
-<span class="nc" id="L204">    Check.notNull(other);</span>
-<span class="nc" id="L205">    other.forEach((k, v) -&gt; assign(k, ifNull(v, nullValue)));</span>
-<span class="nc" id="L206">  }</span>
+<span class="nc" id="L207">    Check.notNull(other);</span>
+<span class="nc" id="L208">    other.forEach((k, v) -&gt; assign(k, ifNull(v, nullValue)));</span>
+<span class="nc" id="L209">  }</span>
 
   /**
-   * Returns a fully-generic version of this map.
+   * Converts this map to a fully-generic version of this map.
    *
    * @return a fully-generic version of this map
    */
-  @SuppressWarnings(&quot;unchecked&quot;)
   public EnumMap&lt;K, Integer&gt; toGenericMap() {
-<span class="fc" id="L215">    EnumMap&lt;K, Integer&gt; map = new EnumMap&lt;&gt;((Class&lt;K&gt;) keys[0].getClass());</span>
-<span class="fc" id="L216">    streamKeys().forEach(k -&gt; map.put(k, data[k.ordinal()]));</span>
-<span class="fc" id="L217">    return map;</span>
+<span class="fc" id="L217">    EnumMap&lt;K, Integer&gt; map = new EnumMap&lt;&gt;(enumClass);</span>
+<span class="fc" id="L218">    streamKeys().forEach(k -&gt; map.put(k, data[k.ordinal()]));</span>
+<span class="fc" id="L219">    return map;</span>
   }
 
   /**
    * Removes the mapping for a key from this map if it is present.
    *
    * @param key the key
+   * @return an {@code OptionalInt} containing the previous value associated with key, or an empty
+   *     {@code OptionalInt} if there was no mapping for key.
    * @see Map#remove(Object)
    */
-  public void remove(K key) {
-<span class="fc" id="L227">    Check.notNull(key, &quot;key&quot;);</span>
-<span class="fc" id="L228">    nulls[key.ordinal()] = true;</span>
-<span class="fc" id="L229">  }</span>
+  public OptionalInt remove(K key) {
+<span class="fc" id="L231">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">    if (!isNull[key.ordinal()]) {</span>
+<span class="fc" id="L233">      OptionalInt origVal = get(key);</span>
+<span class="fc" id="L234">      isNull[key.ordinal()] = true;</span>
+<span class="fc" id="L235">      return origVal;</span>
+    }
+<span class="fc" id="L237">    return OptionalInt.empty();</span>
+  }
 
   /**
-   * Returns a {@link Set} view of the keys contained in this map.
+   * Returns a {@link Set} view of the keys contained in this map. The {@code Set} maintains the order of the
+   * enum constants, and can be iterated over quickly, but is inefficient for typical set operations such as
+   * {@link Set#contains(Object) constains()}.
    *
    * @return a Set view of the keys contained in this map
    * @see Map#keySet()
    */
   public Set&lt;K&gt; keySet() {
-<span class="fc" id="L238">    return streamKeys().collect(toUnmodifiableSet());</span>
+<span class="fc" id="L249">    return ClassMethods.cast(ArraySet.of(streamKeys().toArray(), true));</span>
   }
 
   /**
@@ -245,7 +256,7 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#values()
    */
   public Collection&lt;Integer&gt; values() {
-<span class="fc" id="L248">    return streamValues().boxed().toList();</span>
+<span class="fc" id="L259">    return streamValues().boxed().toList();</span>
   }
 
   /**
@@ -254,9 +265,7 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @return an {@code IntList} containing the values of this map
    */
   public IntList intValues() {
-<span class="fc" id="L257">    IntArrayList intList = new IntArrayList(size());</span>
-<span class="fc" id="L258">    streamValues().forEach(intList::add);</span>
-<span class="fc" id="L259">    return intList;</span>
+<span class="fc" id="L268">    return IntList.of(streamValues().toArray());</span>
   }
 
   /**
@@ -267,10 +276,10 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    */
   @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
   public Set&lt;Map.Entry&lt;K, Integer&gt;&gt; entrySet() {
-<span class="fc" id="L270">    SimpleImmutableEntry[] entries = streamKeys()</span>
-<span class="fc" id="L271">        .map(k -&gt; new SimpleImmutableEntry(k, data[k.ordinal()]))</span>
-<span class="fc" id="L272">        .toArray(SimpleImmutableEntry[]::new);</span>
-<span class="fc" id="L273">    return ArraySet.of(entries, true);</span>
+<span class="fc" id="L279">    SimpleImmutableEntry[] entries = streamKeys()</span>
+<span class="fc" id="L280">        .map(k -&gt; new SimpleImmutableEntry(k, data[k.ordinal()]))</span>
+<span class="fc" id="L281">        .toArray(SimpleImmutableEntry[]::new);</span>
+<span class="fc" id="L282">    return ArraySet.of(entries, true);</span>
   }
 
   /**
@@ -280,7 +289,7 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#isEmpty()
    */
   public boolean isEmpty() {
-<span class="fc bfc" id="L283" title="All 2 branches covered.">    return size() == 0;</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">    return size() == 0;</span>
   }
 
   /**
@@ -291,8 +300,8 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#forEach(BiConsumer)
    */
   public void forEach(ObjIntConsumer&lt;K&gt; action) {
-<span class="fc" id="L294">    streamKeys().forEach(k -&gt; action.accept(k, data[k.ordinal()]));</span>
-<span class="fc" id="L295">  }</span>
+<span class="fc" id="L303">    streamKeys().forEach(k -&gt; action.accept(k, data[k.ordinal()]));</span>
+<span class="fc" id="L304">  }</span>
 
   /**
    * Removes all mappings from this map.
@@ -300,8 +309,8 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#clear()
    */
   public void clear() {
-<span class="fc" id="L303">    Arrays.fill(nulls, true);</span>
-<span class="fc" id="L304">  }</span>
+<span class="fc" id="L312">    Arrays.fill(isNull, true);</span>
+<span class="fc" id="L313">  }</span>
 
   /**
    * Returns the number of key-value mappings in this map.
@@ -310,7 +319,7 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    * @see Map#size()
    */
   public int size() {
-<span class="fc" id="L313">    return (int) streamKeys().count();</span>
+<span class="fc" id="L322">    return (int) streamKeys().count();</span>
   }
 
   /**
@@ -320,42 +329,37 @@ public final class EnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implements Emptya
    */
   @Override
   public boolean equals(Object obj) {
-<span class="pc bpc" id="L323" title="1 of 2 branches missed.">    if (this == obj) {</span>
-<span class="nc" id="L324">      return true;</span>
-<span class="pc bpc" id="L325" title="2 of 4 branches missed.">    } else if (obj instanceof EnumToIntMap&lt;?&gt; that &amp;&amp; enumClass() == that.enumClass()) {</span>
-<span class="pc bpc" id="L326" title="2 of 4 branches missed.">      return Arrays.equals(this.nulls, that.nulls) &amp;&amp; Arrays.equals(this.data, that.data);</span>
+<span class="pc bpc" id="L332" title="1 of 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L333">      return true;</span>
+<span class="pc bpc" id="L334" title="2 of 4 branches missed.">    } else if (obj instanceof EnumToIntMap&lt;?&gt; that &amp;&amp; enumClass == that.enumClass) {</span>
+<span class="pc bpc" id="L335" title="2 of 4 branches missed.">      return Arrays.equals(this.isNull, that.isNull) &amp;&amp; Arrays.equals(this.data, that.data);</span>
     }
-<span class="nc" id="L328">    return false;</span>
+<span class="nc" id="L337">    return false;</span>
   }
 
   public int hashCode() {
-<span class="nc" id="L332">    return Objects.hash(Arrays.hashCode(nulls), Arrays.hashCode(data));</span>
+<span class="nc" id="L341">    return Objects.hash(Arrays.hashCode(isNull), Arrays.hashCode(data));</span>
   }
 
   @Override
   public String toString() {
-<span class="fc" id="L337">    return '[' + CollectionMethods.implode(entrySet()) + ']';</span>
+<span class="fc" id="L346">    return '[' + CollectionMethods.implode(entrySet()) + ']';</span>
   }
 
   private IntStream streamValues() {
-<span class="fc" id="L341">    return IntStream.range(0, data.length)</span>
-<span class="fc bfc" id="L342" title="All 2 branches covered.">        .filter(i -&gt; !nulls[i])</span>
-<span class="fc" id="L343">        .map(i -&gt; data[i]);</span>
+<span class="fc" id="L350">    return IntStream.range(0, data.length)</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">        .filter(i -&gt; !isNull[i])</span>
+<span class="fc" id="L352">        .map(i -&gt; data[i]);</span>
   }
 
   private Stream&lt;K&gt; streamKeys() {
-<span class="fc bfc" id="L347" title="All 2 branches covered.">    return Arrays.stream(keys).filter(k -&gt; !nulls[k.ordinal()]);</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">    return Arrays.stream(enumClass.getEnumConstants()).filter(k -&gt; !isNull[k.ordinal()]);</span>
   }
 
   private void assign(K key, int val) {
-<span class="fc" id="L351">    data[key.ordinal()] = val;</span>
-<span class="fc" id="L352">    nulls[key.ordinal()] = false;</span>
-<span class="fc" id="L353">  }</span>
-
-  @SuppressWarnings(&quot;unchecked&quot;)
-  private Class&lt;K&gt; enumClass() {
-<span class="fc" id="L357">    return (Class&lt;K&gt;) keys[0].getClass();</span>
-  }
+<span class="fc" id="L360">    data[key.ordinal()] = val;</span>
+<span class="fc" id="L361">    isNull[key.ordinal()] = false;</span>
+<span class="fc" id="L362">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

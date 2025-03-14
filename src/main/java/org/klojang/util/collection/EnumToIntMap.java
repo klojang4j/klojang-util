@@ -2,6 +2,7 @@ package org.klojang.util.collection;
 
 import org.klojang.check.Check;
 import org.klojang.check.extra.Emptyable;
+import org.klojang.util.ClassMethods;
 import org.klojang.util.CollectionMethods;
 import org.klojang.util.x.collection.ArraySet;
 
@@ -13,23 +14,24 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.AbstractMap.SimpleImmutableEntry;
-import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.klojang.check.CommonChecks.gt;
-import static org.klojang.check.CommonProperties.length;
 import static org.klojang.util.ObjectMethods.ifNull;
 
 /**
  * An enum-to-int map. The map is backed by an int array with the same length as the number of constants in
- * the {@code enum} class.
+ * the {@code enum} class. Although {@code EnumToIntMap} loosely mimics the behaviour and interface of the
+ * {@link Map} interface, it obviously does not, and cannot implement the {@code Map} interface. Some methods
+ * <i>need</i> to behave differently due to the fact that the type of the values in the map is a primitive
+ * type ({@code int}).
  *
  * @param <K> the type of the enum class
  * @author Ayco Holleman
  */
 public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
 
-  private final K[] keys;
+  private final Class<K> enumClass;
   private final int[] data;
-  private final boolean[] nulls;
+  private final boolean[] isNull;
 
   /**
    * Creates an empty {@code EnumToIntMap} for the specified {@code enum} class.
@@ -38,12 +40,12 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
    */
   public EnumToIntMap(Class<K> enumClass) {
     Check.notNull(enumClass, "enum class");
-    K[] keys = enumClass.getEnumConstants();
-    Check.that(keys).has(length(), gt(), 0, "empty enums not supported");
-    this.keys = keys;
-    this.data = new int[keys.length];
-    this.nulls = new boolean[keys.length];
-    Arrays.fill(nulls, true);
+    int len = enumClass.getEnumConstants().length;
+    Check.that(len).is(gt(), 0, "empty enums not supported");
+    this.enumClass = enumClass;
+    this.data = new int[len];
+    this.isNull = new boolean[len];
+    Arrays.fill(isNull, true);
   }
 
   /**
@@ -69,11 +71,12 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
     Check.notNull(enumClass, "enum class");
     Check.notNull(initializer, "initializer");
     K[] keys = enumClass.getEnumConstants();
-    Check.that(keys).has(length(), gt(), 0, "empty enums not supported");
-    this.keys = keys;
-    this.data = new int[keys.length];
-    this.nulls = new boolean[keys.length];
-    IntStream.range(0, keys.length).forEach(i -> data[i] = initializer.applyAsInt(keys[i]));
+    int len = keys.length;
+    Check.that(len).is(gt(), 0, "empty enums not supported");
+    this.enumClass = enumClass;
+    this.data = new int[len];
+    this.isNull = new boolean[len];
+    IntStream.range(0, len).forEach(i -> data[i] = initializer.applyAsInt(keys[i]));
     // no need to fill nulls array
   }
 
@@ -85,12 +88,21 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
    */
   public EnumToIntMap(EnumToIntMap<K> other) {
     Check.notNull(other);
-    K[] keys = other.keys;
-    this.keys = keys;
-    this.data = new int[keys.length];
-    this.nulls = new boolean[keys.length];
-    System.arraycopy(other.data, 0, this.data, 0, keys.length);
-    System.arraycopy(other.nulls, 0, this.nulls, 0, keys.length);
+    this.enumClass = other.enumClass;
+    int len = other.data.length;
+    this.data = new int[len];
+    this.isNull = new boolean[len];
+    System.arraycopy(other.data, 0, this.data, 0, len);
+    System.arraycopy(other.isNull, 0, this.isNull, 0, len);
+  }
+
+  /**
+   * Returns the type of the keys in this map.
+   *
+   * @return the type of the keys in this map
+   */
+  public Class<K> keyType() {
+    return enumClass;
   }
 
   /**
@@ -102,7 +114,7 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
    */
   public boolean containsKey(K key) {
     Check.notNull(key, "key");
-    return !nulls[key.ordinal()];
+    return !isNull[key.ordinal()];
   }
 
   /**
@@ -117,30 +129,19 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
   }
 
   /**
-   * Returns the value to which the specified enum constant is mapped, or {@code -1} if this map contains no
-   * mapping for the key. (A regular {@code Map} would return {@code null} in the latter case.)
-   * <b>Only use this method if you are absolutely certain that {@code -1}  is an "impossible" value.</b> In
-   * principle, you should always use {@link #getOrDefault(Enum, int) getOrDefault()}.
+   * Returns an {@code OptionalInt} containing the value to which the specified enum constant is mapped, or an
+   * empty {@code OptionalInt} if this map contains no mapping for the key. (A regular {@code Map} would
+   * return {@code null} in the latter case.)
    *
    * @param key the key whose associated value is to be returned
    * @return the value to which the specified key is mapped
    * @see Map#get(Object)
    */
-  public int get(K key) {
+  public OptionalInt get(K key) {
     Check.notNull(key, "key");
-    return nulls[key.ordinal()] ? -1 : data[key.ordinal()];
-  }
-
-  /**
-   * Alias for {@link #getOrDefault(Enum, int) getOrDefault()}.
-   *
-   * @param key the key to retrieve the value of.
-   * @param dfault the integer to return if the map did not contain the key
-   * @return the value associated with the key or {@code dfault}
-   * @see Map#getOrDefault(Object, Object)
-   */
-  public int get(K key, int dfault) {
-    return containsKey(key) ? data[key.ordinal()] : dfault;
+    return isNull[key.ordinal()]
+        ? OptionalInt.empty()
+        : OptionalInt.of(data[key.ordinal()]);
   }
 
   /**
@@ -153,7 +154,7 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
    * @see Map#getOrDefault(Object, Object)
    */
   public int getOrDefault(K key, int dfault) {
-    return get(key, dfault);
+    return get(key).orElse(dfault);
   }
 
   /**
@@ -163,9 +164,11 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
    * @param val the value enum constant yet.
    * @see Map#put(Object, Object)
    */
-  public void put(K key, int val) {
+  public OptionalInt put(K key, int val) {
     Check.notNull(key, "key");
+    OptionalInt origVal = get(key);
     assign(key, val);
+    return origVal;
   }
 
   /**
@@ -206,13 +209,12 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
   }
 
   /**
-   * Returns a fully-generic version of this map.
+   * Converts this map to a fully-generic version of this map.
    *
    * @return a fully-generic version of this map
    */
-  @SuppressWarnings("unchecked")
   public EnumMap<K, Integer> toGenericMap() {
-    EnumMap<K, Integer> map = new EnumMap<>((Class<K>) keys[0].getClass());
+    EnumMap<K, Integer> map = new EnumMap<>(enumClass);
     streamKeys().forEach(k -> map.put(k, data[k.ordinal()]));
     return map;
   }
@@ -221,21 +223,30 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
    * Removes the mapping for a key from this map if it is present.
    *
    * @param key the key
+   * @return an {@code OptionalInt} containing the previous value associated with key, or an empty
+   *     {@code OptionalInt} if there was no mapping for key.
    * @see Map#remove(Object)
    */
-  public void remove(K key) {
+  public OptionalInt remove(K key) {
     Check.notNull(key, "key");
-    nulls[key.ordinal()] = true;
+    if (!isNull[key.ordinal()]) {
+      OptionalInt origVal = get(key);
+      isNull[key.ordinal()] = true;
+      return origVal;
+    }
+    return OptionalInt.empty();
   }
 
   /**
-   * Returns a {@link Set} view of the keys contained in this map.
+   * Returns a {@link Set} view of the keys contained in this map. The {@code Set} maintains the order of the
+   * enum constants, and can be iterated over quickly, but is inefficient for typical set operations such as
+   * {@link Set#contains(Object) constains()}.
    *
    * @return a Set view of the keys contained in this map
    * @see Map#keySet()
    */
   public Set<K> keySet() {
-    return streamKeys().collect(toUnmodifiableSet());
+    return ClassMethods.cast(ArraySet.of(streamKeys().toArray(), true));
   }
 
   /**
@@ -254,9 +265,7 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
    * @return an {@code IntList} containing the values of this map
    */
   public IntList intValues() {
-    IntArrayList intList = new IntArrayList(size());
-    streamValues().forEach(intList::add);
-    return intList;
+    return IntList.of(streamValues().toArray());
   }
 
   /**
@@ -300,7 +309,7 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
    * @see Map#clear()
    */
   public void clear() {
-    Arrays.fill(nulls, true);
+    Arrays.fill(isNull, true);
   }
 
   /**
@@ -322,14 +331,14 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
-    } else if (obj instanceof EnumToIntMap<?> that && enumClass() == that.enumClass()) {
-      return Arrays.equals(this.nulls, that.nulls) && Arrays.equals(this.data, that.data);
+    } else if (obj instanceof EnumToIntMap<?> that && enumClass == that.enumClass) {
+      return Arrays.equals(this.isNull, that.isNull) && Arrays.equals(this.data, that.data);
     }
     return false;
   }
 
   public int hashCode() {
-    return Objects.hash(Arrays.hashCode(nulls), Arrays.hashCode(data));
+    return Objects.hash(Arrays.hashCode(isNull), Arrays.hashCode(data));
   }
 
   @Override
@@ -339,22 +348,17 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
 
   private IntStream streamValues() {
     return IntStream.range(0, data.length)
-        .filter(i -> !nulls[i])
+        .filter(i -> !isNull[i])
         .map(i -> data[i]);
   }
 
   private Stream<K> streamKeys() {
-    return Arrays.stream(keys).filter(k -> !nulls[k.ordinal()]);
+    return Arrays.stream(enumClass.getEnumConstants()).filter(k -> !isNull[k.ordinal()]);
   }
 
   private void assign(K key, int val) {
     data[key.ordinal()] = val;
-    nulls[key.ordinal()] = false;
-  }
-
-  @SuppressWarnings("unchecked")
-  private Class<K> enumClass() {
-    return (Class<K>) keys[0].getClass();
+    isNull[key.ordinal()] = false;
   }
 
 }
