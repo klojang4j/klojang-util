@@ -1,14 +1,10 @@
 package org.klojang.util.collection;
 
 import org.junit.Test;
-import org.klojang.util.collection.IntArrayList;
-import org.klojang.util.collection.IntList;
 import org.klojang.util.MutableInt;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.Set;
 
 import static org.junit.Assert.*;
 import static org.klojang.util.ArrayMethods.ints;
@@ -194,14 +190,14 @@ public class UnmodifiableIntListTest {
   @Test
   public void forEach() {
     MutableInt mi = new MutableInt();
-    IntList.of(3, 7, 10).forEach(mi::plusIs);
+    IntList.of(3, 7, 10).forEach(mi::add);
     assertEquals(20, mi.get());
   }
 
   @Test
   public void forEachThrowing() {
     MutableInt mi = new MutableInt();
-    IntList.of(3, 7, 10).forEachThrowing(mi::plusIs);
+    IntList.of(3, 7, 10).forEachThrowing(mi::add);
     assertEquals(20, mi.get());
   }
 

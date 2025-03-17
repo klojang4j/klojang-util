@@ -13,7 +13,6 @@ import static java.util.Collections.emptyList;
 import static org.junit.Assert.*;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.util.ArrayMethods.*;
-import static org.klojang.util.CollectionMethods.listify;
 import static org.klojang.util.ObjectMethods.*;
 
 @SuppressWarnings("rawtypes")
@@ -28,14 +27,14 @@ public class ObjectMethodsTest {
     long[] longs = new long[] {1L, 2L, 3L, 4L, 5L};
     Integer[] integers = new Integer[] {1, 2, 3, 4, 5};
     Object[] objects = new Object[] {1, 2, 3, 4, 5};
-    assertFalse(ClassMethods.isSubtype(ints.getClass(), longs.getClass()));
-    assertFalse(ClassMethods.isSubtype(longs.getClass(), ints.getClass()));
-    assertFalse(ClassMethods.isSubtype(ints.getClass(), integers.getClass()));
-    assertFalse(ClassMethods.isSubtype(integers.getClass(), ints.getClass()));
+    assertFalse(ClassMethods.isSameOrSubtype(ints.getClass(), longs.getClass()));
+    assertFalse(ClassMethods.isSameOrSubtype(longs.getClass(), ints.getClass()));
+    assertFalse(ClassMethods.isSameOrSubtype(ints.getClass(), integers.getClass()));
+    assertFalse(ClassMethods.isSameOrSubtype(integers.getClass(), ints.getClass()));
     assertTrue("05",
-        ClassMethods.isSubtype(integers.getClass(), objects.getClass()));
+        ClassMethods.isSameOrSubtype(integers.getClass(), objects.getClass()));
     assertFalse("06",
-        ClassMethods.isSubtype(objects.getClass(), integers.getClass()));
+        ClassMethods.isSameOrSubtype(objects.getClass(), integers.getClass()));
     assertFalse(ints.equals(longs));
     assertFalse(longs.equals(ints));
     assertFalse(ints.equals(integers));
@@ -198,7 +197,7 @@ public class ObjectMethodsTest {
     assertEquals("Hi There", ifEmpty(null, () -> "Hi There"));
     assertEquals("World", ifEmpty("World", () -> "Hi There"));
     List list0 = List.of("Hi There");
-    assertEquals(list0, ifEmpty(emptyList(), () -> listify("Hi There")));
+    assertEquals(list0, ifEmpty(emptyList(), () -> CollectionMethods.asList("Hi There")));
   }
 
   @Test
@@ -382,19 +381,6 @@ public class ObjectMethodsTest {
     assertEquals(43, ObjectMethods.clamp(44, gt(), 43));
     assertEquals(44, replaceIf(44, lt(), 43, 50));
     assertEquals(50, replaceIf(40, lt(), 43, 50));
-  }
-
-  @Test(expected = ClassCastException.class)
-  public void bruteCast00() {
-    String s = hardCast(new File("/tmp/foo.txt"));
-  }
-
-  @Test
-  public void bruteCast01() {
-    List<CharSequence> l0 = List.of("Hello", "world");
-    // WON'T COMPILE: List<String> l2 = l0;
-    List<String> l2 = hardCast(l0);
-    assertEquals(Arrays.asList("Hello", "world"), l2);
   }
 
 }

@@ -1,14 +1,11 @@
 package org.klojang.util.exception;
 
+import org.klojang.check.Check;
+import org.klojang.util.ExceptionMethods;
+
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Optional;
-
-import org.klojang.check.Check;
-import org.klojang.util.ExceptionMethods;
-import org.klojang.util.exception.RootException;
-import org.klojang.util.exception.UncheckedException;
-import org.klojang.check.Tag;
 
 import static org.klojang.check.Tag.MESSAGE;
 

@@ -7,6 +7,7 @@ import org.klojang.util.x.collection.ArraySet;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.IntUnaryOperator;
 import java.util.function.ObjIntConsumer;
 import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
@@ -20,9 +21,8 @@ import static org.klojang.util.ObjectMethods.ifNull;
 /**
  * An enum-to-int map. The map is backed by an int array with the same length as the number of constants in
  * the {@code enum} class. All constructors immediately saturate the map with all enum constants and there is
- * no way to remove keys from the map. These two preconditions make {@code SaturatedEnumToIntMap} just as
- * efficient as a regular {@link EnumMap}, with the added benefit that it obviates the need for unboxing and
- * boxing in the {@code get()} and {@code put()} operations.
+ * no way to remove keys from the map. These two preconditions allow {@code SaturatedEnumToIntMap} to be
+ * implemented very efficiently.
  *
  * @param <K> the type of the enum class
  * @author Ayco Holleman
@@ -50,7 +50,13 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
    * @param initialValue the initial value for all enum constants
    */
   public SaturatedEnumToIntMap(Class<K> enumClass, int initialValue) {
-    this(enumClass, k -> initialValue);
+    Check.notNull(enumClass, "enum class");
+    int len = enumClass.getEnumConstants().length;
+    Check.that(len).is(gt(), 0, "empty enums not supported");
+    this.enumClass = enumClass;
+    int[] data = new int[len];
+    Arrays.fill(data, initialValue);
+    this.data = data;
   }
 
   /**
@@ -136,9 +142,10 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
    * @see Map#put(Object, Object)
    */
   public int put(K key, int val) {
-    int origVal = get(key);
+    Check.notNull(key, "key");
+    int old = data[key.ordinal()];
     data[key.ordinal()] = val;
-    return origVal;
+    return old;
   }
 
   /**
@@ -189,6 +196,19 @@ public final class SaturatedEnumToIntMap<K extends Enum<K>> implements Emptyable
   public int multiply(K key, int val) {
     Check.notNull(key, "key");
     int x = data[key.ordinal()] * val;
+    return data[key.ordinal()] = x;
+  }
+
+  /**
+   * Computes a new value for the value currently associated with the specified key
+   *
+   * @param key the key
+   * @param operator the function to apply to the value currently associated with the key
+   * @return the new value associated with the key
+   */
+  public int compute(K key, IntUnaryOperator operator) {
+    Check.notNull(key, "key");
+    int x = operator.applyAsInt(data[key.ordinal()]);
     return data[key.ordinal()] = x;
   }
 

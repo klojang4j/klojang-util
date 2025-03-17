@@ -5,9 +5,9 @@ import org.junit.Test;
 import java.nio.BufferOverflowException;
 
 import static org.junit.Assert.assertEquals;
-import static org.klojang.util.ResizeMethod.*;
+import static org.klojang.util.ResizeType.*;
 
-public class ResizeMethodTest {
+public class ResizeTypeTest {
 
   private static final int MAX_INT = Integer.MAX_VALUE;
 

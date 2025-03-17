@@ -7,6 +7,7 @@ import org.klojang.util.x.collection.ArraySet;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.IntUnaryOperator;
 import java.util.function.ObjIntConsumer;
 import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
@@ -20,9 +21,8 @@ import static org.klojang.util.ObjectMethods.ifNull;
 /**
  * An enum-to-int map. The map is backed by an int array with the same length as the number of constants in
  * the {@code enum} class. All constructors immediately saturate the map with all enum constants and there is
- * no way to remove keys from the map. These two preconditions make {@code SaturatedEnumToIntMap} just as
- * efficient as a regular {@link EnumMap}, with the added benefit that it obviates the need for unboxing and
- * boxing in the {@code get()} and {@code put()} operations.
+ * no way to remove keys from the map. These two preconditions allow {@code SaturatedEnumToIntMap} to be
+ * implemented very efficiently.
  *
  * @param &lt;K&gt; the type of the enum class
  * @author Ayco Holleman
@@ -49,9 +49,15 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @param enumClass the type of the enum class
    * @param initialValue the initial value for all enum constants
    */
-  public SaturatedEnumToIntMap(Class&lt;K&gt; enumClass, int initialValue) {
-<span class="fc" id="L53">    this(enumClass, k -&gt; initialValue);</span>
-<span class="fc" id="L54">  }</span>
+<span class="fc" id="L52">  public SaturatedEnumToIntMap(Class&lt;K&gt; enumClass, int initialValue) {</span>
+<span class="fc" id="L53">    Check.notNull(enumClass, &quot;enum class&quot;);</span>
+<span class="fc" id="L54">    int len = enumClass.getEnumConstants().length;</span>
+<span class="fc" id="L55">    Check.that(len).is(gt(), 0, &quot;empty enums not supported&quot;);</span>
+<span class="fc" id="L56">    this.enumClass = enumClass;</span>
+<span class="fc" id="L57">    int[] data = new int[len];</span>
+<span class="fc" id="L58">    Arrays.fill(data, initialValue);</span>
+<span class="fc" id="L59">    this.data = data;</span>
+<span class="fc" id="L60">  }</span>
 
   /**
    * Creates an {@code EnumToIntMap} saturated with all enum constants of the specified enum class. The map's
@@ -61,15 +67,15 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @param enumClass the type of the enum class
    * @param initializer a function that initializes the map's values
    */
-<span class="fc" id="L64">  public SaturatedEnumToIntMap(Class&lt;K&gt; enumClass, ToIntFunction&lt;K&gt; initializer) {</span>
-<span class="fc" id="L65">    Check.notNull(enumClass, &quot;enum class&quot;);</span>
-<span class="fc" id="L66">    Check.notNull(initializer, &quot;initializer&quot;);</span>
-<span class="fc" id="L67">    K[] keys = enumClass.getEnumConstants();</span>
-<span class="fc" id="L68">    Check.that(keys).has(length(), gt(), 0, &quot;empty enums not supported&quot;);</span>
-<span class="fc" id="L69">    this.enumClass = enumClass;</span>
-<span class="fc" id="L70">    this.data = new int[keys.length];</span>
-<span class="fc" id="L71">    IntStream.range(0, keys.length).forEach(i -&gt; data[i] = initializer.applyAsInt(keys[i]));</span>
-<span class="fc" id="L72">  }</span>
+<span class="fc" id="L70">  public SaturatedEnumToIntMap(Class&lt;K&gt; enumClass, ToIntFunction&lt;K&gt; initializer) {</span>
+<span class="fc" id="L71">    Check.notNull(enumClass, &quot;enum class&quot;);</span>
+<span class="fc" id="L72">    Check.notNull(initializer, &quot;initializer&quot;);</span>
+<span class="fc" id="L73">    K[] keys = enumClass.getEnumConstants();</span>
+<span class="fc" id="L74">    Check.that(keys).has(length(), gt(), 0, &quot;empty enums not supported&quot;);</span>
+<span class="fc" id="L75">    this.enumClass = enumClass;</span>
+<span class="fc" id="L76">    this.data = new int[keys.length];</span>
+<span class="fc" id="L77">    IntStream.range(0, keys.length).forEach(i -&gt; data[i] = initializer.applyAsInt(keys[i]));</span>
+<span class="fc" id="L78">  }</span>
 
   /**
    * Instantiates a new {@code EnumToIntMap} with the same key-value mappings as the specified
@@ -77,13 +83,13 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    *
    * @param other the {@code EnumToIntMap} whose key-value mappings to copy
    */
-<span class="fc" id="L80">  public SaturatedEnumToIntMap(SaturatedEnumToIntMap&lt;K&gt; other) {</span>
-<span class="fc" id="L81">    Check.notNull(other);</span>
-<span class="fc" id="L82">    this.enumClass = other.enumClass;</span>
-<span class="fc" id="L83">    int len = other.enumClass.getEnumConstants().length;</span>
-<span class="fc" id="L84">    this.data = new int[len];</span>
-<span class="fc" id="L85">    System.arraycopy(other.data, 0, this.data, 0, len);</span>
-<span class="fc" id="L86">  }</span>
+<span class="fc" id="L86">  public SaturatedEnumToIntMap(SaturatedEnumToIntMap&lt;K&gt; other) {</span>
+<span class="fc" id="L87">    Check.notNull(other);</span>
+<span class="fc" id="L88">    this.enumClass = other.enumClass;</span>
+<span class="fc" id="L89">    int len = other.enumClass.getEnumConstants().length;</span>
+<span class="fc" id="L90">    this.data = new int[len];</span>
+<span class="fc" id="L91">    System.arraycopy(other.data, 0, this.data, 0, len);</span>
+<span class="fc" id="L92">  }</span>
 
   /**
    * Returns the type of the keys in this map.
@@ -91,7 +97,7 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @return the type of the keys in this map
    */
   public Class&lt;K&gt; keyType() {
-<span class="nc" id="L94">    return enumClass;</span>
+<span class="nc" id="L100">    return enumClass;</span>
   }
 
   /**
@@ -102,7 +108,7 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @see Map#containsKey(Object)
    */
   public boolean containsKey(K key) {
-<span class="fc" id="L105">    return true;</span>
+<span class="fc" id="L111">    return true;</span>
   }
 
   /**
@@ -113,7 +119,7 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @see Map#containsValue(Object)
    */
   public boolean containsValue(int val) {
-<span class="nc bnc" id="L116" title="All 2 branches missed.">    return Arrays.stream(data).anyMatch(v -&gt; v == val);</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">    return Arrays.stream(data).anyMatch(v -&gt; v == val);</span>
   }
 
   /**
@@ -124,8 +130,8 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @see Map#get(Object)
    */
   public int get(K key) {
-<span class="fc" id="L127">    Check.notNull(key, &quot;key&quot;);</span>
-<span class="fc" id="L128">    return data[key.ordinal()];</span>
+<span class="fc" id="L133">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc" id="L134">    return data[key.ordinal()];</span>
   }
 
   /**
@@ -136,9 +142,10 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @see Map#put(Object, Object)
    */
   public int put(K key, int val) {
-<span class="fc" id="L139">    int origVal = get(key);</span>
-<span class="fc" id="L140">    data[key.ordinal()] = val;</span>
-<span class="fc" id="L141">    return origVal;</span>
+<span class="fc" id="L145">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc" id="L146">    int old = data[key.ordinal()];</span>
+<span class="fc" id="L147">    data[key.ordinal()] = val;</span>
+<span class="fc" id="L148">    return old;</span>
   }
 
   /**
@@ -149,9 +156,9 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @return This instance
    */
   public SaturatedEnumToIntMap&lt;K&gt; set(K key, int val) {
-<span class="fc" id="L152">    Check.notNull(key, &quot;key&quot;);</span>
-<span class="fc" id="L153">    data[key.ordinal()] = val;</span>
-<span class="fc" id="L154">    return this;</span>
+<span class="fc" id="L159">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="fc" id="L160">    data[key.ordinal()] = val;</span>
+<span class="fc" id="L161">    return this;</span>
   }
 
   /**
@@ -161,9 +168,9 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @return the new value associated with the key
    */
   public int increment(K key) {
-<span class="nc" id="L164">    Check.notNull(key, &quot;key&quot;);</span>
-<span class="nc" id="L165">    int x = data[key.ordinal()] + 1;</span>
-<span class="nc" id="L166">    return data[key.ordinal()] = x;</span>
+<span class="nc" id="L171">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="nc" id="L172">    int x = data[key.ordinal()] + 1;</span>
+<span class="nc" id="L173">    return data[key.ordinal()] = x;</span>
   }
 
   /**
@@ -174,9 +181,9 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @return the new value associated with the key
    */
   public int add(K key, int val) {
-<span class="nc" id="L177">    Check.notNull(key, &quot;key&quot;);</span>
-<span class="nc" id="L178">    int x = data[key.ordinal()] + val;</span>
-<span class="nc" id="L179">    return data[key.ordinal()] = x;</span>
+<span class="nc" id="L184">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="nc" id="L185">    int x = data[key.ordinal()] + val;</span>
+<span class="nc" id="L186">    return data[key.ordinal()] = x;</span>
   }
 
   /**
@@ -187,9 +194,22 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @return the new value associated with the key
    */
   public int multiply(K key, int val) {
-<span class="nc" id="L190">    Check.notNull(key, &quot;key&quot;);</span>
-<span class="nc" id="L191">    int x = data[key.ordinal()] * val;</span>
-<span class="nc" id="L192">    return data[key.ordinal()] = x;</span>
+<span class="nc" id="L197">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="nc" id="L198">    int x = data[key.ordinal()] * val;</span>
+<span class="nc" id="L199">    return data[key.ordinal()] = x;</span>
+  }
+
+  /**
+   * Computes a new value for the value currently associated with the specified key
+   *
+   * @param key the key
+   * @param operator the function to apply to the value currently associated with the key
+   * @return the new value associated with the key
+   */
+  public int compute(K key, IntUnaryOperator operator) {
+<span class="nc" id="L210">    Check.notNull(key, &quot;key&quot;);</span>
+<span class="nc" id="L211">    int x = operator.applyAsInt(data[key.ordinal()]);</span>
+<span class="nc" id="L212">    return data[key.ordinal()] = x;</span>
   }
 
   /**
@@ -198,9 +218,9 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @param other the {@code EnumToIntMap} whose key-value mappings to copy
    */
   public void putAll(SaturatedEnumToIntMap&lt;K&gt; other) {
-<span class="fc" id="L201">    Check.notNull(other);</span>
-<span class="fc" id="L202">    other.forEach(this::assign);</span>
-<span class="fc" id="L203">  }</span>
+<span class="fc" id="L221">    Check.notNull(other);</span>
+<span class="fc" id="L222">    other.forEach(this::assign);</span>
+<span class="fc" id="L223">  }</span>
 
   /**
    * Adds all entries of the specified map to this map. This method acts as a bridge to fully-generic map
@@ -210,9 +230,9 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @param nullValue the {@code int} value to use for {@code null} values in the source map
    */
   public void putAll(Map&lt;K, Integer&gt; other, int nullValue) {
-<span class="nc" id="L213">    Check.notNull(other);</span>
-<span class="nc" id="L214">    other.forEach((k, v) -&gt; assign(k, ifNull(v, nullValue)));</span>
-<span class="nc" id="L215">  }</span>
+<span class="nc" id="L233">    Check.notNull(other);</span>
+<span class="nc" id="L234">    other.forEach((k, v) -&gt; assign(k, ifNull(v, nullValue)));</span>
+<span class="nc" id="L235">  }</span>
 
   /**
    * Converts this map to a fully-generic version of this map.
@@ -220,9 +240,9 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @return a fully-generic version of this map
    */
   public EnumMap&lt;K, Integer&gt; toGenericMap() {
-<span class="fc" id="L223">    EnumMap&lt;K, Integer&gt; map = new EnumMap&lt;&gt;(enumClass);</span>
-<span class="fc" id="L224">    streamKeys().forEach(k -&gt; map.put(k, data[k.ordinal()]));</span>
-<span class="fc" id="L225">    return map;</span>
+<span class="fc" id="L243">    EnumMap&lt;K, Integer&gt; map = new EnumMap&lt;&gt;(enumClass);</span>
+<span class="fc" id="L244">    streamKeys().forEach(k -&gt; map.put(k, data[k.ordinal()]));</span>
+<span class="fc" id="L245">    return map;</span>
   }
 
   /**
@@ -234,7 +254,7 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @see Map#keySet()
    */
   public Set&lt;K&gt; keySet() {
-<span class="fc" id="L237">    return ArraySet.of(enumClass.getEnumConstants(), true);</span>
+<span class="fc" id="L257">    return ArraySet.of(enumClass.getEnumConstants(), true);</span>
   }
 
   /**
@@ -244,7 +264,7 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @see Map#values()
    */
   public Collection&lt;Integer&gt; values() {
-<span class="fc" id="L247">    return Arrays.stream(data).boxed().toList();</span>
+<span class="fc" id="L267">    return Arrays.stream(data).boxed().toList();</span>
   }
 
   /**
@@ -253,7 +273,7 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @return an {@code IntList} containing the values of this map
    */
   public IntList intValues() {
-<span class="fc" id="L256">    return IntList.ofElements(data);</span>
+<span class="fc" id="L276">    return IntList.ofElements(data);</span>
   }
 
   /**
@@ -264,10 +284,10 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    */
   @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
   public Set&lt;Map.Entry&lt;K, Integer&gt;&gt; entrySet() {
-<span class="fc" id="L267">    SimpleImmutableEntry[] entries = streamKeys()</span>
-<span class="fc" id="L268">        .map(k -&gt; new SimpleImmutableEntry(k, data[k.ordinal()]))</span>
-<span class="fc" id="L269">        .toArray(SimpleImmutableEntry[]::new);</span>
-<span class="fc" id="L270">    return ArraySet.of(entries, true);</span>
+<span class="fc" id="L287">    SimpleImmutableEntry[] entries = streamKeys()</span>
+<span class="fc" id="L288">        .map(k -&gt; new SimpleImmutableEntry(k, data[k.ordinal()]))</span>
+<span class="fc" id="L289">        .toArray(SimpleImmutableEntry[]::new);</span>
+<span class="fc" id="L290">    return ArraySet.of(entries, true);</span>
   }
 
   /**
@@ -278,8 +298,8 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @see Map#forEach(BiConsumer)
    */
   public void forEach(ObjIntConsumer&lt;K&gt; action) {
-<span class="fc" id="L281">    streamKeys().forEach(k -&gt; action.accept(k, data[k.ordinal()]));</span>
-<span class="fc" id="L282">  }</span>
+<span class="fc" id="L301">    streamKeys().forEach(k -&gt; action.accept(k, data[k.ordinal()]));</span>
+<span class="fc" id="L302">  }</span>
 
   /**
    * Always returns {@code false}.
@@ -288,7 +308,7 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    */
   @Override
   public boolean isEmpty() {
-<span class="fc" id="L291">    return false;</span>
+<span class="fc" id="L311">    return false;</span>
   }
 
   /**
@@ -298,7 +318,7 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    * @see Map#size()
    */
   public int size() {
-<span class="fc" id="L301">    return data.length;</span>
+<span class="fc" id="L321">    return data.length;</span>
   }
 
   /**
@@ -308,30 +328,30 @@ public final class SaturatedEnumToIntMap&lt;K extends Enum&lt;K&gt;&gt; implemen
    */
   @Override
   public boolean equals(Object obj) {
-<span class="pc bpc" id="L311" title="1 of 2 branches missed.">    if (this == obj) {</span>
-<span class="nc" id="L312">      return true;</span>
-<span class="pc bpc" id="L313" title="2 of 4 branches missed.">    } else if (obj instanceof SaturatedEnumToIntMap&lt;?&gt; that &amp;&amp; enumClass == that.enumClass) {</span>
-<span class="fc" id="L314">      return Arrays.equals(this.data, that.data);</span>
+<span class="pc bpc" id="L331" title="1 of 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L332">      return true;</span>
+<span class="pc bpc" id="L333" title="2 of 4 branches missed.">    } else if (obj instanceof SaturatedEnumToIntMap&lt;?&gt; that &amp;&amp; enumClass == that.enumClass) {</span>
+<span class="fc" id="L334">      return Arrays.equals(this.data, that.data);</span>
     }
-<span class="nc" id="L316">    return false;</span>
+<span class="nc" id="L336">    return false;</span>
   }
 
   public int hashCode() {
-<span class="nc" id="L320">    return Arrays.hashCode(data);</span>
+<span class="nc" id="L340">    return Arrays.hashCode(data);</span>
   }
 
   @Override
   public String toString() {
-<span class="fc" id="L325">    return '[' + CollectionMethods.implode(entrySet()) + ']';</span>
+<span class="fc" id="L345">    return '[' + CollectionMethods.implode(entrySet()) + ']';</span>
   }
 
   private Stream&lt;K&gt; streamKeys() {
-<span class="fc" id="L329">    return Arrays.stream(enumClass.getEnumConstants());</span>
+<span class="fc" id="L349">    return Arrays.stream(enumClass.getEnumConstants());</span>
   }
 
   private void assign(K key, int val) {
-<span class="fc" id="L333">    data[key.ordinal()] = val;</span>
-<span class="fc" id="L334">  }</span>
+<span class="fc" id="L353">    data[key.ordinal()] = val;</span>
+<span class="fc" id="L354">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

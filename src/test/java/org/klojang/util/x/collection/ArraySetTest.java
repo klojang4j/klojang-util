@@ -82,7 +82,7 @@ public class ArraySetTest {
     ArraySet<Integer> set = ArraySet.copyOf(List.of(0, 1, 2, 3, 4, 5), true);
     MutableInt mi = new MutableInt();
     for (Iterator<Integer> itr = set.iterator(); itr.hasNext(); ) {
-      assertEquals(mi.getAndIncrement(), (int) itr.next());
+      assertEquals(mi.increment(), (int) itr.next());
     }
   }
 

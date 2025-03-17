@@ -8,6 +8,7 @@ import org.klojang.util.x.collection.ArraySet;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.IntUnaryOperator;
 import java.util.function.ObjIntConsumer;
 import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
@@ -26,6 +27,7 @@ import static org.klojang.util.ObjectMethods.ifNull;
  *
  * @param <K> the type of the enum class
  * @author Ayco Holleman
+ * @see SaturatedEnumToIntMap
  */
 public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
 
@@ -158,6 +160,26 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
   }
 
   /**
+   * Computes a new value for the specified key if present, else associates the key with the specified initial
+   * value.
+   *
+   * @param key the key
+   * @param operator the function to apply to the value currently associated with the key
+   * @param initialValue the value to associate the key with if the key was not present in the map yet
+   * @return the new value
+   */
+  public int computeIfPresent(K key, IntUnaryOperator operator, int initialValue) {
+    Check.notNull(key, "key");
+    Check.notNull(operator, "compute");
+    int i = key.ordinal();
+    if (isNull[i]) {
+      isNull[i] = false;
+      return data[i] = initialValue;
+    }
+    return data[i] = operator.applyAsInt(data[i]);
+  }
+
+  /**
    * Associates the specified value with the specified key in this map.
    *
    * @param key the key
@@ -165,10 +187,9 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
    * @see Map#put(Object, Object)
    */
   public OptionalInt put(K key, int val) {
-    Check.notNull(key, "key");
-    OptionalInt origVal = get(key);
+    OptionalInt old = get(key);
     assign(key, val);
-    return origVal;
+    return old;
   }
 
   /**
@@ -230,9 +251,8 @@ public final class EnumToIntMap<K extends Enum<K>> implements Emptyable {
   public OptionalInt remove(K key) {
     Check.notNull(key, "key");
     if (!isNull[key.ordinal()]) {
-      OptionalInt origVal = get(key);
       isNull[key.ordinal()] = true;
-      return origVal;
+      return OptionalInt.of(data[key.ordinal()]);
     }
     return OptionalInt.empty();
   }

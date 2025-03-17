@@ -1,15 +1,14 @@
 package org.klojang.util.exception;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.klojang.util.ArrayMethods;
 import org.klojang.util.StringMethods;
-import org.klojang.util.exception.ExceptionOrigin;
 
 import java.io.IOException;
 import java.nio.file.Path;
+
+import static org.junit.Assert.assertEquals;
 
 public class ExceptionOriginTest {
 

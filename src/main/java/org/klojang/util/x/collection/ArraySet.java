@@ -6,9 +6,9 @@ import org.klojang.util.ArrayMethods;
 
 import java.util.*;
 
-import static org.klojang.check.CommonChecks.*;
+import static org.klojang.check.CommonChecks.deepNotNull;
+import static org.klojang.check.CommonChecks.notNull;
 import static org.klojang.check.extra.DuplicateValueException.Usage.ELEMENT;
-import static org.klojang.util.ArrayMethods.EMPTY_OBJECT_ARRAY;
 import static org.klojang.util.ArrayMethods.implode;
 import static org.klojang.util.InvokeMethods.newArray;
 
@@ -17,7 +17,7 @@ public final class ArraySet<E> extends ImmutableSet<E> {
   private static final String NULL_ELEMENTS_NOT_ALLOWED = "null elements not allowed";
 
   @SuppressWarnings({"rawtypes"})
-  private static final ArraySet EMPTY = new ArraySet(EMPTY_OBJECT_ARRAY);
+  private static final ArraySet EMPTY = new ArraySet(ArrayMethods.EMPTY_OBJECT_ARRAY);
 
   @SuppressWarnings({"unchecked"})
   private static <E> ArraySet<E> empty() {
@@ -53,7 +53,7 @@ public final class ArraySet<E> extends ImmutableSet<E> {
     } else if (trust) {
       return new ArraySet<>(values.toArray());
     }
-    Set<E> set = new HashSet<>();
+    Set<E> set = HashSet.newHashSet(values.size());
     for (E e : values) {
       Check.that(e).is(notNull(), NULL_ELEMENTS_NOT_ALLOWED);
       if (!set.add(e)) {
@@ -107,7 +107,7 @@ public final class ArraySet<E> extends ImmutableSet<E> {
   @Override
   public Object[] toArray() {
     if (this == EMPTY) {
-      return EMPTY_OBJECT_ARRAY;
+      return ArrayMethods.EMPTY_OBJECT_ARRAY;
     }
     Object[] objs = new Object[elems.length];
     System.arraycopy(elems, 0, objs, 0, elems.length);

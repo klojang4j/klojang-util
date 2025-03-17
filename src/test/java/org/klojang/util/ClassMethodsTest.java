@@ -17,15 +17,15 @@ public class ClassMethodsTest {
 
   @Test
   public void isA00() {
-    assertTrue(ClassMethods.isSubtype(String.class, String.class));
-    assertTrue(ClassMethods.isSubtype(String.class, Object.class));
-    assertTrue(ClassMethods.isSubtype(String.class, CharSequence.class));
-    assertFalse(ClassMethods.isSubtype(Object.class, String.class));
-    assertFalse(ClassMethods.isSubtype(CharSequence.class, String.class));
-    assertTrue(ClassMethods.isSubtype(String.class, String.class));
-    assertFalse(ClassMethods.isSubtype(short.class, int.class));
-    assertTrue(ClassMethods.isSubtype(Serializable.class, Object.class));
-    assertTrue(ClassMethods.isSubtype(Function.class, Object.class));
+    assertTrue(ClassMethods.isSameOrSubtype(String.class, String.class));
+    assertTrue(ClassMethods.isSameOrSubtype(String.class, Object.class));
+    assertTrue(ClassMethods.isSameOrSubtype(String.class, CharSequence.class));
+    assertFalse(ClassMethods.isSameOrSubtype(Object.class, String.class));
+    assertFalse(ClassMethods.isSameOrSubtype(CharSequence.class, String.class));
+    assertTrue(ClassMethods.isSameOrSubtype(String.class, String.class));
+    assertFalse(ClassMethods.isSameOrSubtype(short.class, int.class));
+    assertTrue(ClassMethods.isSameOrSubtype(Serializable.class, Object.class));
+    assertTrue(ClassMethods.isSameOrSubtype(Function.class, Object.class));
   }
 
   public void isA01() {
@@ -39,20 +39,20 @@ public class ClassMethodsTest {
   @Test // Interesting: Enum.class returns false for Class::isEnum
   public void isEnum01() {
     assertFalse(Enum.class.isEnum());
-    assertTrue(ClassMethods.isSubtype(Enum.class, Enum.class));
+    assertTrue(ClassMethods.isSameOrSubtype(Enum.class, Enum.class));
   }
 
   @Test
   public void getAllInterfaces00() {
     Set<Class<?>> expected = Set.of(NavigableSet.class,
-          Cloneable.class,
-          Serializable.class,
-          SortedSet.class,
-          Set.class,
-          SequencedSet.class,
-          SequencedCollection.class,
-          Collection.class,
-          Iterable.class);
+        Cloneable.class,
+        Serializable.class,
+        SortedSet.class,
+        Set.class,
+        SequencedSet.class,
+        SequencedCollection.class,
+        Collection.class,
+        Iterable.class);
     Set<Class<?>> actual = ClassMethods.getAllInterfaces(TreeSet.class);
     // System.out.println(implode(actual, "\n"));
     assertEquals(expected, actual);
@@ -61,11 +61,11 @@ public class ClassMethodsTest {
   @Test
   public void getAllInterfaces01() {
     Set<Class<?>> expected = Set.of(SortedSet.class,
-          Set.class,
-          Collection.class,
-          SequencedCollection.class,
-          SequencedSet.class,
-          Iterable.class);
+        Set.class,
+        Collection.class,
+        SequencedCollection.class,
+        SequencedSet.class,
+        Iterable.class);
     Set<Class<?>> actual = ClassMethods.getAllInterfaces(NavigableSet.class);
     // System.out.println(implode(actual.toArray(), "\n"));
     assertEquals(expected, actual);
@@ -84,7 +84,7 @@ public class ClassMethodsTest {
   public void describe00() {
     assertEquals("null", ClassMethods.describe(null));
     assertEquals("ArrayList[5]",
-          ClassMethods.describe(CollectionMethods.initializeList(5, "foo")));
+        ClassMethods.describe(CollectionMethods.initializedList(5, "foo")));
     assertEquals("SetN[5]", ClassMethods.describe(Set.of(1, 2, 3, 4, 5)));
     assertEquals("MapN[2]", ClassMethods.describe(Map.of("foo", 1, "bar", 2)));
     assertEquals("double[4]", ClassMethods.describe(doubles(1.56, 0, 2.3, 4.8)));
@@ -95,10 +95,35 @@ public class ClassMethodsTest {
   @Test
   public void isAutoboxedAs00() {
     assertFalse(isAutoBoxedAs(String.class, Integer.class));
-    assertFalse(isAutoBoxedAs(int.class, int.class));
-    assertFalse(isAutoBoxedAs(int.class, File.class));
-    assertTrue(isAutoBoxedAs(int.class, Integer.class));
+    assertFalse(isAutoBoxedAs(int.class, Double.class));
+    assertTrue(isAutoBoxedAs(void.class, Void.class));
     assertTrue(isAutoBoxedAs(char.class, Character.class));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void isAutoboxedAs01() {
+    assertFalse(isAutoBoxedAs(int.class, int.class));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void isAutoboxedAs02() {
+    assertFalse(isAutoBoxedAs(int.class, File.class));
+  }
+
+  @Test
+  public void isAutoUnboxedAs00() {
+    assertFalse(isAutoUnboxedAs(String.class, int.class));
+    assertTrue(isAutoUnboxedAs(Double.class, double.class));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void isAutoUnboxedAs01() {
+    assertFalse(isAutoUnboxedAs(Integer.class, String.class));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void isAutoUnboxedAs02() {
+    assertFalse(isAutoUnboxedAs(int.class, Integer.class));
   }
 
   @Test

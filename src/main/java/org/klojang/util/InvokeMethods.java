@@ -10,7 +10,7 @@ import static java.lang.invoke.MethodType.methodType;
 /**
  * Dynamic invocation utility methods. <i>These methods are not meant to be used in
  * application-level software.</i> They very thinly wrap methods from the
- * {@code java.lang.invoke} package and don't perform any null checks, type checks,
+ * {@code java.lang.invoke} package and do not perform any null checks, type checks,
  * range checks, etc.
  */
 public final class InvokeMethods {

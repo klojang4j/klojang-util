@@ -1,231 +1,306 @@
 package org.klojang.util;
 
+import org.klojang.check.Check;
+
+import java.util.function.IntUnaryOperator;
+
 /**
  * The mutable-integer class.
  */
 public final class MutableInt {
+
+  public static MutableInt of(int value) {
+    return new MutableInt(value);
+  }
 
   private int i;
 
   /**
    * Instantiates a {@code MutableInt} with an initial value of 0 (zero).
    */
-  public MutableInt() {}
+  public MutableInt() {
+  }
 
   /**
    * Instantiates a {@code MutableInt} with the specified initial value.
    *
-   * @param value The initial value of this instance
+   * @param value the initial value of this instance
    */
   public MutableInt(int value) {
     i = value;
   }
 
   /**
-   * Instantiates a {@code MutableInt} initialized to the current value of another
-   * instance.
+   * Instantiates a {@code MutableInt} initialized to the current value of another instance.
    *
-   * @param other The instance used to initialize this instance.
+   * @param other the instance used to initialize this instance.
    */
   public MutableInt(MutableInt other) {
+    Check.notNull(other);
     i = other.i;
   }
 
   /**
    * Returns the current value of this {@code MutableInt}.
    *
-   * @return The current value of this {@code MutableInt}
+   * @return the current value of this {@code MutableInt}
    */
   public int get() {
     return i;
   }
 
   /**
-   * Corresponds to the {@code ++} postfix operator ({@code i++}).
+   * Returns a copy of this {@code MutableInt}.
    *
-   * @return The original value (before incrementation)
+   * @return a copy of this {@code MutableInt}
    */
-  public int getAndIncrement() {
+  public MutableInt copy() {
+    return new MutableInt(i);
+  }
+
+  /**
+   * Increments the value by one and returns the original value (before incrementing). Corresponds to the ++
+   * postfix operator.
+   *
+   * @return the original value
+   */
+  public int increment() {
     return i++;
   }
 
   /**
-   * Corresponds to the {@code ++} prefix operator ({@code ++i}).
+   * Increments the value by one and returns the new value (after incrementing). Corresponds to the ++ prefix
+   * operator.
    *
-   * @return The incremented value (after incrementation)
+   * @return the new value
    */
-  public int incrementAndGet() {
-    return ++i;
+  public int oneUp() {
+    return add(1);
   }
 
+
   /**
-   * Corresponds to the {@code --} postfix operator ({@code i--}).
+   * Decrements the value by one and returns the original value (before decrementing). Corresponds to the --
+   * postfix operator.
    *
-   * @return The original value
+   * @return the original value
    */
-  public int getAndDecrement() {
+  public int decrement() {
     return i--;
   }
 
   /**
-   * Corresponds to the {@code --} prefix operator ({@code --i}).
+   * Decrements the value by one and returns the new value (after decrementing). Corresponds to the -- prefix
+   * operator.
    *
-   * @return The decremented value
+   * @return the new value
    */
-  public int decrementAndGet() {
-    return --i;
+  public int oneDown() {
+    return subtract(1);
   }
 
   /**
-   * Corresponds to the {@code +=} operation.
+   * Adds the specified value to the current value and returns the new value.
    *
-   * @param j The value to add
-   * @return The new value
+   * @param j the value to add
+   * @return the new value
    */
-  public int plusIs(int j) {
+  public int add(int j) {
     return i += j;
   }
 
   /**
-   * Corresponds to the {@code +=} operation.
+   * Adds the specified value to the current value and returns the new value.
    *
-   * @param other The value the add
-   * @return The new value
+   * @param other the value the add
+   * @return the new value
    */
-  public int plusIs(MutableInt other) {
-    return i += other.i;
+  public MutableInt add(MutableInt other) {
+    Check.notNull(other);
+    i += other.i;
+    return this;
   }
 
   /**
-   * Corresponds to the {@code -=} (minus-is) operation.
+   * Subtracts the specified value to the current value and returns the new value.
    *
-   * @param j The value to subtract
-   * @return The new value
+   * @param j the value to subtract
+   * @return the new value
    */
-  public int minusIs(int j) {
+  public int subtract(int j) {
     return i -= j;
   }
 
   /**
-   * Corresponds to the {@code -=} (minus-is) operation.
+   * Subtracts the specified value to the current value and returns the new value.
    *
-   * @param other The value to subtract
-   * @return The new value
+   * @param other the value to subtract
+   * @return the new value
    */
-  public int minusIs(MutableInt other) {
-    return i -= other.i;
+  public MutableInt subtract(MutableInt other) {
+    Check.notNull(other);
+    i -= other.i;
+    return this;
   }
 
   /**
-   * Corresponds to the assignment operation ({@code i = j}).
+   * Subtracts the specified value to the current value and returns the new value.
    *
-   * @param j The value to assign to this {@code MutableInt}
-   * @return The new value
+   * @param j the value to subtract
+   * @return the new value
+   */
+  public int multiply(int j) {
+    return i *= j;
+  }
+
+  /**
+   * Subtracts the specified value to the current value and returns the new value.
+   *
+   * @param other the value to subtract
+   * @return the new value
+   */
+  public MutableInt multiply(MutableInt other) {
+    Check.notNull(other);
+    i *= other.i;
+    return this;
+  }
+
+  /**
+   * Computes a new value for this instance using the current value as input
+   *
+   * @param operator a function that computes a new value based on the current value
+   * @return the new value
+   */
+  public int computeInt(IntUnaryOperator operator) {
+    return i = operator.applyAsInt(i);
+  }
+
+  /**
+   * Computes a new value for this instance using the current value as input
+   *
+   * @param operator a function that computes a new value based on the current value
+   * @return the new value
+   */
+  public MutableInt compute(IntUnaryOperator operator) {
+    Check.notNull(operator);
+    i = operator.applyAsInt(i);
+    return this;
+  }
+
+  /**
+   * Overwrites the current value with the specified value and returns the new value.
+   *
+   * @param j the new value
+   * @return the new value
    */
   public int set(int j) {
     return i = j;
   }
 
   /**
-   * Corresponds to the assignment operation ({@code i = j}).
+   * Overwrites the current value with the specified value and returns the new value.
    *
-   * @param other The value to assign to this {@code MutableInt}
-   * @return The new value
+   * @param other the new value
+   * @return the new value
    */
-  public int set(MutableInt other) {
-    return i = other.i;
+  public MutableInt set(MutableInt other) {
+    Check.notNull(other);
+    i = other.i;
+    return this;
   }
 
   /**
    * Corresponds to the {@code ==} (equals) operation.
    *
-   * @param j The value to compare this instance with
+   * @param j the value to compare this instance with
    * @return {@code true} if equal, {@code false} otherwise
    */
-  public boolean eq(int j) {
+  public boolean equalTo(int j) {
     return i == j;
   }
 
   /**
    * Corresponds to the {@code ==} (equals) operation.
    *
-   * @param other The value to compare this instance with
+   * @param other the value to compare this instance with
    * @return {@code true} if equal, {@code false} otherwise
    */
-  public boolean eq(MutableInt other) {
+  public boolean equalTo(MutableInt other) {
+    Check.notNull(other);
     return i == other.i;
   }
 
   /**
    * Corresponds to the {@code !=} (not equals) operation.
    *
-   * @param j The value to compare this instance with
+   * @param j the value to compare this instance with
    * @return {@code true} if not equal, {@code false} otherwise
    */
-  public boolean ne(int j) {
+  public boolean notEquals(int j) {
     return i != j;
   }
 
   /**
    * Corresponds to the {@code !=} (not equals) operation.
    *
-   * @param other The value to compare this instance with
+   * @param other the value to compare this instance with
    * @return {@code true} if equal, {@code false} otherwise
    */
-  public boolean ne(MutableInt other) {
+  public boolean notEquals(MutableInt other) {
+    Check.notNull(other);
     return i != other.i;
   }
 
   /**
    * Corresponds to the {@code >} (greater than) operation.
    *
-   * @param j The value to compare this instance with
-   * @return {@code true} if this instance has a value greater than the specified
-   *     value, {@code false} otherwise
+   * @param j the value to compare this instance with
+   * @return {@code true} if this instance has a value greater than the specified value, {@code false}
+   *     otherwise
    */
-  public boolean gt(int j) {
+  public boolean greaterThan(int j) {
     return i > j;
   }
 
   /**
    * Corresponds to the {@code >} (greater than) operation.
    *
-   * @param other The value to compare this instance with
-   * @return {@code true} if this instance has a value greater than the specified
-   *     value, {@code false} otherwise
+   * @param other the value to compare this instance with
+   * @return {@code true} if this instance has a value greater than the specified value, {@code false}
+   *     otherwise
    */
-  public boolean gt(MutableInt other) {
+  public boolean greaterThan(MutableInt other) {
+    Check.notNull(other);
     return i > other.i;
   }
 
   /**
    * Corresponds to the {@code <} (less than) operation.
    *
-   * @param j The value to compare this instance with
-   * @return {@code true} if this instance has a value less than the specified value,
-   *     {@code false} otherwise
+   * @param j the value to compare this instance with
+   * @return {@code true} if this instance has a value less than the specified value, {@code false} otherwise
    */
-  public boolean lt(int j) {
+  public boolean lessThan(int j) {
     return i < j;
   }
 
   /**
    * Corresponds to the {@code <} (less than) operation.
    *
-   * @param other The value to compare this instance with
-   * @return {@code true} if this instance has a value less than the specified value,
-   *     {@code false} otherwise
+   * @param other the value to compare this instance with
+   * @return {@code true} if this instance has a value less than the specified value, {@code false} otherwise
    */
-  public boolean lt(MutableInt other) {
+  public boolean lessThan(MutableInt other) {
+    Check.notNull(other);
     return i < other.i;
   }
 
   /**
    * Corresponds to the {@code >=} (greater or equal) operation.
    *
-   * @param j The value to compare this instance with
-   * @return {@code true} if this instance has a value greater than, or equal to the
-   *     specified value, {@code false} otherwise
+   * @param j the value to compare this instance with
+   * @return {@code true} if this instance has a value greater than, or equal to the specified value,
+   *     {@code false} otherwise
    */
   public boolean gte(int j) {
     return i >= j;
@@ -234,20 +309,21 @@ public final class MutableInt {
   /**
    * Corresponds to the {@code >=} (greater or equal) operation.
    *
-   * @param other The value to compare this instance with
-   * @return {@code true} if this instance has a value greater than, or equal to the
-   *     specified value, {@code false} otherwise
+   * @param other the value to compare this instance with
+   * @return {@code true} if this instance has a value greater than, or equal to the specified value,
+   *     {@code false} otherwise
    */
   public boolean gte(MutableInt other) {
+    Check.notNull(other);
     return i >= other.i;
   }
 
   /**
    * Corresponds to the {@code <=} (less or equal) operation.
    *
-   * @param j The value to compare this instance with
-   * @return {@code true} if this instance has a value less than, or equal to the
-   *     specified value, {@code false} otherwise
+   * @param j the value to compare this instance with
+   * @return {@code true} if this instance has a value less than, or equal to the specified value,
+   *     {@code false} otherwise
    */
   public boolean lte(int j) {
     return i <= j;
@@ -256,11 +332,12 @@ public final class MutableInt {
   /**
    * Corresponds to the {@code <=} (less or equal) operation.
    *
-   * @param other The value to compare this instance with
-   * @return {@code true} if this instance has a value less than, or equal to the
-   *     specified value, {@code false} otherwise
+   * @param other the value to compare this instance with
+   * @return {@code true} if this instance has a value less than, or equal to the specified value,
+   *     {@code false} otherwise
    */
   public boolean lte(MutableInt other) {
+    Check.notNull(other);
     return i <= other.i;
   }
 
@@ -275,6 +352,7 @@ public final class MutableInt {
 
   /**
    * Returns the current value of this instance
+   *
    * @return the current value of this instance
    */
   @Override
@@ -283,33 +361,25 @@ public final class MutableInt {
   }
 
   /**
-   * Returns true if {@code obj} is a {@code MutableInt}, {@link Integer}, {@link
-   * Short} or {@link Byte} with the same value as this {@code MutableInt}, {@code
-   * false otherwise}.
+   * Returns true if {@code obj} is a {@code MutableInt} containing the same {@code int} value as this
+   * {@code MutableInt}, {@code false otherwise}.
    *
-   * @param obj The value to compare this instance with
+   * @param obj the value to compare this instance with
    * @return Whether this {@code MutableInt} is equal to the specified value
    */
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
-    } else if (obj == null) {
-      return false;
-    } else if (obj instanceof MutableInt other) {
-      return i == other.i;
-    } else if (obj instanceof Integer x) {
-      return i == x;
-    } else if (obj instanceof Short x) {
-      return i == x;
-    } else if (obj instanceof Byte x) {
-      return i == x;
+    } else if (obj instanceof MutableInt mi) {
+      return i == mi.i;
     }
     return false;
   }
 
   /**
    * Returns the string representation of the current value.
+   *
    * @return the string representation of the current value
    */
   @Override

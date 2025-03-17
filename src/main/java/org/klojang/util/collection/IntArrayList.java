@@ -4,7 +4,7 @@ import org.klojang.check.Check;
 import org.klojang.check.CommonChecks;
 import org.klojang.check.fallible.FallibleIntConsumer;
 import org.klojang.util.ArrayMethods;
-import org.klojang.util.ResizeMethod;
+import org.klojang.util.ResizeType;
 
 import java.util.*;
 import java.util.function.IntConsumer;
@@ -15,7 +15,7 @@ import static org.klojang.check.Check.fail;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonExceptions.indexOutOfBounds;
 import static org.klojang.util.ArrayMethods.*;
-import static org.klojang.util.ResizeMethod.*;
+import static org.klojang.util.ResizeType.*;
 
 /**
  * A mutable list of {@code int} values.
@@ -25,7 +25,7 @@ import static org.klojang.util.ResizeMethod.*;
  */
 public final class IntArrayList implements IntList {
 
-  private final ResizeMethod resizeMethod;
+  private final ResizeType resizeType;
   private final float resizeAmount;
 
   int[] buf;
@@ -41,7 +41,7 @@ public final class IntArrayList implements IntList {
   /**
    * Creates an {@code IntList} with the specified initial capacity. Each time the
    * backing array reaches full capacity, it is resized to twice its length.
-   * (However, see {@link ResizeMethod}.)
+   * (However, see {@link ResizeType}.)
    *
    * @param initialCapacity The initial capacity of the list
    */
@@ -64,19 +64,19 @@ public final class IntArrayList implements IntList {
   /**
    * Creates an {@code IntList} with the specified initial capacity. Each time the
    * backing array reaches full capacity, it is resized by applying the specified
-   * {@link ResizeMethod} to the specified resize amount.
+   * {@link ResizeType} to the specified resize amount.
    *
    * @param initialCapacity The initial capacity of the list
-   * @param resizeMethod The method to use for resizing the backing array
+   * @param resizeType The method to use for resizing the backing array
    * @param resizeAmount The resize amount
    */
   public IntArrayList(int initialCapacity,
-      ResizeMethod resizeMethod,
+      ResizeType resizeType,
       float resizeAmount) {
     Check.that(initialCapacity, "initialCapacity").is(gte(), 0);
-    Check.notNull(resizeMethod, "resizeMethod");
+    Check.notNull(resizeType, "resizeMethod");
     this.buf = new int[initialCapacity];
-    this.resizeMethod = resizeMethod;
+    this.resizeType = resizeType;
     this.resizeAmount = resizeAmount;
   }
 
@@ -90,14 +90,14 @@ public final class IntArrayList implements IntList {
     Check.notNull(other, "IntList");
     if (other instanceof IntArrayList ial) {
       this.size = ial.size;
-      this.resizeMethod = ial.resizeMethod;
+      this.resizeType = ial.resizeType;
       this.resizeAmount = ial.resizeAmount;
       this.buf = new int[Math.min(Integer.MAX_VALUE, size + 10)];
       arraycopy(ial.buf, 0, this.buf, 0, size);
     } else { // UnmodifiableIntList
       this.buf = other.toArray();
       this.size = other.size();
-      this.resizeMethod = MULTIPLY;
+      this.resizeType = MULTIPLY;
       this.resizeAmount = 2F;
     }
   }
@@ -381,7 +381,7 @@ public final class IntArrayList implements IntList {
   }
 
   private void increaseCapacity(int minIncrease) {
-    int capacity = resizeMethod.resize(buf.length, resizeAmount, minIncrease);
+    int capacity = resizeType.resize(buf.length, resizeAmount, minIncrease);
     int[] newBuf = new int[capacity];
     arraycopy(buf, 0, newBuf, 0, size);
     buf = newBuf;

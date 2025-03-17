@@ -1,17 +1,15 @@
 package org.klojang.util.exception;
 
-import static org.klojang.check.Tag.MESSAGE;
-import static org.klojang.util.ExceptionMethods.getRootCause;
-import static org.klojang.util.exception.UncheckedException.peal;
+import org.klojang.check.Check;
+import org.klojang.util.ExceptionMethods;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Optional;
 
-import org.klojang.check.Check;
-import org.klojang.util.ExceptionMethods;
-import org.klojang.util.exception.UncheckedException;
-import org.klojang.check.Tag;
+import static org.klojang.check.Tag.MESSAGE;
+import static org.klojang.util.ExceptionMethods.getRootCause;
+import static org.klojang.util.exception.UncheckedException.peal;
 
 /**
  * A {@code RuntimeException} that behaves as though it is the root cause of the

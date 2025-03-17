@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UncheckedException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Util</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util.exception</a> &gt; <span class="el_source">UncheckedException.java</span></div><h1>UncheckedException.java</h1><pre class="source lang-java linenums">package org.klojang.util.exception;
 
+import org.klojang.check.Check;
+import org.klojang.util.ExceptionMethods;
+
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Optional;
-
-import org.klojang.check.Check;
-import org.klojang.util.ExceptionMethods;
-import org.klojang.util.exception.RootException;
-import org.klojang.util.exception.UncheckedException;
-import org.klojang.check.Tag;
 
 import static org.klojang.check.Tag.MESSAGE;
 
@@ -46,15 +43,15 @@ public final class UncheckedException extends RuntimeException {
 
   static Throwable peal(Throwable t) {
     do {
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">      if (t instanceof UncheckedException ue) {</span>
-<span class="nc" id="L50">        t = ue.unwrap();</span>
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">      } else if (t instanceof RootException re) {</span>
-<span class="nc" id="L52">        t = re.unwrap();</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">      if (t instanceof UncheckedException ue) {</span>
+<span class="nc" id="L47">        t = ue.unwrap();</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">      } else if (t instanceof RootException re) {</span>
+<span class="nc" id="L49">        t = re.unwrap();</span>
       } else {
         break;
       }
-<span class="nc" id="L56">    } while (true);</span>
-<span class="fc" id="L57">    return t;</span>
+<span class="nc" id="L53">    } while (true);</span>
+<span class="fc" id="L54">    return t;</span>
   }
 
   private final String msg;
@@ -65,9 +62,9 @@ public final class UncheckedException extends RuntimeException {
    * @param cause the exception to wrap and mask
    */
   public UncheckedException(Throwable cause) {
-<span class="fc" id="L68">    super(Check.notNull(cause, &quot;cause&quot;).ok(UncheckedException::peal));</span>
-<span class="fc" id="L69">    this.msg = null;</span>
-<span class="fc" id="L70">  }</span>
+<span class="fc" id="L65">    super(Check.notNull(cause, &quot;cause&quot;).ok(UncheckedException::peal));</span>
+<span class="fc" id="L66">    this.msg = null;</span>
+<span class="fc" id="L67">  }</span>
 
   /**
    * Creates an {@code UncheckedException} with the provided custom message, wrapping
@@ -77,9 +74,9 @@ public final class UncheckedException extends RuntimeException {
    * @param cause the exception to wrap and mask
    */
   public UncheckedException(String message, Throwable cause) {
-<span class="fc" id="L80">    super(Check.notNull(cause, &quot;cause&quot;).ok(UncheckedException::peal));</span>
-<span class="fc" id="L81">    this.msg = Check.notNull(message, MESSAGE).ok();</span>
-<span class="fc" id="L82">  }</span>
+<span class="fc" id="L77">    super(Check.notNull(cause, &quot;cause&quot;).ok(UncheckedException::peal));</span>
+<span class="fc" id="L78">    this.msg = Check.notNull(message, MESSAGE).ok();</span>
+<span class="fc" id="L79">  }</span>
 
   /**
    * Returns the exception wrapped by this {@code UncheckedException}. Note that
@@ -91,7 +88,7 @@ public final class UncheckedException extends RuntimeException {
    */
   @SuppressWarnings(&quot;unchecked&quot;)
   public &lt;E extends Throwable&gt; E unwrap() {
-<span class="nc" id="L94">    return (E) super.getCause();</span>
+<span class="nc" id="L91">    return (E) super.getCause();</span>
   }
 
   /**
@@ -103,7 +100,7 @@ public final class UncheckedException extends RuntimeException {
    *     constructor
    */
   public Optional&lt;String&gt; getCustomMessage() {
-<span class="fc" id="L106">    return Optional.ofNullable(msg);</span>
+<span class="fc" id="L103">    return Optional.ofNullable(msg);</span>
   }
 
   /**
@@ -113,7 +110,7 @@ public final class UncheckedException extends RuntimeException {
    */
   @Override
   public String getMessage() {
-<span class="nc" id="L116">    return super.getCause().getMessage();</span>
+<span class="nc" id="L113">    return super.getCause().getMessage();</span>
   }
 
   /**
@@ -124,7 +121,7 @@ public final class UncheckedException extends RuntimeException {
    */
   @Override
   public String getLocalizedMessage() {
-<span class="nc" id="L127">    return super.getCause().getLocalizedMessage();</span>
+<span class="nc" id="L124">    return super.getCause().getLocalizedMessage();</span>
   }
 
   /**
@@ -134,7 +131,7 @@ public final class UncheckedException extends RuntimeException {
    */
   @Override
   public synchronized Throwable getCause() {
-<span class="nc" id="L137">    return super.getCause().getCause();</span>
+<span class="nc" id="L134">    return super.getCause().getCause();</span>
   }
 
   /**
@@ -142,24 +139,24 @@ public final class UncheckedException extends RuntimeException {
    */
   @Override
   public void printStackTrace() {
-<span class="nc" id="L145">    super.getCause().printStackTrace();</span>
-<span class="nc" id="L146">  }</span>
+<span class="nc" id="L142">    super.getCause().printStackTrace();</span>
+<span class="nc" id="L143">  }</span>
 
   /**
    * Calls {@code printStackTrace()} on the wrapped exception
    */
   @Override
   public void printStackTrace(PrintStream s) {
-<span class="nc" id="L153">    super.getCause().printStackTrace(s);</span>
-<span class="nc" id="L154">  }</span>
+<span class="nc" id="L150">    super.getCause().printStackTrace(s);</span>
+<span class="nc" id="L151">  }</span>
 
   /**
    * Calls {@code printStackTrace} on the wrapped exception.
    */
   @Override
   public void printStackTrace(PrintWriter s) {
-<span class="nc" id="L161">    super.getCause().printStackTrace(s);</span>
-<span class="nc" id="L162">  }</span>
+<span class="nc" id="L158">    super.getCause().printStackTrace(s);</span>
+<span class="nc" id="L159">  }</span>
 
   /**
    * Calls {@code getStackTrace()} on the wrapped exception
@@ -168,7 +165,7 @@ public final class UncheckedException extends RuntimeException {
    */
   @Override
   public StackTraceElement[] getStackTrace() {
-<span class="nc" id="L171">    return super.getCause().getStackTrace();</span>
+<span class="nc" id="L168">    return super.getCause().getStackTrace();</span>
   }
 
   /**
@@ -176,7 +173,7 @@ public final class UncheckedException extends RuntimeException {
    */
   @Override
   public void setStackTrace(StackTraceElement[] stackTrace) {
-<span class="nc" id="L179">    throw new UnsupportedOperationException();</span>
+<span class="nc" id="L176">    throw new UnsupportedOperationException();</span>
   }
 
   /**
@@ -186,7 +183,7 @@ public final class UncheckedException extends RuntimeException {
    */
   @Override
   public String toString() {
-<span class="nc" id="L189">    return super.getCause().toString();</span>
+<span class="nc" id="L186">    return super.getCause().toString();</span>
   }
 
   /**
@@ -194,7 +191,7 @@ public final class UncheckedException extends RuntimeException {
    */
   @Override
   public synchronized Throwable initCause(Throwable cause) {
-<span class="nc" id="L197">    throw new UnsupportedOperationException();</span>
+<span class="nc" id="L194">    throw new UnsupportedOperationException();</span>
   }
 
 }

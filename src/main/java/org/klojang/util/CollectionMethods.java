@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
 import static java.util.Map.Entry;
 import static java.util.Map.entry;
 import static java.util.stream.Collectors.*;
@@ -30,15 +31,15 @@ public final class CollectionMethods {
     throw new UnsupportedOperationException();
   }
 
-  private static final Map<Class<?>, Function<Object, List<?>>> listifiers = Map.of(
-        int[].class, o -> ArrayMethods.asList((int[]) o),
-        double[].class, o -> ArrayMethods.asList((double[]) o),
-        long[].class, o -> ArrayMethods.asList((long[]) o),
-        byte[].class, o -> ArrayMethods.asList((byte[]) o),
-        char[].class, o -> ArrayMethods.asList((char[]) o),
-        float[].class, o -> ArrayMethods.asList((float[]) o),
-        short[].class, o -> ArrayMethods.asList((short[]) o),
-        boolean[].class, o -> ArrayMethods.asList((boolean[]) o)
+  private static final Map<Class<?>, Function<Object, List<?>>> LISTIFIERS = Map.of(
+      int[].class, o -> ArrayMethods.asList((int[]) o),
+      double[].class, o -> ArrayMethods.asList((double[]) o),
+      long[].class, o -> ArrayMethods.asList((long[]) o),
+      byte[].class, o -> ArrayMethods.asList((byte[]) o),
+      char[].class, o -> ArrayMethods.asList((char[]) o),
+      float[].class, o -> ArrayMethods.asList((float[]) o),
+      short[].class, o -> ArrayMethods.asList((short[]) o),
+      boolean[].class, o -> ArrayMethods.asList((boolean[]) o)
   );
 
   /**
@@ -54,48 +55,43 @@ public final class CollectionMethods {
    *      {@link Arrays#asList(Object[]) Arrays.asList}
    *   <li>if the value is an array of a primitive type, it is converted using
    *      {@link ArrayMethods#asList(int[]) ArrayMethods.asList}
-   *   <li>in any other case the value is converted using
+   *   <li>in any other case (which includes the value being {@code null}), the value is converted using
    *      {@link Collections#singletonList(Object) Collections.singletonList}
    * </ul>
    *
-   * <p>In other words, this method takes the shortest route to turn the value into
-   * a {@code List} and there is no guarantee about what type of {@code List}
-   * you get.
+   * <p>In other words, this method takes the shortest route to turn the value into a {@code List} and there
+   * is no guarantee about what type of {@code List} is returned. The returned list will always contain at
+   * least one element, but it may be {@code null}.
    *
    * @param value the value to convert
    * @return the value converted to a {@code List}
    * @see ArrayMethods#box(int[])
    * @see ArrayMethods#asList(int[])
    */
-  public static List<?> listify(Object value) {
-    if (value != null) {
-      if (value instanceof List<?> l) {
-        return l;
-      } else if (value instanceof Collection<?> c) {
-        return new ArrayList<>(c);
-      } else if (value instanceof Object[] o) {
-        return Arrays.asList(o);
+  public static List<?> asList(Object value) {
+    return switch (value) {
+      case null -> singletonList(null);
+      case List<?> x -> x;
+      case Collection<?> x -> new ArrayList<>(x);
+      case Object[] x -> Arrays.asList(x);
+      default -> {
+        Function<Object, List<?>> fnc = LISTIFIERS.get(value.getClass());
+        yield fnc == null ? singletonList(value) : fnc.apply(value);
       }
-      Function<Object, List<?>> fnc = listifiers.get(value.getClass());
-      if (fnc != null) {
-        return fnc.apply(value);
-      }
-    }
-    return Collections.singletonList(value);
+    };
   }
 
   /**
-   * Returns a fixed-size, mutable {@code List} with all elements initialized to the
-   * specified value. The initialization value must not be {@code null}.
+   * Returns a fixed-size, mutable {@code List} with all elements initialized to the specified value. The
+   * initialization value must not be {@code null}.
    *
-   * @param size The desired size of the {@code List}
-   * @param initVal The initial value of the list elements (must not be
-   *       {@code null})
+   * @param size the desired size of the {@code List}
+   * @param initVal the initial value of the list elements (must not be {@code null})
    * @param <E> the type of the elements
    * @return a fixed-size, mutable, initialized {@code List}
    */
   @SuppressWarnings({"unchecked"})
-  public static <E> List<E> initializeList(int size, E initVal) {
+  public static <E> List<E> initializedList(int size, E initVal) {
     Check.that(size, SIZE).is(gte(), 0);
     Check.notNull(initVal, "initialization value");
     Object[] array = new Object[size];
@@ -104,16 +100,16 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns a fixed-size, mutable {@code List} with all elements initialized to values
-   * provided by a {@code Supplier}.
+   * Returns a fixed-size, mutable {@code List} with all elements initialized to values provided by a
+   * {@code Supplier}.
    *
-   * @param size The desired size of the {@code List}
-   * @param initValSupplier The supplier of the initial values
+   * @param size the desired size of the {@code List}
+   * @param initValSupplier the supplier of the initial values
    * @param <E> the type of the elements
    * @return a fixed-size, mutable, initialized {@code List}
    */
   @SuppressWarnings({"unchecked"})
-  public static <E> List<E> initializeList(int size, Supplier<E> initValSupplier) {
+  public static <E> List<E> initializedList(int size, Supplier<E> initValSupplier) {
     Check.that(size, SIZE).is(gte(), 0);
     Check.notNull(initValSupplier, "supplier");
     Object[] array = new Object[size];
@@ -124,42 +120,38 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns a new {@link ArrayList} initialized with the specified values. The values are
-   * allowed to be {@code null}. The initial capacity will always be at least the length
-   * of the {@code initialValues} array, whatever the value of the {@code capacity}
-   * argument.
+   * Returns a new {@link ArrayList} initialized with the specified values. The values are allowed to be
+   * {@code null}. The initial capacity will always be at least the length of the {@code initialValues} array,
+   * whatever the value of the {@code capacity} argument.
    *
-   * @param capacity The initial capacity of the list
-   * @param initialValues The values to add to the list
+   * @param capacity the initial capacity of the list
+   * @param initialValues the values to add to the list
    * @param <E> the type of the list elements
    * @return a new {@link ArrayList} initialized with the specified values.
    */
   @SafeVarargs
   public static <E> List<E> newArrayList(int capacity, E... initialValues) {
     Check.that(capacity, CAPACITY).is(gte(), 0);
-    Check.notNull(initialValues, VARARGS);
-    if (initialValues.length == 0) {
-      return new ArrayList<>(Math.max(1, capacity));
+    int len = Check.notNull(initialValues, VARARGS).ok().length;
+    if (len == 0) {
+      return new ArrayList<>(capacity);
     }
-    List<E> l = new ArrayList<>(Math.max(capacity, initialValues.length));
-    l.addAll(Arrays.asList(initialValues));
-    return l;
+    return Arrays.stream(initialValues).collect(toCollection(ArrayList::new));
   }
 
   /**
-   * Returns a {@link HashMap} initialized with the specified key-value pairs. Both keys
-   * and values are allowed to be {@code null}. The map will be tightly sized to the
-   * number of key-value pairs.
+   * Returns a {@link HashMap} initialized with the specified key-value pairs. Both keys and values are
+   * allowed to be {@code null}. The map will be tightly sized to the number of key-value pairs.
    *
    * @param <K> the type of the keys
    * @param <V> the type of the values
-   * @param kvPairs An array alternating between keys and values
+   * @param kvPairs an array alternating between keys and values
    * @return a {@code HashMap} initialized with the specified key-value pairs
    */
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  public static <K, V> Map<K, V> initializeMap(Object... kvPairs) {
+  @SuppressWarnings({"unchecked"})
+  public static <K, V> Map<K, V> initializedMap(Object... kvPairs) {
     Check.notNull(kvPairs, VARARGS).has(length(), even());
-    HashMap map = HashMap.newHashMap(kvPairs.length / 2);
+    var map = HashMap.newHashMap(kvPairs.length / 2);
     for (int x = 0; x < kvPairs.length; x += 2) {
       map.put(kvPairs[x], kvPairs[x + 1]);
     }
@@ -167,48 +159,42 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns a {@link HashMap} initialized with the specified key-value pairs. Both keys
-   * and values are allowed to be {@code null}. Keys will be checked for uniqueness.
+   * Returns a {@link HashMap} initialized with the specified key-value pairs. Both keys and values are
+   * allowed to be {@code null}. Keys will be checked for uniqueness. Keys and values will be type-checked
+   * against {@code keyType} and {@code valueType}, respectively.
    *
    * @param <K> the type of the keys
    * @param <V> the type of the values
-   * @param size The expected number of map entries. No rehashing will take place
-   *       until that number is reached. If you specify a number less than the number of
-   *       key-value pairs (half the length of the varargs array), it will be taken as a
-   *       multiplier. For example, 2 would mean that you expect the map to grow to about
-   *       twice the specified number of key-value pairs.
-   * @param keyClass The class of the keys
-   * @param valueClass The class of the values
-   * @param kvPairs An array alternating between keys and values
+   * @param size the expected number of map entries. No rehashing will take place until that number is
+   *     reached. If you specify a number less than the number of key-value pairs (half the length of the
+   *     varargs array), it will be taken as a multiplier. For example, 2 would mean that you expect the map
+   *     to grow to about twice the specified number of key-value pairs.
+   * @param keyType the class of the keys
+   * @param valueType the class of the values
+   * @param kvPairs an array alternating between keys and values
    * @return a {@code HashMap} initialized with the specified key-value pairs
    */
   @SuppressWarnings("unchecked")
-  public static <K, V> Map<K, V> newHashMap(
-        int size, Class<K> keyClass, Class<V> valueClass, Object... kvPairs) {
+  public static <K, V> Map<K, V> newHashMap(int size,
+      Class<K> keyType,
+      Class<V> valueType,
+      Object... kvPairs) {
     Check.that(size, CAPACITY).isNot(negative());
     Check.notNull(kvPairs, VARARGS).has(length(), even());
     if (kvPairs.length == 0) {
-      return new HashMap<>(Math.max(1, size));
+      return HashMap.newHashMap(size);
     }
-    int cap;
-    if (size < kvPairs.length / 2) {
-      cap = Math.max(1, size) * kvPairs.length;
-    } else {
-      cap = size;
-    }
+    int cap = Math.max(size, kvPairs.length / 2);
     HashMap<K, V> map = HashMap.newHashMap(cap);
     for (int x = 0; x < kvPairs.length - 1; x += 2) {
       K key = (K) kvPairs[x];
       V val = (V) kvPairs[x + 1];
-      Check.that(key).isNot(keyIn(),
-            map,
-            "duplicate key at position ${0}: ${arg}",
-            x);
+      Check.that(key).isNot(keyIn(), map, "duplicate key at position ${0}: ${arg}", x);
       if (key != null) {
-        Check.that(key, "kvPairs[" + x + "]").is(instanceOf(), keyClass);
+        Check.that(key, "kvPairs[" + x + "]").is(instanceOf(), keyType);
       }
       if (val != null) {
-        Check.that(val, "kvPairs[" + (x + 1) + "]").is(instanceOf(), valueClass);
+        Check.that(val, "kvPairs[" + (x + 1) + "]").is(instanceOf(), valueType);
       }
       map.put(key, val);
     }
@@ -216,43 +202,39 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns an {@link EnumMap} with all enum constants set to non-null values. The number
-   * of values must exactly equal the number of enum constants, and they are assigned
-   * according to ordinal number. This method throws an {@link IllegalArgumentException}
-   * if the number of values is not exactly equal to the number of constants in the enum
-   * class, or if any of the values is null.
+   * Returns an {@link EnumMap} containing all enum constants. The number of values must exactly equal the
+   * number of enum constants, and they are assigned according to ordinal number. This method throws an
+   * {@link IllegalArgumentException} if the number of values is not exactly equal to the number of constants
+   * in the enum class, or if any of the values is {@code null}.
    *
    * @param <K> the key type
    * @param <V> the value type
-   * @param enumClass The enum class
-   * @param values The values to associate with the enum constants
+   * @param enumClass the enum class
+   * @param values the values to associate with the enum constants
    * @return a fully-occupied {@code EnumMap} with no null-values
-   * @throws IllegalArgumentException if {@code enumClass} or {@code Values} is
-   *       null, or if any of the provided values is null, or is the number of values is
-   *       not exactly equals to the number of enum constants
+   * @throws IllegalArgumentException if {@code enumClass} or {@code Values} is null, or if any of the
+   *     provided values is null, or is the number of values is not exactly equals to the number of enum
+   *     constants
    */
   @SuppressWarnings("unchecked")
   public static <K extends Enum<K>, V> EnumMap<K, V> saturatedEnumMap(
-        Class<K> enumClass, V... values) throws IllegalArgumentException {
+      Class<K> enumClass, V... values) throws IllegalArgumentException {
     K[] constants = Check.notNull(enumClass, "enumClass").ok().getEnumConstants();
     Check.notNull(values, VALUES).has(length(), eq(), constants.length);
     EnumMap<K, V> map = new EnumMap<>(enumClass);
     for (int x = 0; x < constants.length; ++x) {
-      Check.that(values[x]).is(notNull(),
-            "Illegal null value for key ${0}", constants[x]);
+      Check.that(values[x]).is(notNull(), "Illegal null value for ${0}", constants[x]);
       map.put(constants[x], values[x]);
     }
     return map;
   }
 
   /**
-   * Returns a sublist of the provided list starting with element {@code from} and
-   * containing at most {@code length} elements. The returned list is backed by the
-   * original list, so changing its elements will affect the original list as well. If
-   * {@code offset} is negative, it is taken relative to the end of the list. If
-   * {@code length} is negative, the sublist is taken in the opposite direction &#8212;
-   * that is, the element at {@code offset} now becomes the <i>last</i> element of the
-   * sublist.
+   * Returns a sublist of the provided list starting with element {@code from} and containing at most
+   * {@code length} elements. The returned list is backed by the original list, so changing its elements will
+   * affect the original list as well. If {@code offset} is negative, it is taken relative to the end of the
+   * list. If {@code length} is negative, the sublist is taken in the opposite direction &#8212; that is, the
+   * element at {@code offset} now becomes the <i>last</i> element of the sublist.
    *
    * @param list the {@code List} to extract a sublist from
    * @param offset the start index if the sublist (however, see above)
@@ -284,57 +266,47 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns a new {@code Map} where keys and values of the input map have traded places.
-   * The specified {@code Map} must not contain duplicate values. An
-   * {@link IllegalArgumentException} is thrown if it does. The returned map is tightly
-   * sized, but modifiable.
+   * Returns a new {@code Map} where keys and values of the input map have traded places. The specified
+   * {@code Map} must not contain duplicate values. An {@link IllegalArgumentException} is thrown if it does.
    *
-   * @param <K> the type of the keys in the original map, and of the values in the
-   *       returned map
-   * @param <V> the type of the values in the original map, and of the keys in the
-   *       returned map
-   * @param map The source map
+   * @param <K> the type of the keys in the original map, and of the values in the returned map
+   * @param <V> the type of the values in the original map, and of the keys in the returned map
+   * @param map the source map
    * @return a new {@code Map} where keys and values are swapped
    */
   public static <K, V> Map<V, K> swap(Map<K, V> map) {
-    return swap(map, () -> new HashMap<>(1 + map.size() * 4 / 3));
+    return swap(map, () -> HashMap.newHashMap(map.size()));
   }
 
   /**
-   * Returns a new {@code Map} where keys and values of the input map have traded places.
-   * The specified {@code Map} must not contain duplicate values. A
-   * {@link DuplicateValueException} is thrown if it does. {@code null} keys and values
-   * are allowed, however.
+   * Returns a new {@code Map} where keys and values of the input map have traded places. The specified
+   * {@code Map} must not contain duplicate values. A {@link DuplicateValueException} is thrown if it does.
+   * {@code null} keys and values are allowed, however.
    *
-   * @param <K> the type of the keys in the original map, and of the values in the
-   *       returned map
-   * @param <V> the type of the values in the original map, and of the keys in the
-   *       returned map
-   * @param map The source map
-   * @param mapFactory A supplier of a {@code Map} instance
+   * @param <K> the type of the keys in the original map, and of the values in the returned map
+   * @param <V> the type of the values in the original map, and of the keys in the returned map
+   * @param map the source map
+   * @param mapFactory a supplier of a {@code Map} instance
    * @return a new {@code Map} where keys and values are swapped
    * @throws DuplicateValueException if the map contains duplicate values
    */
   public static <K, V> Map<V, K> swap(Map<K, V> map,
-        Supplier<? extends Map<V, K>> mapFactory) throws DuplicateValueException {
+      Supplier<? extends Map<V, K>> mapFactory) throws DuplicateValueException {
     Check.notNull(map, MAP);
-    Check.notNull(mapFactory, "mapFactory");
+    Check.notNull(mapFactory, "map factory");
     Map<V, K> out = mapFactory.get();
     map.forEach((k, v) -> out.put(v, k));
     return Check.that(out).has(mapSize(), eq(), map.size(), duplicateKey()).ok();
   }
 
   /**
-   * Returns an unmodifiable {@code Map} where keys and values of the input map have
-   * traded places. The specified {@code Map} must not contain {@code null} keys,
-   * {@code null} values or duplicate values. An {@link IllegalArgumentException} is
-   * thrown if it does.
+   * Returns an unmodifiable {@code Map} where keys and values of the input map have traded places. The
+   * specified {@code Map} must not contain {@code null} keys, {@code null} values or duplicate values. An
+   * {@link IllegalArgumentException} is thrown if it does.
    *
-   * @param <K> the type of the keys in the original map, and of the values in the
-   *       returned map
-   * @param <V> the type of the values in the original map, and of the keys in the
-   *       returned map
-   * @param map The source map
+   * @param <K> the type of the keys in the original map, and of the values in the returned map
+   * @param <V> the type of the values in the original map, and of the keys in the returned map
+   * @param map the source map
    * @return a new {@code Map} where keys and values are swapped
    */
   public static <K, V> Map<V, K> swapAndFreeze(Map<K, V> map) {
@@ -343,119 +315,112 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns an unmodifiable {@code Map} where the values of the input {@code Map} have
-   * been converted using the specified {@code Function}. The specified {@code Map} must
-   * not contain {@code null} keys, {@code null} values or duplicate values. An
-   * {@link IllegalArgumentException} is thrown if it does.
+   * Returns an unmodifiable {@code Map} where the values of the input {@code Map} have been converted using
+   * the specified {@code Function}. The specified {@code Map} must not contain {@code null} keys,
+   * {@code null} values or duplicate values. An {@link IllegalArgumentException} is thrown if it does.
    *
    * @param <K> the type of the keys of the input and output {@code Map}
    * @param <V0> the type of the values of the input {@code Map}
    * @param <V1> the type of the values of the output {@code Map}
    * @param src the input {@code Map}
-   * @param valueConverter A {@code Function} that converts the values of the input
-   *       {@code Map}
-   * @return an unmodifiable {@code Map} where the values of the input {@code Map} have
-   *       been converted using the specified {@code Function}
+   * @param valueConverter a {@code Function} that converts the values of the input {@code Map}
+   * @return an unmodifiable {@code Map} where the values of the input {@code Map} have been converted using
+   *     the specified {@code Function}
    */
   public static <K, V0, V1> Map<K, V1> freeze(
-        Map<K, V0> src, Function<? super V0, ? extends V1> valueConverter) {
+      Map<K, V0> src, Function<? super V0, ? extends V1> valueConverter) {
     Check.notNull(src, MAP);
     Check.notNull(valueConverter, "value converter");
     return src.entrySet().stream()
-          .peek(checkEntry())
-          .map(toEntryConverter(valueConverter))
-          .collect(toUnmodifiableMap(key(), value()));
+        .peek(checkEntry())
+        .map(toEntryConverter(valueConverter))
+        .collect(toUnmodifiableMap(key(), value()));
   }
 
   /**
-   * Returns an unmodifiable {@code Map} where the values of the input {@code Map} have
-   * been converted using the specified {@code BiFunction}. This method passes both the
-   * key and the value to the converter function so you can make the conversion
-   * key-dependent, or so you can mention the key if the conversion fails.
+   * Returns an unmodifiable {@code Map} where the values of the input {@code Map} have been converted using
+   * the specified {@code BiFunction}. This method passes both the key and the value to the converter function
+   * so you can make the conversion key-dependent, or so you can mention the key if the conversion fails.
    *
    * @param <K> the type of the keys of the input and output {@code Map}
    * @param <V0> the type of the values of the input {@code Map}
    * @param <V1> the type of the values of the output {@code Map}
    * @param src the input {@code Map}
-   * @param valueConverter A {@code Function} that converts the values of the input
-   *       {@code Map}
-   * @return an unmodifiable {@code Map} where the values of the input {@code Map} have
-   *       been converted using the specified {@code Function}
+   * @param valueConverter a {@code Function} that converts the values of the input {@code Map}
+   * @return an unmodifiable {@code Map} where the values of the input {@code Map} have been converted using
+   *     the specified {@code Function}
    */
   public static <K, V0, V1> Map<K, V1> freeze(
-        Map<K, V0> src,
-        BiFunction<? super K, ? super V0, ? extends V1> valueConverter) {
+      Map<K, V0> src,
+      BiFunction<? super K, ? super V0, ? extends V1> valueConverter) {
     Check.notNull(src, MAP);
     Check.notNull(valueConverter, "value converter");
     return src.entrySet().stream()
-          .peek(checkEntry())
-          .map(toEntryConverter(valueConverter))
-          .collect(toUnmodifiableMap(key(), value()));
+        .peek(checkEntry())
+        .map(toEntryConverter(valueConverter))
+        .collect(toUnmodifiableMap(key(), value()));
   }
 
   /**
-   * Returns an unmodifiable {@code Map} where both keys and values of the input
-   * {@code Map} have been converted using the specified {@code Function}. The output map
-   * may be smaller than the input map if the conversion function does not generate unique
-   * keys.
+   * Returns an unmodifiable {@code Map} where both keys and values of the input {@code Map} have been
+   * converted using the specified {@code Function}. The output map may be smaller than the input map if the
+   * conversion function does not generate unique keys.
    *
    * @param src the input {@code Map}
-   * @param entryConverter a {@code Function} that produces a new entry from the
-   *       original entry
+   * @param entryConverter a {@code Function} that produces a new entry from the original entry
    * @param <K0> The type of the keys in the input map
    * @param <V0> the type of the values in the input map
    * @param <K1> the type of the keys in the output map
    * @param <V1> the type of the values in the output map
-   * @return an unmodifiable {@code Map} where the values of the input {@code Map} have
-   *       been converted using the specified {@code Function}
+   * @return an unmodifiable {@code Map} where the values of the input {@code Map} have been converted using
+   *     the specified {@code Function}
    */
   public static <K0, V0, K1, V1> Map<K1, V1> deepFreeze(
-        Map<K0, V0> src, Function<Entry<K0, V0>, Entry<K1, V1>> entryConverter) {
+      Map<K0, V0> src, Function<Entry<K0, V0>, Entry<K1, V1>> entryConverter) {
     Check.notNull(src, MAP);
     Check.notNull(entryConverter, "entry converter");
-    Map<K1, V1> out = new HashMap<>(1 + src.size() * 4 / 3);
+    Map<K1, V1> out = HashMap.newHashMap(src.size());
     src.entrySet().stream()
-          .peek(checkEntry())
-          .map(entryConverter)
-          .forEach(e -> out.put(e.getKey(), e.getValue()));
+        .peek(checkEntry())
+        .map(entryConverter)
+        .forEach(e -> out.put(e.getKey(), e.getValue()));
     return Map.copyOf(out);
   }
 
   private static <K, V0, V1> Function<Entry<K, V0>, Entry<K, V1>> toEntryConverter(
-        BiFunction<? super K, ? super V0, ? extends V1> fnc) {
+      BiFunction<? super K, ? super V0, ? extends V1> fnc) {
     return e -> entry(e.getKey(), fnc.apply(e.getKey(), e.getValue()));
   }
 
   private static <K, V0, V1> Function<Entry<K, V0>, Entry<K, V1>> toEntryConverter(
-        Function<? super V0, ? extends V1> fnc) {
+      Function<? super V0, ? extends V1> fnc) {
     return e -> entry(e.getKey(), fnc.apply(e.getValue()));
   }
 
   private static <K, V> Consumer<Entry<K, V>> checkEntry() {
     return e ->
-          Check.that(e)
-                .has(key(), notNull(), "Illegal null key for value ${0}", e.getValue())
-                .has(value(), notNull(), "Illegal null value for key ${0}", e.getKey());
+        Check.that(e)
+            .has(key(), notNull(), "Illegal null key for value ${0}", e.getValue())
+            .has(value(), notNull(), "Illegal null value for key ${0}", e.getKey());
   }
 
   /**
-   * Returns an unmodifiable {@code List} containing the values that result from applying
-   * the specified function to the source list's elements. The conversion function is
-   * allowed to throw a checked exception.
+   * Returns an unmodifiable {@code List} containing the values that result from applying the specified
+   * function to the source list's elements. The conversion function is allowed to throw a checked exception.
    *
    * @param <T> the type of the elements in the source list
    * @param <U> the type of the elements in the returned list
    * @param <E> the type of exception thrown if the conversion fails
    * @param src the source list
    * @param converter the conversion function
-   * @return an unmodifiable {@code List} containing the values that result from applying
-   *       the specified function to the source list's elements
+   * @return an unmodifiable {@code List} containing the values that result from applying the specified
+   *     function to the source list's elements
    * @throws E the exception potentially being thrown from the conversion function
    */
   @SuppressWarnings("unchecked")
   public static <T, U, E extends Throwable> List<U> freeze(
-        List<? extends T> src, FallibleFunction<? super T, ? extends U, E> converter)
-        throws E {
+      List<? extends T> src, FallibleFunction<? super T, ? extends U, E> converter)
+      throws E {
     Check.notNull(src, LIST);
     Check.notNull(converter, CONVERTER);
     Object[] objs = new Object[src.size()];
@@ -466,23 +431,21 @@ public final class CollectionMethods {
   }
 
   /**
-   * Returns an unmodifiable {@code Set} containing the values that result from applying
-   * the specified function to the source set's elements. The conversion function is
-   * allowed to throw a checked exception.
+   * Returns an unmodifiable {@code Set} containing the values that result from applying the specified
+   * function to the source set's elements. The conversion function is allowed to throw a checked exception.
    *
    * @param <T> the type of the elements in the source set
    * @param <U> the type of the elements in the returned set
    * @param <E> the type of exception thrown if the conversion fails
    * @param src the source set
    * @param converter the conversion function
-   * @return an unmodifiable {@code Set} containing the values that result from applying
-   *       the
+   * @return an unmodifiable {@code Set} containing the values that result from applying the
    * @throws E the exception potentially being thrown from the conversion function
    */
   @SuppressWarnings({"unchecked"})
   public static <T, U, E extends Throwable> Set<U> freeze(
-        Set<? extends T> src, FallibleFunction<? super T, ? extends U, E> converter)
-        throws E {
+      Set<? extends T> src, FallibleFunction<? super T, ? extends U, E> converter)
+      throws E {
     Check.notNull(src, SET);
     Check.notNull(converter, CONVERTER);
     Object[] objs = new Object[src.size()];
@@ -496,23 +459,19 @@ public final class CollectionMethods {
   /**
    * Shortcut method. Returns an unmodifiable list using:
    *
-   * <blockquote>
-   *
-   * <pre>{@code
+   * <blockquote><pre>{@code
    * src.stream().map(converter).collect(toUnmodifiableList());
-   * }</pre>
-   *
-   * </blockquote>
+   * }</pre></blockquote>
    *
    * @param <T> the type of the elements in the source set
    * @param <U> the type of the elements in the returned list
    * @param src the source list
    * @param converter the conversion function
-   * @return an unmodifiable {@code List} containing the values that result from applying
-   *       the specified function to the source collection's elements
+   * @return an unmodifiable {@code List} containing the values that result from applying the specified
+   *     function to the source collection's elements
    */
   public static <T, U> List<U> collectionToList(
-        Collection<? extends T> src, Function<? super T, ? extends U> converter) {
+      Collection<? extends T> src, Function<? super T, ? extends U> converter) {
     Check.notNull(src, COLLECTION);
     Check.notNull(converter, CONVERTER);
     return src.stream().map(converter).collect(toUnmodifiableList());
@@ -533,11 +492,11 @@ public final class CollectionMethods {
    * @param <U> the type of the elements in the returned list
    * @param src the source list
    * @param converter the conversion function
-   * @return an unmodifiable {@code Set} containing the values that result from applying
-   *       the specified function to the source collection's elements
+   * @return an unmodifiable {@code Set} containing the values that result from applying the specified
+   *     function to the source collection's elements
    */
   public static <T, U> Set<U> collectionToSet(
-        Collection<? extends T> src, Function<? super T, ? extends U> converter) {
+      Collection<? extends T> src, Function<? super T, ? extends U> converter) {
     Check.notNull(src, COLLECTION);
     Check.notNull(converter, CONVERTER);
     return src.stream().map(converter).collect(toUnmodifiableSet());
@@ -553,21 +512,20 @@ public final class CollectionMethods {
    * @param <K> the type of the keys
    * @param <V> the type of the values and the list elements
    * @param src the {@code List} to convert.
-   * @param keyExtractor The key-extraction function
+   * @param keyExtractor the key-extraction function
    * @return an unmodifiable {@code Map}
    */
   public static <K, V> Map<K, V> collectionToMap(
-        Collection<V> src, Function<? super V, ? extends K> keyExtractor) {
+      Collection<V> src, Function<? super V, ? extends K> keyExtractor) {
     Check.notNull(src, COLLECTION);
     Check.notNull(keyExtractor, "key extractor");
     return src.stream().collect(toUnmodifiableMap(keyExtractor,
-          Function.identity()));
+        Function.identity()));
   }
 
   /**
-   * Shortcut method. Returns the first element that passes the specified test, or else
-   * {@code null}. Shortcut for
-   * {@code collection.stream().filter(test).findFirst().orElse(null)}.
+   * Shortcut method. Returns the first element that passes the specified test, or else {@code null}. Shortcut
+   * for {@code collection.stream().filter(test).findFirst().orElse(null)}.
    *
    * @param collection the collection to search
    * @param test the test
@@ -575,13 +533,12 @@ public final class CollectionMethods {
    * @return the first element that passes the specified test, or else {@code null}
    */
   public static <T> T findFirst(Collection<T> collection,
-        Predicate<? super T> test) {
+      Predicate<? super T> test) {
     return collection.stream().filter(test).findFirst().orElse(null);
   }
 
   /**
-   * PHP-style implode method, concatenating the collection elements using ", "
-   * (comma-space) as separator.
+   * PHP-style implode method, concatenating the collection elements using ", " (comma-space) as separator.
    *
    * @param collection the collection to implode
    * @param <T> the type of the elements
@@ -593,8 +550,7 @@ public final class CollectionMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating the collection elements with the specified
-   * separator.
+   * PHP-style implode method, concatenating the collection elements with the specified separator.
    *
    * @param collection the collection to implode
    * @param separator the string used to separate the elements
@@ -609,13 +565,12 @@ public final class CollectionMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} collection elements
-   * using ", " (comma-space) as separator.
+   * PHP-style implode method, concatenating at most {@code limit} collection elements using ", "
+   * (comma-space) as separator.
    *
    * @param collection the collection to implode
-   * @param limit The maximum number of elements to collect. Specify -1 for no
-   *       maximum. Specifying a number greater than the length of the collection is OK.
-   *       It will be clamped to the collection length.
+   * @param limit the maximum number of elements to collect. Specify -1 for no maximum. Specifying a
+   *     number greater than the length of the collection is OK. It will be clamped to the collection length.
    * @param <T> the type of the elements
    * @return a concatenation of the elements in the collection.
    * @see ArrayMethods#implode(Object[])
@@ -626,29 +581,27 @@ public final class CollectionMethods {
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} collection elements
-   * using ", " (comma-space) as separator.
+   * PHP-style implode method, concatenating at most {@code limit} collection elements using ", "
+   * (comma-space) as separator.
    *
    * @param collection the collection to implode
-   * @param stringifier a {@code Function} that converts the collection elements to
-   *       strings
+   * @param stringifier a {@code Function} that converts the collection elements to strings
    * @param <T> the type of the elements
    * @return a concatenation of the elements in the collection.
    * @see ArrayMethods#implode(Object[])
    * @see ArrayMethods#implode(Object[], Function)
    */
   public static <T> String implode(Collection<T> collection,
-        Function<T, String> stringifier) {
+      Function<T, String> stringifier) {
     return implode(collection, stringifier, IMPLODE_SEPARATOR, 0, -1);
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} collection elements
-   * using ", " (comma-space) as separator.
+   * PHP-style implode method, concatenating at most {@code limit} collection elements using ", "
+   * (comma-space) as separator.
    *
    * @param collection the collection to implode
-   * @param stringifier a {@code Function} that converts the collection elements to
-   *       strings
+   * @param stringifier a {@code Function} that converts the collection elements to strings
    * @param separator the string used to separate the elements
    * @param <T> the type of the elements
    * @return a concatenation of the elements in the collection.
@@ -656,27 +609,26 @@ public final class CollectionMethods {
    * @see ArrayMethods#implode(Object[], Function)
    */
   public static <T> String implode(Collection<T> collection,
-        Function<T, String> stringifier, String separator) {
+      Function<T, String> stringifier, String separator) {
     return implode(collection, stringifier, separator, 0, -1);
   }
 
   /**
-   * PHP-style implode method, concatenating at most {@code limit} collection elements
-   * using the specified separator.
+   * PHP-style implode method, concatenating at most {@code limit} collection elements using the specified
+   * separator.
    *
    * @param collection the collection to implode
    * @param separator the string used to separate the elements
-   * @param limit The maximum number of elements to collect. Specify -1 for no
-   *       maximum. Specifying a number greater than the length of the collection is OK.
-   *       It will be clamped to the collection length.
+   * @param limit the maximum number of elements to collect. Specify -1 for no maximum. Specifying a
+   *     number greater than the length of the collection is OK. It will be clamped to the collection length.
    * @param <T> the type of the elements
    * @return a concatenation of the elements in the collection.
    * @see ArrayMethods#implode(Object[])
    * @see ArrayMethods#implode(Object[], String, int)
    */
   public static <T> String implode(Collection<T> collection,
-        String separator,
-        int limit) {
+      String separator,
+      int limit) {
     return implode(collection, Objects::toString, separator, 0, limit);
   }
 
@@ -684,15 +636,12 @@ public final class CollectionMethods {
    * PHP-style implode method.
    *
    * @param collection the collection to implode
-   * @param stringifier a {@code Function} that converts the collection elements to
-   *       strings
+   * @param stringifier a {@code Function} that converts the collection elements to strings
    * @param separator the string used to separate the elements
-   * @param from the index of the element to begin the concatenation with
-   *       (inclusive)
-   * @param to the index of the element to end the concatenation with (exclusive).
-   *       The specified number will be clamped to {@code collection.size()} (i.e. it's OK
-   *       to specify a number greater than {@code collection.size()}). You can specify -1
-   *       as a shorthand for {@code collection.size()}.
+   * @param from the index of the element to begin the concatenation with (inclusive)
+   * @param to the index of the element to end the concatenation with (exclusive). The specified number
+   *     will be clamped to {@code collection.size()} (i.e. it's OK to specify a number greater than
+   *     {@code collection.size()}). You can specify -1 as a shorthand for {@code collection.size()}.
    * @param <T> the type of the elements
    * @return a concatenation of the elements in the collection.
    * @see ArrayMethods#implode(Object[])
@@ -700,11 +649,11 @@ public final class CollectionMethods {
    */
   @SuppressWarnings({"rawtypes", "unchecked"})
   public static <T> String implode(
-        Collection<T> collection,
-        Function<T, String> stringifier,
-        String separator,
-        int from,
-        int to) {
+      Collection<T> collection,
+      Function<T, String> stringifier,
+      String separator,
+      int from,
+      int to) {
     int sz = Check.notNull(collection, COLLECTION).ok(Collection::size);
     Check.notNull(stringifier, STRINGIFIER);
     Check.notNull(separator, SEPARATOR);
@@ -713,8 +662,8 @@ public final class CollectionMethods {
     Check.that(x, "to").is(gte(), from);
     if (from == 0) {
       Stream<T> stream = x == sz
-            ? collection.stream()
-            : collection.stream().limit(x);
+          ? collection.stream()
+          : collection.stream().limit(x);
       return stream.map(stringifier).collect(joining(separator));
     } else if (collection instanceof List) {
       List<T> sublist = ((List<T>) collection).subList(from, x);
@@ -726,28 +675,28 @@ public final class CollectionMethods {
 
   @SuppressWarnings("rawtypes")
   private static final Set<Class> NULL_REPELLERS =
-        // Actually, List.of(1) and List.of(1, 2) currently have the same type, but
-        // better safe than sorry. They will anyhow be de-duplicated when entering
-        // the HashSet
-        Set.copyOf(new HashSet<>(
-              Arrays.asList(
-                    Collections.emptyList().getClass(),
-                    Collections.emptySet().getClass(),
-                    List.of().getClass(),
-                    List.of(1).getClass(),
-                    List.of(1, 2).getClass(),
-                    List.of(1, 2, 3).getClass(),
-                    Set.of().getClass(),
-                    Set.of(1).getClass(),
-                    Set.of(1, 2).getClass(),
-                    Set.of(1, 2, 3).getClass())));
+      // Actually, List.of(1) and List.of(1, 2) currently have the same type, but
+      // better safe than sorry. They will anyhow be de-duplicated when entering
+      // the HashSet
+      Set.copyOf(new HashSet<>(
+          Arrays.asList(
+              Collections.emptyList().getClass(),
+              Collections.emptySet().getClass(),
+              List.of().getClass(),
+              List.of(1).getClass(),
+              List.of(1, 2).getClass(),
+              List.of(1, 2, 3).getClass(),
+              Set.of().getClass(),
+              Set.of(1).getClass(),
+              Set.of(1, 2).getClass(),
+              Set.of(1, 2, 3).getClass())));
 
   /**
-   * Returns {@code true} if the provided collection is a null-repellent collection like
-   * those obtained via {@code List.of(...)} and {@code Set.of(...)}. Note that if this
-   * method returns {@code false}, it does not mean that the collection is
-   * <i>not</i> null-repellent. The only sure thing is that if this method returns
-   * {@code true}, the collection is guaranteed not to contain {@code null} values.
+   * Returns {@code true} if the provided collection is a well-known, null-repellent collection like those
+   * obtained via {@code List.of(...)} and {@code Set.of(...)}. Note that if this method returns
+   * {@code false}, it does not mean that the collection is <i>not</i> null-repellent. The only sure thing is
+   * that if this method returns {@code true}, the collection is guaranteed not to contain {@code null}
+   * values.
    *
    * @param c the collection to inspect
    * @return {@code true} if the provided collection is a null-repellent collection

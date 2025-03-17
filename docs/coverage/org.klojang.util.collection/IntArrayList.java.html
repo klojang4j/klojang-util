@@ -4,7 +4,7 @@ import org.klojang.check.Check;
 import org.klojang.check.CommonChecks;
 import org.klojang.check.fallible.FallibleIntConsumer;
 import org.klojang.util.ArrayMethods;
-import org.klojang.util.ResizeMethod;
+import org.klojang.util.ResizeType;
 
 import java.util.*;
 import java.util.function.IntConsumer;
@@ -15,7 +15,7 @@ import static org.klojang.check.Check.fail;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonExceptions.indexOutOfBounds;
 import static org.klojang.util.ArrayMethods.*;
-import static org.klojang.util.ResizeMethod.*;
+import static org.klojang.util.ResizeType.*;
 
 /**
  * A mutable list of {@code int} values.
@@ -25,7 +25,7 @@ import static org.klojang.util.ResizeMethod.*;
  */
 public final class IntArrayList implements IntList {
 
-  private final ResizeMethod resizeMethod;
+  private final ResizeType resizeType;
   private final float resizeAmount;
 
   int[] buf;
@@ -41,7 +41,7 @@ public final class IntArrayList implements IntList {
   /**
    * Creates an {@code IntList} with the specified initial capacity. Each time the
    * backing array reaches full capacity, it is resized to twice its length.
-   * (However, see {@link ResizeMethod}.)
+   * (However, see {@link ResizeType}.)
    *
    * @param initialCapacity The initial capacity of the list
    */
@@ -64,19 +64,19 @@ public final class IntArrayList implements IntList {
   /**
    * Creates an {@code IntList} with the specified initial capacity. Each time the
    * backing array reaches full capacity, it is resized by applying the specified
-   * {@link ResizeMethod} to the specified resize amount.
+   * {@link ResizeType} to the specified resize amount.
    *
    * @param initialCapacity The initial capacity of the list
-   * @param resizeMethod The method to use for resizing the backing array
+   * @param resizeType The method to use for resizing the backing array
    * @param resizeAmount The resize amount
    */
   public IntArrayList(int initialCapacity,
-      ResizeMethod resizeMethod,
+      ResizeType resizeType,
 <span class="fc" id="L75">      float resizeAmount) {</span>
 <span class="fc" id="L76">    Check.that(initialCapacity, &quot;initialCapacity&quot;).is(gte(), 0);</span>
-<span class="fc" id="L77">    Check.notNull(resizeMethod, &quot;resizeMethod&quot;);</span>
+<span class="fc" id="L77">    Check.notNull(resizeType, &quot;resizeMethod&quot;);</span>
 <span class="fc" id="L78">    this.buf = new int[initialCapacity];</span>
-<span class="fc" id="L79">    this.resizeMethod = resizeMethod;</span>
+<span class="fc" id="L79">    this.resizeType = resizeType;</span>
 <span class="fc" id="L80">    this.resizeAmount = resizeAmount;</span>
 <span class="fc" id="L81">  }</span>
 
@@ -90,14 +90,14 @@ public final class IntArrayList implements IntList {
 <span class="fc" id="L90">    Check.notNull(other, &quot;IntList&quot;);</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">    if (other instanceof IntArrayList ial) {</span>
 <span class="fc" id="L92">      this.size = ial.size;</span>
-<span class="fc" id="L93">      this.resizeMethod = ial.resizeMethod;</span>
+<span class="fc" id="L93">      this.resizeType = ial.resizeType;</span>
 <span class="fc" id="L94">      this.resizeAmount = ial.resizeAmount;</span>
 <span class="fc" id="L95">      this.buf = new int[Math.min(Integer.MAX_VALUE, size + 10)];</span>
 <span class="fc" id="L96">      arraycopy(ial.buf, 0, this.buf, 0, size);</span>
     } else { // UnmodifiableIntList
 <span class="fc" id="L98">      this.buf = other.toArray();</span>
 <span class="fc" id="L99">      this.size = other.size();</span>
-<span class="fc" id="L100">      this.resizeMethod = MULTIPLY;</span>
+<span class="fc" id="L100">      this.resizeType = MULTIPLY;</span>
 <span class="fc" id="L101">      this.resizeAmount = 2F;</span>
     }
 <span class="fc" id="L103">  }</span>
@@ -381,7 +381,7 @@ public final class IntArrayList implements IntList {
   }
 
   private void increaseCapacity(int minIncrease) {
-<span class="fc" id="L384">    int capacity = resizeMethod.resize(buf.length, resizeAmount, minIncrease);</span>
+<span class="fc" id="L384">    int capacity = resizeType.resize(buf.length, resizeAmount, minIncrease);</span>
 <span class="fc" id="L385">    int[] newBuf = new int[capacity];</span>
 <span class="fc" id="L386">    arraycopy(buf, 0, newBuf, 0, size);</span>
 <span class="fc" id="L387">    buf = newBuf;</span>

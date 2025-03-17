@@ -2,12 +2,10 @@ package org.klojang.util.collection;
 
 import static org.junit.Assert.*;
 import static org.klojang.util.ArrayMethods.ints;
-import static org.klojang.util.ResizeMethod.ADD;
-import static org.klojang.util.ResizeMethod.PERCENTAGE;
+import static org.klojang.util.ResizeType.ADD;
+import static org.klojang.util.ResizeType.PERCENTAGE;
 
 import org.junit.Test;
-import org.klojang.util.collection.IntArrayList;
-import org.klojang.util.collection.IntList;
 import org.klojang.util.MutableInt;
 
 import java.util.List;
@@ -212,7 +210,7 @@ public class IntArrayListTest {
     IntArrayList list = new IntArrayList(4, 4);
     list.addAll(ints(0, 1, 2, 3, 4, 5));
     MutableInt mi = new MutableInt();
-    list.forEach(i -> mi.plusIs(i));
+    list.forEach(i -> mi.add(i));
     assertEquals(15, mi.get());
   }
 
@@ -221,7 +219,7 @@ public class IntArrayListTest {
     IntArrayList list = new IntArrayList(50);
     list.addAll(ints(0, 1, 2, 3, 4, 5));
     MutableInt mi = new MutableInt();
-    list.forEachThrowing(i -> mi.plusIs(i));
+    list.forEachThrowing(i -> mi.add(i));
     assertEquals(15, mi.get());
   }
 

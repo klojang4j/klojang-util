@@ -6,108 +6,137 @@ import static org.junit.Assert.*;
 
 public class MutableIntTest {
 
+  public void copy00() {
+    MutableInt mi0 = MutableInt.of(100);
+    MutableInt mi1 = mi0.copy();
+    assertEquals(mi0, mi1);
+  }
+
   @Test
-  public void getAndIncrement200() {
-    MutableInt i = new MutableInt();
-    int j = i.getAndIncrement();
+  public void increment00() {
+    MutableInt mi0 = new MutableInt();
+    int j = mi0.increment();
     assertEquals(0, j);
-    assertEquals(1, i.get());
+    assertEquals(1, mi0.get());
   }
 
   @Test
-  public void incrementAndGet00() {
-    MutableInt i = new MutableInt(7);
-    int j = i.incrementAndGet();
-    assertEquals(8, j);
-    assertEquals(8, i.get());
+  public void oneUp00() {
+    MutableInt mi0 = new MutableInt();
+    int j = mi0.oneUp();
+    assertEquals(1, j);
+    assertEquals(1, mi0.get());
   }
 
   @Test
-  public void getAndDecrement00() {
-    MutableInt i = new MutableInt();
-    int j = i.getAndDecrement();
-    assertEquals(0, j);
-    assertEquals(-1, i.get());
+  public void decrement00() {
+    MutableInt mi = new MutableInt(7);
+    int j = mi.decrement();
+    assertEquals(7, j);
+    assertEquals(6, mi.get());
   }
 
   @Test
-  public void decrementAndGet00() {
-    MutableInt i = new MutableInt(7);
-    int j = i.decrementAndGet();
+  public void oneDown00() {
+    MutableInt mi = new MutableInt(7);
+    int j = mi.oneDown();
     assertEquals(6, j);
-    assertEquals(6, i.get());
+    assertEquals(6, mi.get());
   }
 
   @Test
-  public void plusIs00() {
-    MutableInt i = new MutableInt(7);
-    int j = i.plusIs(2);
+  public void add00() {
+    MutableInt mi0 = new MutableInt(7);
+    int j = mi0.add(2);
     assertEquals(9, j);
-    assertEquals(9, i.get());
-    j = i.plusIs(i);
-    assertEquals(18, j);
-    assertEquals(18, i.get());
+    assertEquals(9, mi0.get());
+    MutableInt mi1 = mi0.add(mi0);
+    assertEquals(18, mi1.get());
+    assertEquals(18, mi0.get());
   }
 
   @Test
-  public void minusIs00() {
-    MutableInt i = new MutableInt(7);
-    int j = i.minusIs(2);
+  public void subtract00() {
+    MutableInt mi0 = new MutableInt(7);
+    int j = mi0.subtract(2);
     assertEquals(5, j);
-    assertEquals(5, i.get());
-    j = i.minusIs(new MutableInt(i));
-    assertEquals(0, j);
-    assertEquals(0, i.get());
+    assertEquals(5, mi0.get());
+    MutableInt mi1 = mi0.subtract(mi0.copy());
+    assertEquals(MutableInt.of(0), mi1);
+    assertEquals(0, mi0.get());
+  }
+
+  @Test
+  public void multiply00() {
+    MutableInt mi0 = new MutableInt(7);
+    int j = mi0.multiply(2);
+    assertEquals(14, j);
+    assertEquals(14, mi0.get());
+    MutableInt mi1 = mi0.multiply(mi0);
+    assertEquals(MutableInt.of(196), mi1);
+  }
+
+
+  @Test
+  public void computeInt00() {
+    MutableInt mi0 = new MutableInt(9);
+    int j = mi0.computeInt(i -> i / 3);
+    assertEquals(3, j);
+  }
+
+  @Test
+  public void compute00() {
+    MutableInt mi0 = new MutableInt(9);
+    MutableInt mi1 = mi0.compute(i -> i / 3);
+    assertSame(mi0, mi1);
+    assertEquals(MutableInt.of(3), mi1);
   }
 
   @Test
   public void set00() {
-    MutableInt i = new MutableInt(7);
-    int j = i.set(-2);
+    MutableInt mi0 = new MutableInt(7);
+    int j = mi0.set(-2);
     assertEquals(-2, j);
-    assertEquals(-2, i.get());
-    j = i.set(i);
-    assertEquals(-2, j);
-    assertEquals(-2, i.get());
-    j = i.set(new MutableInt(4));
-    assertEquals(4, j);
-    assertEquals(4, i.get());
+    assertEquals(-2, mi0.get());
+    MutableInt mi1 = mi0.set(MutableInt.of(7));
+    assertSame(mi0, mi1);
+    assertEquals(7, mi1.get());
   }
 
   @Test
-  public void eq00() {
+  public void equalTo00() {
     MutableInt i = new MutableInt(7);
-    assertTrue(i.eq(7));
-    assertTrue(i.eq(new MutableInt(7)));
-    assertFalse(i.eq(12));
-    assertFalse(i.eq(new MutableInt(12)));
+    assertTrue(i.equalTo(7));
+    assertTrue(i.equalTo(new MutableInt(7)));
+    assertFalse(i.equalTo(12));
+    assertFalse(i.equalTo(new MutableInt(12)));
   }
 
   @Test
-  public void ne00() {
+  public void notEquals00() {
     MutableInt i = new MutableInt(7);
-    assertTrue(i.ne(9));
-    assertTrue(i.ne(new MutableInt(9)));
-    assertFalse(i.ne(7));
-    assertFalse(i.ne(new MutableInt(7)));
+    assertTrue(i.notEquals(9));
+    assertTrue(i.notEquals(new MutableInt(9)));
+    assertFalse(i.notEquals(7));
+    assertFalse(i.notEquals(new MutableInt(7)));
   }
 
   @Test
-  public void gt00() {
+  public void greaterThan00() {
     MutableInt i = new MutableInt(7);
-    assertTrue(i.gt(-7));
-    assertTrue(i.gt(new MutableInt(-7)));
-    assertFalse(i.gt(9));
-    assertFalse(i.gt(new MutableInt(9)));
+    assertTrue(i.greaterThan(-7));
+    assertTrue(i.greaterThan(new MutableInt(-7)));
+    assertFalse(i.greaterThan(9));
+    assertFalse(i.greaterThan(new MutableInt(9)));
   }
 
   @Test
-  public void lt00() {
+  public void lessThan00() {
     MutableInt i = new MutableInt(7);
-    assertTrue(i.lt(10));
-    assertTrue(i.lt(new MutableInt(10)));
-    assertFalse(i.lt(7));
-    assertFalse(i.lt(new MutableInt(7)));
+    assertTrue(i.lessThan(10));
+    assertTrue(i.lessThan(new MutableInt(10)));
+    assertFalse(i.lessThan(7));
+    assertFalse(i.lessThan(new MutableInt(7)));
   }
 
   @Test
@@ -144,18 +173,14 @@ public class MutableIntTest {
 
   @Test
   public void equals00() {
-    MutableInt i = new MutableInt(7);
-    assertTrue(i.equals(i));
-    assertTrue(i.equals(7));
-    assertFalse(i.equals(13));
-    assertTrue(i.equals((short) 7));
-    assertFalse(i.equals((short) 13));
-    assertTrue(i.equals((byte) 7));
-    assertFalse(i.equals((byte) 13));
-    assertTrue(i.equals(new MutableInt(7)));
-    assertFalse(i.equals(new MutableInt(13)));
-    assertFalse(i.equals(null));
-    assertFalse(i.equals("Hello, World"));
+    MutableInt mi = new MutableInt(7);
+    assertEquals(mi, mi);
+    assertEquals(mi, mi.copy());
+    assertEquals(mi, MutableInt.of(7));
+    assertEquals(mi, new MutableInt(mi));
+    assertNotEquals(mi, new MutableInt(8));
+    assertNotEquals(mi, "7");
+    assertNotEquals(mi, 7);
   }
 
   @Test

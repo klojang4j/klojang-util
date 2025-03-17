@@ -203,7 +203,7 @@ public class SaturatedEnumToIntMapTest {
     map.put(THURSDAY, 200);
     map.put(SATURDAY, 300);
     MutableInt mi = new MutableInt();
-    map.forEach((k, v) -> mi.plusIs(v));
+    map.forEach((k, v) -> mi.add(v));
     assertEquals(600, mi.get());
   }
 
