@@ -9,15 +9,16 @@ import java.util.*;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonExceptions.STATE;
 import static org.klojang.check.CommonProperties.strlen;
+import static org.klojang.check.Tag.VALUE;
 import static org.klojang.util.ObjectMethods.ifNull;
-import static org.klojang.util.ObjectMethods.replaceIf;
+import static org.klojang.util.ObjectMethods.when;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
 /**
  * &lt;p&gt;An elaborate builder class for Map&amp;lt;String, Object&amp;gt; (map-in-map)
  * pseudo-objects. A {@code MapBuilder} lets you write deeply nested values without having to create the
  * intermediate maps first. If they are missing, they will tacitly be created. Map keys must not be
- * {@code null} or an empty string. Map values can be anything, including {@code null}.
+ * {@code null} and they must not be empty strings. Map values can be anything, including {@code null}.
  *
  * &lt;p&gt;Internally, a {@code MapBuilder} works with {@link Path} objects. See the
  * documentation for the {@code Path} class for how to specify path strings.
@@ -80,19 +81,19 @@ public final class MapBuilder {
   public static final class PathBlockedException extends IllegalArgumentException {
 
     private PathBlockedException(Path path, Object value) {
-<span class="fc" id="L83">      super(createMessage(path, value));</span>
-<span class="fc" id="L84">    }</span>
+<span class="fc" id="L84">      super(createMessage(path, value));</span>
+<span class="fc" id="L85">    }</span>
 
     private PathBlockedException(String msg) {
-<span class="fc" id="L87">      super(msg);</span>
-<span class="fc" id="L88">    }</span>
+<span class="fc" id="L88">      super(msg);</span>
+<span class="fc" id="L89">    }</span>
 
     private static String createMessage(Path path, Object value) {
-<span class="fc" id="L91">      String fmt = &quot;path \&quot;%s\&quot; blocked by terminal value %s&quot;;</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">      if (value instanceof String s) {</span>
-<span class="fc" id="L93">        value = '&quot;' + s + '&quot;';</span>
+<span class="fc" id="L92">      String fmt = &quot;path \&quot;%s\&quot; blocked by terminal value %s&quot;;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">      if (value instanceof String s) {</span>
+<span class="fc" id="L94">        value = '&quot;' + s + '&quot;';</span>
       }
-<span class="fc" id="L95">      return String.format(fmt, path, value);</span>
+<span class="fc" id="L96">      return String.format(fmt, path, value);</span>
     }
 
   }
@@ -104,7 +105,7 @@ public final class MapBuilder {
    * it up with a containsKey call. On its way out, _NULL_ is replaced again with
    * null.
    */
-<span class="fc" id="L107">  private static final Object _NULL_ = new Object();</span>
+<span class="fc" id="L108">  private static final Object _NULL_ = new Object();</span>
 
 
   /**
@@ -113,7 +114,7 @@ public final class MapBuilder {
    * @return a new {@code MapBuilder}
    */
   public static MapBuilder begin() {
-<span class="nc" id="L116">    return new MapBuilder();</span>
+<span class="nc" id="L117">    return new MapBuilder();</span>
   }
 
   /**
@@ -124,7 +125,7 @@ public final class MapBuilder {
    * @return a {@code MapBuilder} that starts out with the entries in the specified map
    */
   public static MapBuilder begin(Map&lt;String, Object&gt; map) {
-<span class="nc" id="L127">    return new MapBuilder(map);</span>
+<span class="nc" id="L128">    return new MapBuilder(map);</span>
   }
 
   private final Map&lt;String, Object&gt; map;
@@ -135,8 +136,8 @@ public final class MapBuilder {
    * Creates a new {@code MapBuilder}.
    */
   public MapBuilder() {
-<span class="fc" id="L138">    this(new LinkedHashMap&lt;&gt;());</span>
-<span class="fc" id="L139">  }</span>
+<span class="fc" id="L139">    this(new LinkedHashMap&lt;&gt;());</span>
+<span class="fc" id="L140">  }</span>
 
   /**
    * Creates a {@code MapBuilder} that starts out with the entries in the specified map. The map is read, but
@@ -144,19 +145,19 @@ public final class MapBuilder {
    *
    * @param map The initial {@code Map}
    */
-<span class="fc" id="L147">  public MapBuilder(Map&lt;String, Object&gt; map) {</span>
-<span class="fc" id="L148">    Check.notNull(map, Tag.MAP);</span>
-<span class="fc" id="L149">    this.map = LinkedHashMap.newLinkedHashMap(map.size() + 10);</span>
-<span class="fc" id="L150">    this.root = Path.empty();</span>
-<span class="fc" id="L151">    this.parent = null;</span>
-<span class="fc" id="L152">    init(this, map);</span>
-<span class="fc" id="L153">  }</span>
+<span class="fc" id="L148">  public MapBuilder(Map&lt;String, Object&gt; map) {</span>
+<span class="fc" id="L149">    Check.notNull(map, Tag.MAP);</span>
+<span class="fc" id="L150">    this.map = LinkedHashMap.newLinkedHashMap(map.size() + 10);</span>
+<span class="fc" id="L151">    this.root = Path.empty();</span>
+<span class="fc" id="L152">    this.parent = null;</span>
+<span class="fc" id="L153">    init(this, map);</span>
+<span class="fc" id="L154">  }</span>
 
-<span class="fc" id="L155">  private MapBuilder(Path root, MapBuilder parent) {</span>
-<span class="fc" id="L156">    this.root = root;</span>
-<span class="fc" id="L157">    this.map = new LinkedHashMap&lt;&gt;();</span>
-<span class="fc" id="L158">    this.parent = parent;</span>
-<span class="fc" id="L159">  }</span>
+<span class="fc" id="L156">  private MapBuilder(Path root, MapBuilder parent) {</span>
+<span class="fc" id="L157">    this.root = root;</span>
+<span class="fc" id="L158">    this.map = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L159">    this.parent = parent;</span>
+<span class="fc" id="L160">  }</span>
 
   /**
    * &lt;p&gt;Sets the specified path to the specified value. It is not allowed to
@@ -167,14 +168,14 @@ public final class MapBuilder {
    * {@link #in(String) in()} method to create a new map at the specified path. It is allowed to set a path's
    * value to {@code null}.
    *
-   * @param path  the path at which to write the value
+   * @param path the path at which to write the value
    * @param value the value
    * @return this {@code MapBuilder}
    */
   public MapBuilder set(String path, Object value) {
-<span class="fc" id="L175">    Check.notNull(path, Tag.PATH);</span>
-<span class="fc" id="L176">    set(this, Path.from(path), value);</span>
-<span class="fc" id="L177">    return this;</span>
+<span class="fc" id="L176">    Check.notNull(path, Tag.PATH);</span>
+<span class="fc" id="L177">    set(this, Path.from(path), value);</span>
+<span class="fc" id="L178">    return this;</span>
   }
 
   /**
@@ -183,24 +184,29 @@ public final class MapBuilder {
    * which the element will then be added. If the path is already set to a non-{@code Collection} type, a
    * {@link PathBlockedException} is thrown.
    *
-   * @param path    the path
+   * @param path the path
    * @param element the element to add to the collection found or created at the specified path
    * @return this {@code MapBuilder}
    */
   @SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
   public MapBuilder add(String path, Object element) {
-<span class="fc" id="L192">    Check.notNull(path, Tag.PATH);</span>
-<span class="fc" id="L193">    Result&lt;Object&gt; result = poll(path);</span>
-<span class="fc bfc" id="L194" title="All 2 branches covered.">    if (result.isAvailable()) {</span>
-<span class="fc" id="L195">      Object obj = result.get();</span>
-<span class="fc" id="L196">      Check.on(PathBlockedException::new, obj, path).is(instanceOf(), Collection.class);</span>
-<span class="fc" id="L197">      ((Collection) obj).add(element);</span>
-<span class="fc" id="L198">    } else {</span>
-<span class="fc" id="L199">      List&lt;Object&gt; list = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L200">      list.add(element);</span>
-<span class="fc" id="L201">      set(path, list);</span>
+<span class="fc" id="L193">    Check.notNull(path, Tag.PATH);</span>
+<span class="fc" id="L194">    Result&lt;Object&gt; result = poll(path);</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">    if (result.isAvailable()) {</span>
+<span class="fc" id="L196">      Object obj = result.get();</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">      if (obj instanceof Collection c) {</span>
+<span class="fc" id="L198">        c.add(element);</span>
+      } else {
+<span class="fc" id="L200">        String fmt = &quot;\&quot;%s\&quot; must be a collection (was %s)&quot;;</span>
+<span class="fc" id="L201">        String msg = fmt.formatted(path, obj.getClass());</span>
+<span class="fc" id="L202">        throw new PathBlockedException(msg);</span>
+      }
+<span class="fc" id="L204">    } else {</span>
+<span class="fc" id="L205">      List&lt;Object&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L206">      list.add(element);</span>
+<span class="fc" id="L207">      set(path, list);</span>
     }
-<span class="fc" id="L203">    return this;</span>
+<span class="fc" id="L209">    return this;</span>
   }
 
   /**
@@ -209,40 +215,40 @@ public final class MapBuilder {
    *
    * @param path the path
    * @return a {@link Result} object containing the value of the specified path, or
-   * {@link Result#notAvailable} if the path is not set
+   *     {@link Result#notAvailable} if the path is not set
    * @see #isSet(String)
    */
   public Result&lt;Object&gt; poll(String path) {
-<span class="fc" id="L216">    Check.notNull(path, Tag.PATH);</span>
-<span class="fc" id="L217">    return poll(this, Path.from(path));</span>
+<span class="fc" id="L222">    Check.notNull(path, Tag.PATH);</span>
+<span class="fc" id="L223">    return poll(this, Path.from(path));</span>
   }
 
   /**
    * Returns the value of the specified path if set, else {@code null}.
    *
    * @param path the path
-   * @param &lt;T&gt;  The type to cast the path's value to
+   * @param &lt;T&gt; The type to cast the path's value to
    * @return the value of the specified path if set, else {@code null}
    */
   @SuppressWarnings(&quot;unchecked&quot;)
   public &lt;T&gt; T get(String path) {
-<span class="nc" id="L229">    return (T) poll(path).orElse(null);</span>
+<span class="nc" id="L235">    return (T) poll(path).orElse(null);</span>
   }
 
   /**
    * Returns a {@code MapBuilder} for the map at the specified path. Once this method has been called, &lt;i&gt;all
    * subsequently specified paths&lt;/i&gt; (including for subsequent calls to {@code in()}) are taken relative to
    * the specified path. If there is no map yet at the specified path, it will be created. Ancestral maps will
-   * be created as well, as and when needed. If any of the segments in the path (including the last segment)
-   * has already been set, a {@link PathBlockedException} is thrown.
+   * be created as and when needed. If any of the segments in the path (including the last segment) has
+   * already been set, a {@link PathBlockedException} is thrown.
    *
-   * @param path the path to be used as the base path. The path will itself be interpreted as relative to the
-   *             &lt;i&gt;current&lt;/i&gt; base path
+   * @param path the path to be used as the base path. The path will itself be interpreted as relative to
+   *     the &lt;i&gt;current&lt;/i&gt; base path
    * @return a {@code MapBuilder} for the map found or created at the specified path
    */
   public MapBuilder in(String path) {
-<span class="fc" id="L244">    Check.notNull(path, Tag.PATH);</span>
-<span class="fc" id="L245">    return in(this, Path.from(path));</span>
+<span class="fc" id="L250">    Check.notNull(path, Tag.PATH);</span>
+<span class="fc" id="L251">    return in(this, Path.from(path));</span>
   }
 
   /**
@@ -256,17 +262,16 @@ public final class MapBuilder {
    * @see #in(String)
    */
   public MapBuilder jump(String path) {
-<span class="fc bfc" id="L259" title="All 2 branches covered.">    return parent == null ? in(path) : root().in(path);</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">    return parent == null ? in(path) : root().in(path);</span>
   }
 
   /**
-   * &lt;p&gt;Returns a {@code MapBuilder} for the parent map of the map currently being
-   * edited. All subsequently specified paths will be taken relative to the parent map's path. An
-   * {@link IllegalStateException} is thrown when trying to exit out of the root map. This method must be
-   * passed the name of the parent map (the last segment of the parent map's path). An
-   * {@link IllegalArgumentException} is thrown if the argument does not equal the parent map's name. This is
-   * to make sure you will not accidentally start writing to the wrong map, and it makes the map-building code
-   * more intelligible.
+   * &lt;p&gt;Returns a {@code MapBuilder} for the parent map of the map currently being edited. All subsequently
+   * specified paths will be taken relative to the parent map's path. An {@link IllegalStateException} is
+   * thrown when trying to exit out of the root map. You must pass the name of the parent map (the last path
+   * segment of the parent map's path). An {@link IllegalArgumentException} is thrown if the argument does not
+   * equal the parent map's name. This is to make sure you will not accidentally start writing to the wrong
+   * map, and it makes the map-building code more intelligible.
    *
    * &lt;blockquote&gt;&lt;pre&gt;{@code
    * Map&lt;String, Object&gt; map = new MapBuilder()
@@ -281,8 +286,8 @@ public final class MapBuilder {
    *  .build();
    * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
-   * &lt;p&gt;You can chain {@code exit} calls. To exit from a map directly under the root
-   * map, specify {@code null} or {@code &quot;&quot;} (an empty string):
+   * &lt;p&gt;You can chain {@code up()} calls. To exit from a map directly under the root map, specify {@code &quot;&quot;}
+   * (an empty string):
    *
    * &lt;blockquote&gt;&lt;pre&gt;{@code
    * MapBuilder mb = new MapBuilder();
@@ -290,7 +295,7 @@ public final class MapBuilder {
    *    .set(&quot;street&quot;, &quot;Sunset Blvd&quot;)
    *    .up(&quot;manager&quot;)
    *    .up(&quot;department&quot;)
-   *    .up(null)
+   *    .up(&quot;&quot;)
    *  .set(&quot;foo&quot;, &quot;bar&quot;);
    * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
@@ -298,14 +303,15 @@ public final class MapBuilder {
    * @return a {@code MapBuilder} for the parent map of the map currently being written to
    */
   public MapBuilder up(String parent) {
-<span class="fc" id="L301">    MapBuilder mother = this.parent;</span>
-<span class="fc" id="L302">    Check.on(STATE, mother).is(notNull(), ERR_HOME_ALREADY);</span>
-<span class="fc bfc" id="L303" title="All 2 branches covered.">    if (root.size() == 1) {</span>
-<span class="fc" id="L304">      Check.that(parent).is(empty(), &quot;specify null or \&quot;\&quot; to exit to root map&quot;);</span>
+<span class="fc" id="L306">    Check.notNull(parent);</span>
+<span class="fc" id="L307">    MapBuilder mother = this.parent;</span>
+<span class="fc" id="L308">    Check.on(STATE, mother).is(notNull(), ERR_HOME_ALREADY);</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">    if (root.size() == 1) {</span>
+<span class="fc" id="L310">      Check.that(parent).is(empty(), &quot;specify \&quot;\&quot; to go up to root map&quot;);</span>
     } else {
-<span class="fc" id="L306">      Check.that(parent).is(EQ(), mother.name(), NO_SUCH_PARENT, name());</span>
+<span class="fc" id="L312">      Check.that(parent).is(equalTo(), mother.name(), NO_SUCH_PARENT, name());</span>
     }
-<span class="fc" id="L308">    return this.parent;</span>
+<span class="fc" id="L314">    return this.parent;</span>
   }
 
   /**
@@ -314,14 +320,14 @@ public final class MapBuilder {
    * @return a {@code MapBuilder} for the root map
    */
   public MapBuilder root() {
-<span class="pc bpc" id="L317" title="1 of 2 branches missed.">    if (parent == null) {</span>
-<span class="nc" id="L318">      return this;</span>
+<span class="pc bpc" id="L323" title="1 of 2 branches missed.">    if (parent == null) {</span>
+<span class="nc" id="L324">      return this;</span>
     }
-<span class="fc" id="L320">    MapBuilder mb = parent;</span>
-<span class="fc bfc" id="L321" title="All 2 branches covered.">    while (mb.parent != null) {</span>
-<span class="fc" id="L322">      mb = mb.parent;</span>
+<span class="fc" id="L326">    MapBuilder mb = parent;</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">    while (mb.parent != null) {</span>
+<span class="fc" id="L328">      mb = mb.parent;</span>
     }
-<span class="fc" id="L324">    return mb;</span>
+<span class="fc" id="L330">    return mb;</span>
   }
 
   /**
@@ -331,10 +337,10 @@ public final class MapBuilder {
    * @return the key used to embed the current map within the parent map
    */
   public String name() {
-<span class="fc bfc" id="L334" title="All 2 branches covered.">    if (parent == null) {</span>
-<span class="fc" id="L335">      return EMPTY_STRING;</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">    if (parent == null) {</span>
+<span class="fc" id="L341">      return EMPTY_STRING;</span>
     }
-<span class="fc" id="L337">    return name(root);</span>
+<span class="fc" id="L343">    return name(root);</span>
   }
 
   /**
@@ -344,7 +350,7 @@ public final class MapBuilder {
    * @return the full path to the current map
    */
   public String where() {
-<span class="fc" id="L347">    return root.toString();</span>
+<span class="fc" id="L353">    return root.toString();</span>
   }
 
   /**
@@ -354,8 +360,8 @@ public final class MapBuilder {
    * @return whether it is set to a terminal value
    */
   public boolean isSet(String path) {
-<span class="fc" id="L357">    Check.notNull(path);</span>
-<span class="fc" id="L358">    return isSet(this, Path.from(path));</span>
+<span class="fc" id="L363">    Check.notNull(path);</span>
+<span class="fc" id="L364">    return isSet(this, Path.from(path));</span>
   }
 
   /**
@@ -365,9 +371,9 @@ public final class MapBuilder {
    * @return this {@code MapBuilder}
    */
   public MapBuilder unset(String path) {
-<span class="fc" id="L368">    Check.notNull(path);</span>
-<span class="fc" id="L369">    unset(this, Path.from(path));</span>
-<span class="fc" id="L370">    return this;</span>
+<span class="fc" id="L374">    Check.notNull(path);</span>
+<span class="fc" id="L375">    unset(this, Path.from(path));</span>
+<span class="fc" id="L376">    return this;</span>
   }
 
   /**
@@ -378,10 +384,10 @@ public final class MapBuilder {
    * @return the {@code Map} resulting from the write actions
    */
   public Map&lt;String, Object&gt; build() {
-<span class="fc" id="L381">    MapBuilder mb = this;</span>
-<span class="pc bpc" id="L382" title="1 of 2 branches missed.">    for (; mb.parent != null; mb = mb.parent)</span>
+<span class="fc" id="L387">    MapBuilder mb = this;</span>
+<span class="pc bpc" id="L388" title="1 of 2 branches missed.">    for (; mb.parent != null; mb = mb.parent)</span>
       ;
-<span class="fc" id="L384">    return createMap(mb);</span>
+<span class="fc" id="L390">    return createMap(mb);</span>
   }
 
   /**
@@ -391,125 +397,125 @@ public final class MapBuilder {
    */
   @Override
   public String toString() {
-<span class="fc" id="L394">    return build().toString();</span>
+<span class="fc" id="L400">    return build().toString();</span>
   }
 
   @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
   private static void init(MapBuilder writer, Map map) {
-<span class="fc" id="L399">    map.forEach((key, val) -&gt; processEntry(writer, key, val));</span>
-<span class="fc" id="L400">  }</span>
+<span class="fc" id="L405">    map.forEach((key, val) -&gt; processEntry(writer, key, val));</span>
+<span class="fc" id="L406">  }</span>
 
   @SuppressWarnings(&quot;rawtypes&quot;)
   private static void processEntry(MapBuilder writer, Object key, Object val) {
-<span class="fc" id="L404">    Check.that(key)</span>
-<span class="fc" id="L405">        .isNot(NULL(), &quot;illegal null key in source map&quot;)</span>
-<span class="fc" id="L406">        .isNot(empty(), &quot;illegal empty key in source map&quot;)</span>
-<span class="fc" id="L407">        .is(instanceOf(), String.class, &quot;illegal key type in source map: ${type}&quot;);</span>
-<span class="fc" id="L408">    String k = key.toString();</span>
-<span class="fc bfc" id="L409" title="All 2 branches covered.">    if (val instanceof Map nested) {</span>
-<span class="fc" id="L410">      Path path = writer.root.append(k);</span>
-<span class="fc" id="L411">      MapBuilder mb = new MapBuilder(path, writer);</span>
-<span class="fc" id="L412">      writer.map.put(k, mb);</span>
-<span class="fc" id="L413">      init(mb, nested);</span>
-<span class="fc" id="L414">    } else {</span>
-<span class="fc" id="L415">      Check.that(val).isNot(instanceOf(), MapBuilder.class); // stifle nasty usage</span>
-<span class="fc" id="L416">      writer.map.put(k, ifNull(val, _NULL_));</span>
+<span class="fc" id="L410">    Check.that(key)</span>
+<span class="fc" id="L411">        .is(notNull(), &quot;illegal null key in source map&quot;)</span>
+<span class="fc" id="L412">        .is(notEmpty(), &quot;illegal empty key in source map&quot;)</span>
+<span class="fc" id="L413">        .is(instanceOf(), String.class, &quot;illegal key type in source map: ${type}&quot;);</span>
+<span class="fc" id="L414">    String k = key.toString();</span>
+<span class="fc bfc" id="L415" title="All 2 branches covered.">    if (val instanceof Map nested) {</span>
+<span class="fc" id="L416">      Path path = writer.root.append(k);</span>
+<span class="fc" id="L417">      MapBuilder mb = new MapBuilder(path, writer);</span>
+<span class="fc" id="L418">      writer.map.put(k, mb);</span>
+<span class="fc" id="L419">      init(mb, nested);</span>
+<span class="fc" id="L420">    } else {</span>
+<span class="fc" id="L421">      Check.that(val, VALUE).isNot(instanceOf(), MapBuilder.class); // stifle nasty usage</span>
+<span class="fc" id="L422">      writer.map.put(k, ifNull(val, _NULL_));</span>
     }
-<span class="fc" id="L418">  }</span>
+<span class="fc" id="L424">  }</span>
 
   private static void set(MapBuilder writer, Path path, Object val) {
-<span class="fc" id="L421">    String key = firstSegment(path);</span>
-<span class="fc bfc" id="L422" title="All 2 branches covered.">    if (path.size() == 1) {</span>
-<span class="fc bfc" id="L423" title="All 2 branches covered.">      if (writer.map.containsKey(key)) {</span>
-<span class="fc" id="L424">        throw alreadySet(writer, key);</span>
+<span class="fc" id="L427">    String key = firstSegment(path);</span>
+<span class="fc bfc" id="L428" title="All 2 branches covered.">    if (path.size() == 1) {</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">      if (writer.map.containsKey(key)) {</span>
+<span class="fc" id="L430">        throw alreadySet(writer, key);</span>
       }
-<span class="fc" id="L426">      Check.that(val, Tag.VALUE)</span>
-<span class="fc" id="L427">          .isNot(instanceOf(), Map.class)</span>
-<span class="fc" id="L428">          .isNot(instanceOf(), MapBuilder.class); // stifle nasty usage</span>
-<span class="fc" id="L429">      writer.map.put(key, ifNull(val, _NULL_));</span>
+<span class="fc" id="L432">      Check.that(val, VALUE)</span>
+<span class="fc" id="L433">          .isNot(instanceOf(), Map.class)</span>
+<span class="fc" id="L434">          .isNot(instanceOf(), MapBuilder.class); // stifle nasty usage</span>
+<span class="fc" id="L435">      writer.map.put(key, ifNull(val, _NULL_));</span>
     } else {
-<span class="fc" id="L431">      set(getNestedWriter(writer, key), path.shift(), val);</span>
+<span class="fc" id="L437">      set(getNestedWriter(writer, key), path.shift(), val);</span>
     }
-<span class="fc" id="L433">  }</span>
+<span class="fc" id="L439">  }</span>
 
   private static Result&lt;Object&gt; poll(MapBuilder writer, Path path) {
-<span class="fc" id="L436">    String key = path.segment(0);</span>
-<span class="fc" id="L437">    Object val = writer.map.get(key);</span>
-<span class="fc bfc" id="L438" title="All 2 branches covered.">    if (val instanceof MapBuilder nested) {</span>
-<span class="fc bfc" id="L439" title="All 2 branches covered.">      if (path.size() == 1) {</span>
-<span class="fc" id="L440">        return Result.of(createMap(nested));</span>
+<span class="fc" id="L442">    String key = path.segment(0);</span>
+<span class="fc" id="L443">    Object val = writer.map.get(key);</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">    if (val instanceof MapBuilder nested) {</span>
+<span class="fc bfc" id="L445" title="All 2 branches covered.">      if (path.size() == 1) {</span>
+<span class="fc" id="L446">        return Result.of(createMap(nested));</span>
       }
-<span class="fc" id="L442">      return poll(nested, path.shift());</span>
-<span class="fc bfc" id="L443" title="All 4 branches covered.">    } else if (path.size() == 1 &amp;&amp; val != null) {</span>
-<span class="fc" id="L444">      return Result.of(replaceIf(val, sameAs(), _NULL_, null));</span>
+<span class="fc" id="L448">      return poll(nested, path.shift());</span>
+<span class="fc bfc" id="L449" title="All 4 branches covered.">    } else if (path.size() == 1 &amp;&amp; val != null) {</span>
+<span class="fc" id="L450">      return Result.of(ObjectMethods.when(val, sameAs(), _NULL_, null));</span>
     }
-<span class="fc" id="L446">    return Result.notAvailable();</span>
+<span class="fc" id="L452">    return Result.notAvailable();</span>
   }
 
   private static MapBuilder in(MapBuilder writer, Path path) {
-<span class="fc bfc" id="L450" title="All 2 branches covered.">    if (path.isEmpty()) {</span>
-<span class="fc" id="L451">      return writer;</span>
+<span class="fc bfc" id="L456" title="All 2 branches covered.">    if (path.isEmpty()) {</span>
+<span class="fc" id="L457">      return writer;</span>
     }
-<span class="fc" id="L453">    String key = firstSegment(path);</span>
-<span class="fc" id="L454">    return in(getNestedWriter(writer, key), path.shift());</span>
+<span class="fc" id="L459">    String key = firstSegment(path);</span>
+<span class="fc" id="L460">    return in(getNestedWriter(writer, key), path.shift());</span>
   }
 
   private static boolean isSet(MapBuilder writer, Path path) {
-<span class="fc" id="L458">    String key = firstSegment(path);</span>
-<span class="fc" id="L459">    Object val = writer.map.get(key);</span>
-<span class="fc bfc" id="L460" title="All 2 branches covered.">    if (val == null) {</span>
-<span class="fc" id="L461">      return false;</span>
-<span class="fc bfc" id="L462" title="All 4 branches covered.">    } else if (path.size() == 1 || !(val instanceof MapBuilder)) {</span>
-<span class="fc" id="L463">      return true;</span>
+<span class="fc" id="L464">    String key = firstSegment(path);</span>
+<span class="fc" id="L465">    Object val = writer.map.get(key);</span>
+<span class="fc bfc" id="L466" title="All 2 branches covered.">    if (val == null) {</span>
+<span class="fc" id="L467">      return false;</span>
+<span class="fc bfc" id="L468" title="All 4 branches covered.">    } else if (path.size() == 1 || !(val instanceof MapBuilder)) {</span>
+<span class="fc" id="L469">      return true;</span>
     }
-<span class="fc" id="L465">    return isSet((MapBuilder) val, path.shift());</span>
+<span class="fc" id="L471">    return isSet((MapBuilder) val, path.shift());</span>
   }
 
   private static void unset(MapBuilder writer, Path path) {
-<span class="fc" id="L469">    String key = firstSegment(path);</span>
-<span class="fc bfc" id="L470" title="All 2 branches covered.">    if (path.size() == 1) {</span>
-<span class="fc" id="L471">      writer.map.remove(key);</span>
+<span class="fc" id="L475">    String key = firstSegment(path);</span>
+<span class="fc bfc" id="L476" title="All 2 branches covered.">    if (path.size() == 1) {</span>
+<span class="fc" id="L477">      writer.map.remove(key);</span>
     } else {
-<span class="fc" id="L473">      unset(getNestedWriter(writer, key), path.shift());</span>
+<span class="fc" id="L479">      unset(getNestedWriter(writer, key), path.shift());</span>
     }
-<span class="fc" id="L475">  }</span>
+<span class="fc" id="L481">  }</span>
 
   private static Map&lt;String, Object&gt; createMap(MapBuilder writer) {
-<span class="fc" id="L478">    Map&lt;String, Object&gt; m = LinkedHashMap.newLinkedHashMap(writer.map.size());</span>
-<span class="fc" id="L479">    writer.map.forEach((key, val) -&gt; {</span>
-<span class="fc bfc" id="L480" title="All 2 branches covered.">      if (val instanceof MapBuilder mb) {</span>
-<span class="fc" id="L481">        m.put(key, createMap(mb));</span>
+<span class="fc" id="L484">    Map&lt;String, Object&gt; m = LinkedHashMap.newLinkedHashMap(writer.map.size());</span>
+<span class="fc" id="L485">    writer.map.forEach((key, val) -&gt; {</span>
+<span class="fc bfc" id="L486" title="All 2 branches covered.">      if (val instanceof MapBuilder mb) {</span>
+<span class="fc" id="L487">        m.put(key, createMap(mb));</span>
       } else {
-<span class="fc" id="L483">        m.put(key, replaceIf(val, sameAs(), _NULL_, null));</span>
+<span class="fc" id="L489">        m.put(key, ObjectMethods.when(val, sameAs(), _NULL_, null));</span>
       }
-<span class="fc" id="L485">    });</span>
-<span class="fc" id="L486">    return m;</span>
+<span class="fc" id="L491">    });</span>
+<span class="fc" id="L492">    return m;</span>
   }
 
   private static MapBuilder getNestedWriter(MapBuilder writer, String key) {
-<span class="fc" id="L490">    Path root = writer.root.append(key);</span>
-<span class="fc" id="L491">    Object val = writer.map.computeIfAbsent(key, k -&gt; new MapBuilder(root, writer));</span>
-<span class="fc bfc" id="L492" title="All 2 branches covered.">    if (val instanceof MapBuilder mb) {</span>
-<span class="fc" id="L493">      return mb;</span>
+<span class="fc" id="L496">    Path root = writer.root.append(key);</span>
+<span class="fc" id="L497">    Object val = writer.map.computeIfAbsent(key, k -&gt; new MapBuilder(root, writer));</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">    if (val instanceof MapBuilder mb) {</span>
+<span class="fc" id="L499">      return mb;</span>
     }
-<span class="fc" id="L495">    throw new PathBlockedException(root, val);</span>
+<span class="fc" id="L501">    throw new PathBlockedException(root, val);</span>
   }
 
   private static PathBlockedException alreadySet(MapBuilder writer, String key) {
-<span class="fc" id="L499">    Path absPath = writer.root.append(key);</span>
-<span class="fc" id="L500">    Object curVal = writer.map.get(key);</span>
-<span class="fc" id="L501">    return new PathBlockedException(absPath, curVal);</span>
+<span class="fc" id="L505">    Path absPath = writer.root.append(key);</span>
+<span class="fc" id="L506">    Object curVal = writer.map.get(key);</span>
+<span class="fc" id="L507">    return new PathBlockedException(absPath, curVal);</span>
   }
 
   private static String name(Path path) {
-<span class="fc" id="L505">    return path.segment(-1);</span>
+<span class="fc" id="L511">    return path.segment(-1);</span>
   }
 
   private static String firstSegment(Path path) {
-<span class="fc" id="L509">    return Check.that(path.segment(0))</span>
-<span class="fc" id="L510">        .isNot(NULL(), &quot;illegal null segment in path \&quot;${0}\&quot;&quot;, path)</span>
-<span class="fc" id="L511">        .has(strlen(), gt(), 0, &quot;illegal empty segment in path \&quot;${0}\&quot;&quot;, path)</span>
-<span class="fc" id="L512">        .ok();</span>
+<span class="fc" id="L515">    return Check.that(path.segment(0))</span>
+<span class="fc" id="L516">        .isNot(NULL(), &quot;illegal null segment in path \&quot;${0}\&quot;&quot;, path)</span>
+<span class="fc" id="L517">        .has(strlen(), gt(), 0, &quot;illegal empty segment in path \&quot;${0}\&quot;&quot;, path)</span>
+<span class="fc" id="L518">        .ok();</span>
   }
 
 }

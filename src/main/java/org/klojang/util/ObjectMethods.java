@@ -166,7 +166,7 @@ public class ObjectMethods {
    */
   public static boolean isDeepNotEmpty(Object arg) {
     return arg != null
-        && (!(arg instanceof CharSequence cs) || cs.length() > 0)
+        && (!(arg instanceof CharSequence cs) || !cs.isEmpty())
         && (!(arg instanceof Collection c) || isDeepNotEmpty(c))
         && (!(arg instanceof Map m) || isDeepNotEmpty(m))
         && (!(arg instanceof Object[] x) || isDeepNotEmpty(x))
@@ -578,128 +578,117 @@ public class ObjectMethods {
   }
 
   /**
-   * Replaces a value with another value if it satisfies a certain criterion. Note that the
-   * {@link CommonChecks} class defines various predicates that might be of use.
-   *
-   * @param value the value to test and possibly return
-   * @param criterion the criterion determining which value to return
-   * @param replacement the replacement value
-   * @param <T> the type of the values
-   * @return the value determined by the criterion
-   */
-  public static <T> T replaceIf(
-      T value,
-      Predicate<? super T> criterion,
-      T replacement) {
-    return criterion.test(value) ? replacement : value;
-  }
-
-  /**
-   * Replaces a value with another value if it has a certain relation <i>to</i> that value. Note that the
-   * {@link CommonChecks} class defines various relations that might be of use. This method can be used to
-   * apply some sort of clamping. For example:
+   * Clamps a value to some limit, making sure it does not exceed it.
    *
    * <blockquote><pre>{@code
    * import static nl.naturalis.check.ObjectMethods.clamp;
    * import static nl.naturalis.check.CommonChecks.GT;
    *
    * // Prevent dates from lying in the future:
-   * LocalDate myLocalDate = clamp(someLocalDate, GT(), LocalDate.now());
+   * LocalDate dateVar = clamp(dateArg, LTE(), LocalDate.now());
    * }</pre></blockquote>
    *
-   * @param value the value to test and possibly return
-   * @param relation the relation that needs to exist between the value and the replacement value in order
-   *     for the replacement value to be returned
-   * @param replacement the replacement value
+   * @param value the value to test
+   * @param relation the relation that the value needs to have with respect to the limit
+   * @param limit the maximum or minimum value
    * @param <T> the type of the values
    * @return the value determined by the relation by the two values
    */
-  public static <T> T clamp(T value, Relation<T, T> relation, T replacement) {
-    return relation.exists(value, replacement) ? replacement : value;
+  public static <T> T clamp(T value, Relation<T, T> relation, T limit) {
+    return relation.negate().exists(value, limit) ? limit : value;
   }
 
   /**
-   * Replaces a value with another value if it has a certain relation to yet another value. Note that the
-   * {@link CommonChecks} class defines various relations that might be of use. For example:
+   * Clamps a value to some limit, making sure it does not exceed it.
    *
    * <blockquote><pre>{@code
-   * // import static nl.naturalis.check.CommonChecks.equalTo;
+   * import static nl.naturalis.check.ObjectMethods.clamp;
+   * import static nl.naturalis.check.CommonChecks.lte;
    *
-   * // Replace green with blue, otherwise keep color
-   * Color newColor = replaceIf(color, equalTo(), Color.GREEN, Color.BLUE);
+   * // Max out at 65 MPH.
+   * int speed = clamp(someSpeed, lte(), 65);
    * }</pre></blockquote>
    *
-   * @param value the value to test and possibly return
-   * @param relation the relation that needs to exist between the value and the compare-to value in order
-   *     for the replacement value to be returned
-   * @param compareTo the compare-to value
-   * @param replacement the value returned if the specified relation is found to exist between the value
-   *     and the compare-to value
-   * @param <T> the type of the values
-   * @return the value determined by the relation by the two values
+   * @param value the value to test
+   * @param relation the relation that the value needs to have with respect to the limit
+   * @param limit the maximum or minimum value
+   * @return the value if it does not exceed the limit, else the limit
    */
-  public static <T> T replaceIf(
-      T value,
-      Relation<T, T> relation,
-      T compareTo,
-      T replacement) {
-    return relation.exists(value, compareTo) ? replacement : value;
+  public static int clamp(int value, IntRelation relation, int limit) {
+    return relation.negate().exists(value, limit) ? limit : value;
+  }
+
+  /**
+   * Replaces a value with a default value if it satisfies the specified criterion.
+   *
+   * <blockquote><pre>{@code
+   * import static nl.naturalis.check.ObjectMethods.when;
+   * import static nl.naturalis.check.CommonChecks.isNull;
+   *
+   * // Replace null values with blue
+   * Color newColor = when(color, isNull(), Color.BLUE);
+   * }</pre></blockquote>
+   *
+   * @param value the value to test
+   * @param criterion the criterion
+   * @param then the replacement value
+   * @param <T> the type of the values
+   * @return the default value if the value satisfies the criterion, else the value itself
+   */
+  public static <T> T when(T value, Predicate<? super T> criterion, T then) {
+    return criterion.test(value) ? then : value;
   }
 
   /**
    * Replaces a value with another value if it satisfies a certain criterion. Note that the
    * {@link CommonChecks} class defines various predicates that might be of use.
    *
-   * @param value the value to test and possibly return
-   * @param criterion the criterion determining which value to return
-   * @param replacement the replacement value
-   * @return the value determined by the criterion
+   * @param value the value to test
+   * @param criterion the criterion
+   * @param then the replacement value
+   * @return the default value if the value satisfies the criterion, else the value itself
    */
-  public static int replaceIf(int value, IntPredicate criterion, int replacement) {
-    return criterion.test(value) ? replacement : value;
+  public static int when(int value, IntPredicate criterion, int then) {
+    return criterion.test(value) ? then : value;
   }
 
   /**
-   * Retains a value if it has a certain relation to another value, else replaces it
-   * <i>with</i> that value. Note that the {@link CommonChecks} class defines
-   * various relations that might be of use. This method can be used to apply some sort of clamping. For
-   * example:
+   * Replaces a value with another value if it satisfies a certain criterion. Note that the
+   * {@link CommonChecks} class defines various relations that might be of use. For example:
    *
    * <blockquote><pre>{@code
-   * // import static nl.naturalis.check.CommonChecks.gt;
+   * import static nl.naturalis.check.ObjectMethods.when;
+   * import static nl.naturalis.check.CommonChecks.equalTo;
    *
-   * // Max out at 65 MPH.
-   * int speed = clamp(someSpeed, gt(), 65);
+   * // Replace green with blue, otherwise keep color
+   * Color newColor = when(color, equalTo(), Color.GREEN, Color.BLUE);
    * }</pre></blockquote>
    *
-   * @param value the value to test and possibly return
-   * @param relation the relation that needs to exist between the value and the replacement value in order
-   *     for the replacement value to be returned
-   * @param replacement the replacement value
-   * @return the value determined by the relation by the two values
+   * @param value the value to test
+   * @param relation the relation between {@code value} and {@code compareTo}
+   * @param compareTo the compare-to value
+   * @param then the value returned if the relation between {@code value} and {@code compareTo} exists
+   * @param <T> the type of the values
+   * @return {@code then} if the relation between {@code value} and {@code compareTo} exists, else
+   *     {@code value} itself.
    */
-  public static int clamp(int value, IntRelation relation, int replacement) {
-    return relation.exists(value, replacement) ? replacement : value;
+  public static <T> T when(T value, Relation<T, T> relation, T compareTo, T then) {
+    return relation.exists(value, compareTo) ? then : value;
   }
 
   /**
-   * Replaces a value with another value if it has a certain relation to yet another value. Note that the
-   * {@link CommonChecks} class defines various relations that might be of use.
+   * Replaces a value with another value if it satisfies a certain criterion. Note that the
+   * {@link CommonChecks} class defines various relations that might be of use. For example:
    *
-   * @param value the value to test and possibly return
-   * @param relation the relation that needs to exist between the value and the compare-to value in order
-   *     for the replacement value to be returned
+   * @param value the value to test
+   * @param relation the relation between {@code value} and {@code compareTo}
    * @param compareTo the compare-to value
-   * @param replacement the value returned if the specified relation is found to exist between the value
-   *     and the compare-to value
-   * @return the value determined by the relation by the two values
+   * @param then the value returned if the relation between {@code value} and {@code compareTo} exists
+   * @return {@code then} if the relation between {@code value} and {@code compareTo} exists, else
+   *     {@code value} itself.
    */
-  public static int replaceIf(
-      int value,
-      IntRelation relation,
-      int compareTo,
-      int replacement) {
-    return relation.exists(value, compareTo) ? replacement : value;
+  public static int when(int value, IntRelation relation, int compareTo, int then) {
+    return relation.exists(value, compareTo) ? then : value;
   }
 
   /**

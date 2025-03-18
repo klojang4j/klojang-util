@@ -7,11 +7,12 @@ import static org.klojang.check.CommonChecks.positive;
 import static org.klojang.util.InvokeMethods.getArrayLength;
 
 /**
- * Provides metadata about an array type and allows you to generate new arrays with a different element type
- * or dimensionality from it. The element type is the {@linkplain Class#getComponentType() component type} of
- * the innermost array of an n-dimensional array. So for {@code int[][][]} that would be {@code int}.
- * {@code int[][]} is the component type of {@code int[][][]}, but {@code int} is its element type of
- * {@code int[][][]}. In other words: <i>the element type of an array always is a non-array type</i>.
+ * Provides metadata about an array or array type and allows you to generate new arrays with a different
+ * element type or dimensionality. The element type is the
+ * {@linkplain Class#getComponentType() component type} of the innermost array of an n-dimensional array. So
+ * for {@code int[][][]} that would be {@code int}. {@code int[][]} is the component type of
+ * {@code int[][][]}, but {@code int} is its element type of {@code int[][][]}. In other words: <i>the element
+ * type of an array always is a non-array type</i>.
  *
  * @author Ayco Holleman
  */
@@ -67,7 +68,7 @@ public final class ArrayMetaData {
   public static Class<?> getElementType(Object array) {
     Check.notNull(array);
     if (array.getClass() == Class.class) {
-      // JVM might end up here with dynamically invoked code (using method handles or reflection)
+      // JVM might end up here with dynamically invoked code (method handles / reflection)
       return elementType((Class<?>) array);
     }
     return elementType(array.getClass());
@@ -127,9 +128,10 @@ public final class ArrayMetaData {
 
   /**
    * Creates a new {@code ArrayMetaData} instance. The provided type may or may not be an array type. If it is
-   * an array type, its element type will be the element type of the {@code ArrayMetaData} instance, otherwise
-   * the type itself will be the element type. The specified number of dimensions may be zero or negative, as
-   * long as the sum of the dimensions remains positive:
+   * an array type, its element type will be the element type of the {@code ArrayMetaData} instance and its
+   * dimension count will be added to the provided number of dimensions. If the provided type is a non-array
+   * type, it will itself be the element type of the {@code ArrayMetaData} instance. The specified number of
+   * dimensions may be zero or negative, as long as the sum of the dimensions remains positive:
    *
    * <blockquote><pre>{@code
    * var twoDimensional = float[][].class; // element type: float
@@ -137,7 +139,7 @@ public final class ArrayMetaData {
    * var oneDimensional = ArrayMetaData.of(twoDimensional, -1);  // represents float[].class
    * }</pre></blockquote>
    *
-   * @param type the element type of the array
+   * @param type the type to inspect
    * @param dimensions the number of dimensions
    */
   public static ArrayMetaData of(Class<?> type, int dimensions) {
@@ -295,18 +297,18 @@ public final class ArrayMetaData {
   }
 
   /**
-   * Returns the simple class name of the array type encoded by this instance. The returned string is somewhat
-   * easier to read than what you get from {@link Class#getSimpleName()}. For example the returned value for
-   * {@code int[][].class} would be "int[][]".
+   * Returns the simple class name of the array type represented by this instance. The returned string is
+   * easier to understand than what you get from {@link Class#getSimpleName()}. For example the return
+   * value for {@code int[][].class} would be "int[][]".
    *
-   * @return the simple class name of the array type encoded by this {@code ArrayMetaData}
+   * @return the simple class name of the array type represented by this {@code ArrayMetaData}
    */
   @Override
   public String toString() {
     if (dimensions == 1) { // happy path for 99% of the cases
-      return elementTypeName() + "[]";
+      return elementType.getSimpleName() + "[]";
     }
-    String name = elementTypeName();
+    String name = elementType.getSimpleName();
     StringBuilder sb = new StringBuilder(name.length() + dimensions * 2);
     sb.append(name);
     sb.append("[]".repeat(dimensions));
@@ -314,12 +316,12 @@ public final class ArrayMetaData {
   }
 
   /**
-   * Returns the class name of the array type encoded by this instance. The returned string is easier to
+   * Returns the class name of the array type represented by this instance. The returned string is easier to
    * understand than what you get from {@link Class#getName()}. For example, the return value for
    * {@code String[][].class} would be "String[][]". For types outside the {@code java.lang} package, the
    * fully-qualified class name is used (e.g. "java.io.File[][]").
    *
-   * @return the class name of the array type encoded by this {@code ArrayMetaData}
+   * @return the class name of the array type represented by this {@code ArrayMetaData}
    */
   public String getArrayClassName() {
     StringBuilder sb = new StringBuilder(elementTypeName());

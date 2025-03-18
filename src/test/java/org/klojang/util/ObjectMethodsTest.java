@@ -362,25 +362,33 @@ public class ObjectMethodsTest {
   }
 
   @Test
-  public void replaceIf00() {
-    assertEquals("42", replaceIf("42", empty(), "43"));
-    assertEquals("43", replaceIf("", empty(), "43"));
-    assertEquals("42", clamp("42", GT(), "43"));
-    assertEquals("43", clamp("43", GT(), "43"));
-    assertEquals("43", clamp("44", GT(), "43"));
-    assertEquals("44", replaceIf("44", LT(), "43", "50"));
-    assertEquals("50", replaceIf("40", LT(), "43", "50"));
+  public void clamp00() {
+    assertEquals("41", clamp("41", LTE(), "43"));
+    assertEquals("43", clamp("43", LTE(), "43"));
+    assertEquals("43", clamp("45", LTE(), "43"));
   }
 
   @Test
-  public void replaceIf02() {
-    assertEquals(42, replaceIf(42, odd(), -1));
-    assertEquals(-1, replaceIf(42, even(), -1));
-    assertEquals(42, ObjectMethods.clamp(42, gt(), 43));
-    assertEquals(43, ObjectMethods.clamp(43, gt(), 43));
-    assertEquals(43, ObjectMethods.clamp(44, gt(), 43));
-    assertEquals(44, replaceIf(44, lt(), 43, 50));
-    assertEquals(50, replaceIf(40, lt(), 43, 50));
+  public void clamp01() {
+    assertEquals(41, clamp(41, lte(), 43));
+    assertEquals(43, clamp(43, lte(), 43));
+    assertEquals(43, clamp(45, lte(), 43));
+  }
+
+  @Test
+  public void when00() {
+    assertEquals("42", when("42", empty(), "43"));
+    assertEquals("43", when("", empty(), "43"));
+    assertEquals("44", when("44", LT(), "43", "50"));
+    assertEquals("50", when("40", LT(), "43", "50"));
+  }
+
+  @Test
+  public void when01() {
+    assertEquals(42, when(42, odd(), -1));
+    assertEquals(-1, when(42, even(), -1));
+    assertEquals(44, when(44, lt(), 43, 50));
+    assertEquals(50, when(40, lt(), 43, 50));
   }
 
 }

@@ -243,10 +243,9 @@ public class MapBuilderTest {
         .set("foo", "bar");
     Map<String, Object> expected = Map.of(
         "department",
-        Map.of("foo",
-            "bar",
-            "manager",
-            Map.of("address", Map.of("street", "Sunset Blvd")))
+        Map.of(
+            "foo", "bar",
+            "manager", Map.of("address", Map.of("street", "Sunset Blvd")))
     );
     assertEquals(expected, mb.build());
   }
@@ -258,13 +257,11 @@ public class MapBuilderTest {
         .set("street", "Sunset Blvd")
         .up("manager")
         .up("department")
-        .up(null)
+        .up("")
         .set("foo", "bar");
     Map<String, Object> expected = Map.of(
         "foo", "bar",
-        "department",
-        Map.of("manager",
-            Map.of("address", Map.of("street", "Sunset Blvd")))
+        "department", Map.of("manager", Map.of("address", Map.of("street", "Sunset Blvd")))
     );
     assertEquals(expected, mb.build());
   }
@@ -276,13 +273,11 @@ public class MapBuilderTest {
         .set("street", "Sunset Blvd")
         .up("manager")
         .up("department")
-        .up(null)
+        .up("")
         .set("foo", "bar");
     Map<String, Object> expected = Map.of(
         "foo", "bar",
-        "department",
-        Map.of("manager",
-            Map.of("address", Map.of("street", "Sunset Blvd")))
+        "department", Map.of("manager", Map.of("address", Map.of("street", "Sunset Blvd")))
     );
     assertEquals(expected, mb.build());
   }

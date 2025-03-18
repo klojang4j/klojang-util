@@ -166,7 +166,7 @@ public class ObjectMethods {
    */
   public static boolean isDeepNotEmpty(Object arg) {
 <span class="fc" id="L168">    return arg != null</span>
-<span class="pc bpc" id="L169" title="1 of 4 branches missed.">        &amp;&amp; (!(arg instanceof CharSequence cs) || cs.length() &gt; 0)</span>
+<span class="pc bpc" id="L169" title="1 of 4 branches missed.">        &amp;&amp; (!(arg instanceof CharSequence cs) || !cs.isEmpty())</span>
 <span class="pc bpc" id="L170" title="1 of 4 branches missed.">        &amp;&amp; (!(arg instanceof Collection c) || isDeepNotEmpty(c))</span>
 <span class="fc bfc" id="L171" title="All 4 branches covered.">        &amp;&amp; (!(arg instanceof Map m) || isDeepNotEmpty(m))</span>
 <span class="fc bfc" id="L172" title="All 4 branches covered.">        &amp;&amp; (!(arg instanceof Object[] x) || isDeepNotEmpty(x))</span>
@@ -578,128 +578,117 @@ public class ObjectMethods {
   }
 
   /**
-   * Replaces a value with another value if it satisfies a certain criterion. Note that the
-   * {@link CommonChecks} class defines various predicates that might be of use.
-   *
-   * @param value the value to test and possibly return
-   * @param criterion the criterion determining which value to return
-   * @param replacement the replacement value
-   * @param &lt;T&gt; the type of the values
-   * @return the value determined by the criterion
-   */
-  public static &lt;T&gt; T replaceIf(
-      T value,
-      Predicate&lt;? super T&gt; criterion,
-      T replacement) {
-<span class="fc bfc" id="L594" title="All 2 branches covered.">    return criterion.test(value) ? replacement : value;</span>
-  }
-
-  /**
-   * Replaces a value with another value if it has a certain relation &lt;i&gt;to&lt;/i&gt; that value. Note that the
-   * {@link CommonChecks} class defines various relations that might be of use. This method can be used to
-   * apply some sort of clamping. For example:
+   * Clamps a value to some limit, making sure it does not exceed it.
    *
    * &lt;blockquote&gt;&lt;pre&gt;{@code
    * import static nl.naturalis.check.ObjectMethods.clamp;
    * import static nl.naturalis.check.CommonChecks.GT;
    *
    * // Prevent dates from lying in the future:
-   * LocalDate myLocalDate = clamp(someLocalDate, GT(), LocalDate.now());
+   * LocalDate dateVar = clamp(dateArg, LTE(), LocalDate.now());
    * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
-   * @param value the value to test and possibly return
-   * @param relation the relation that needs to exist between the value and the replacement value in order
-   *     for the replacement value to be returned
-   * @param replacement the replacement value
+   * @param value the value to test
+   * @param relation the relation that the value needs to have with respect to the limit
+   * @param limit the maximum or minimum value
    * @param &lt;T&gt; the type of the values
    * @return the value determined by the relation by the two values
    */
-  public static &lt;T&gt; T clamp(T value, Relation&lt;T, T&gt; relation, T replacement) {
-<span class="fc bfc" id="L618" title="All 2 branches covered.">    return relation.exists(value, replacement) ? replacement : value;</span>
+  public static &lt;T&gt; T clamp(T value, Relation&lt;T, T&gt; relation, T limit) {
+<span class="fc bfc" id="L598" title="All 2 branches covered.">    return relation.negate().exists(value, limit) ? limit : value;</span>
   }
 
   /**
-   * Replaces a value with another value if it has a certain relation to yet another value. Note that the
-   * {@link CommonChecks} class defines various relations that might be of use. For example:
+   * Clamps a value to some limit, making sure it does not exceed it.
    *
    * &lt;blockquote&gt;&lt;pre&gt;{@code
-   * // import static nl.naturalis.check.CommonChecks.equalTo;
+   * import static nl.naturalis.check.ObjectMethods.clamp;
+   * import static nl.naturalis.check.CommonChecks.lte;
    *
-   * // Replace green with blue, otherwise keep color
-   * Color newColor = replaceIf(color, equalTo(), Color.GREEN, Color.BLUE);
+   * // Max out at 65 MPH.
+   * int speed = clamp(someSpeed, lte(), 65);
    * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
-   * @param value the value to test and possibly return
-   * @param relation the relation that needs to exist between the value and the compare-to value in order
-   *     for the replacement value to be returned
-   * @param compareTo the compare-to value
-   * @param replacement the value returned if the specified relation is found to exist between the value
-   *     and the compare-to value
-   * @param &lt;T&gt; the type of the values
-   * @return the value determined by the relation by the two values
+   * @param value the value to test
+   * @param relation the relation that the value needs to have with respect to the limit
+   * @param limit the maximum or minimum value
+   * @return the value if it does not exceed the limit, else the limit
    */
-  public static &lt;T&gt; T replaceIf(
-      T value,
-      Relation&lt;T, T&gt; relation,
-      T compareTo,
-      T replacement) {
-<span class="fc bfc" id="L646" title="All 2 branches covered.">    return relation.exists(value, compareTo) ? replacement : value;</span>
+  public static int clamp(int value, IntRelation relation, int limit) {
+<span class="fc bfc" id="L618" title="All 2 branches covered.">    return relation.negate().exists(value, limit) ? limit : value;</span>
+  }
+
+  /**
+   * Replaces a value with a default value if it satisfies the specified criterion.
+   *
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * import static nl.naturalis.check.ObjectMethods.when;
+   * import static nl.naturalis.check.CommonChecks.isNull;
+   *
+   * // Replace null values with blue
+   * Color newColor = when(color, isNull(), Color.BLUE);
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   *
+   * @param value the value to test
+   * @param criterion the criterion
+   * @param then the replacement value
+   * @param &lt;T&gt; the type of the values
+   * @return the default value if the value satisfies the criterion, else the value itself
+   */
+  public static &lt;T&gt; T when(T value, Predicate&lt;? super T&gt; criterion, T then) {
+<span class="fc bfc" id="L639" title="All 2 branches covered.">    return criterion.test(value) ? then : value;</span>
   }
 
   /**
    * Replaces a value with another value if it satisfies a certain criterion. Note that the
    * {@link CommonChecks} class defines various predicates that might be of use.
    *
-   * @param value the value to test and possibly return
-   * @param criterion the criterion determining which value to return
-   * @param replacement the replacement value
-   * @return the value determined by the criterion
+   * @param value the value to test
+   * @param criterion the criterion
+   * @param then the replacement value
+   * @return the default value if the value satisfies the criterion, else the value itself
    */
-  public static int replaceIf(int value, IntPredicate criterion, int replacement) {
-<span class="fc bfc" id="L659" title="All 2 branches covered.">    return criterion.test(value) ? replacement : value;</span>
+  public static int when(int value, IntPredicate criterion, int then) {
+<span class="fc bfc" id="L652" title="All 2 branches covered.">    return criterion.test(value) ? then : value;</span>
   }
 
   /**
-   * Retains a value if it has a certain relation to another value, else replaces it
-   * &lt;i&gt;with&lt;/i&gt; that value. Note that the {@link CommonChecks} class defines
-   * various relations that might be of use. This method can be used to apply some sort of clamping. For
-   * example:
+   * Replaces a value with another value if it satisfies a certain criterion. Note that the
+   * {@link CommonChecks} class defines various relations that might be of use. For example:
    *
    * &lt;blockquote&gt;&lt;pre&gt;{@code
-   * // import static nl.naturalis.check.CommonChecks.gt;
+   * import static nl.naturalis.check.ObjectMethods.when;
+   * import static nl.naturalis.check.CommonChecks.equalTo;
    *
-   * // Max out at 65 MPH.
-   * int speed = clamp(someSpeed, gt(), 65);
+   * // Replace green with blue, otherwise keep color
+   * Color newColor = when(color, equalTo(), Color.GREEN, Color.BLUE);
    * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
-   * @param value the value to test and possibly return
-   * @param relation the relation that needs to exist between the value and the replacement value in order
-   *     for the replacement value to be returned
-   * @param replacement the replacement value
-   * @return the value determined by the relation by the two values
+   * @param value the value to test
+   * @param relation the relation between {@code value} and {@code compareTo}
+   * @param compareTo the compare-to value
+   * @param then the value returned if the relation between {@code value} and {@code compareTo} exists
+   * @param &lt;T&gt; the type of the values
+   * @return {@code then} if the relation between {@code value} and {@code compareTo} exists, else
+   *     {@code value} itself.
    */
-  public static int clamp(int value, IntRelation relation, int replacement) {
-<span class="fc bfc" id="L682" title="All 2 branches covered.">    return relation.exists(value, replacement) ? replacement : value;</span>
+  public static &lt;T&gt; T when(T value, Relation&lt;T, T&gt; relation, T compareTo, T then) {
+<span class="fc bfc" id="L676" title="All 2 branches covered.">    return relation.exists(value, compareTo) ? then : value;</span>
   }
 
   /**
-   * Replaces a value with another value if it has a certain relation to yet another value. Note that the
-   * {@link CommonChecks} class defines various relations that might be of use.
+   * Replaces a value with another value if it satisfies a certain criterion. Note that the
+   * {@link CommonChecks} class defines various relations that might be of use. For example:
    *
-   * @param value the value to test and possibly return
-   * @param relation the relation that needs to exist between the value and the compare-to value in order
-   *     for the replacement value to be returned
+   * @param value the value to test
+   * @param relation the relation between {@code value} and {@code compareTo}
    * @param compareTo the compare-to value
-   * @param replacement the value returned if the specified relation is found to exist between the value
-   *     and the compare-to value
-   * @return the value determined by the relation by the two values
+   * @param then the value returned if the relation between {@code value} and {@code compareTo} exists
+   * @return {@code then} if the relation between {@code value} and {@code compareTo} exists, else
+   *     {@code value} itself.
    */
-  public static int replaceIf(
-      int value,
-      IntRelation relation,
-      int compareTo,
-      int replacement) {
-<span class="fc bfc" id="L702" title="All 2 branches covered.">    return relation.exists(value, compareTo) ? replacement : value;</span>
+  public static int when(int value, IntRelation relation, int compareTo, int then) {
+<span class="fc bfc" id="L691" title="All 2 branches covered.">    return relation.exists(value, compareTo) ? then : value;</span>
   }
 
   /**
@@ -711,7 +700,7 @@ public class ObjectMethods {
    * @return the argument itself if not empty, else {@code null}
    */
   public static &lt;T&gt; T emptyToNull(T arg) {
-<span class="fc bfc" id="L714" title="All 2 branches covered.">    return isEmpty(arg) ? null : arg;</span>
+<span class="fc bfc" id="L703" title="All 2 branches covered.">    return isEmpty(arg) ? null : arg;</span>
   }
 
   /**
@@ -721,7 +710,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static String nullToEmpty(String arg) {
-<span class="fc" id="L724">    return ifNull(arg, EMPTY_STRING);</span>
+<span class="fc" id="L713">    return ifNull(arg, EMPTY_STRING);</span>
   }
 
   /**
@@ -732,7 +721,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static &lt;T&gt; List&lt;T&gt; nullToEmpty(List&lt;T&gt; arg) {
-<span class="fc" id="L735">    return ifNull(arg, Collections.emptyList());</span>
+<span class="fc" id="L724">    return ifNull(arg, Collections.emptyList());</span>
   }
 
   /**
@@ -742,7 +731,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static &lt;T&gt; Set&lt;T&gt; nullToEmpty(Set&lt;T&gt; arg) {
-<span class="fc" id="L745">    return ifNull(arg, Collections.emptySet());</span>
+<span class="fc" id="L734">    return ifNull(arg, Collections.emptySet());</span>
   }
 
   /**
@@ -752,7 +741,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static &lt;K, V&gt; Map&lt;K, V&gt; nullToEmpty(Map&lt;K, V&gt; arg) {
-<span class="fc" id="L755">    return ifNull(arg, Collections.emptyMap());</span>
+<span class="fc" id="L744">    return ifNull(arg, Collections.emptyMap());</span>
   }
 
   /**
@@ -762,7 +751,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Integer nullToZero(Integer arg) {
-<span class="fc" id="L765">    return ifNull(arg, 0);</span>
+<span class="fc" id="L754">    return ifNull(arg, 0);</span>
   }
 
   /**
@@ -772,7 +761,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Double nullToZero(Double arg) {
-<span class="fc" id="L775">    return ifNull(arg, 0D);</span>
+<span class="fc" id="L764">    return ifNull(arg, 0D);</span>
   }
 
   /**
@@ -782,7 +771,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Long nullToZero(Long arg) {
-<span class="fc" id="L785">    return ifNull(arg, 0L);</span>
+<span class="fc" id="L774">    return ifNull(arg, 0L);</span>
   }
 
   /**
@@ -792,7 +781,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Float nullToZero(Float arg) {
-<span class="fc" id="L795">    return ifNull(arg, 0F);</span>
+<span class="fc" id="L784">    return ifNull(arg, 0F);</span>
   }
 
   /**
@@ -802,7 +791,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Short nullToZero(Short arg) {
-<span class="fc" id="L805">    return ifNull(arg, (short) 0);</span>
+<span class="fc" id="L794">    return ifNull(arg, (short) 0);</span>
   }
 
   /**
@@ -812,7 +801,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Byte nullToZero(Byte arg) {
-<span class="fc" id="L815">    return ifNull(arg, (byte) 0);</span>
+<span class="fc" id="L804">    return ifNull(arg, (byte) 0);</span>
   }
 
   /**
@@ -822,7 +811,7 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Character nullToZero(Character arg) {
-<span class="fc" id="L825">    return ifNull(arg, '\0');</span>
+<span class="fc" id="L814">    return ifNull(arg, '\0');</span>
   }
 
   /**
@@ -832,82 +821,82 @@ public class ObjectMethods {
    * @return the argument or the default value of the corresponding primitive type
    */
   public static Boolean nullToFalse(Boolean arg) {
-<span class="fc" id="L835">    return ifNull(arg, Boolean.FALSE);</span>
+<span class="fc" id="L824">    return ifNull(arg, Boolean.FALSE);</span>
   }
 
   private static boolean eq(Object arg0, Object arg1) {
-<span class="fc bfc" id="L839" title="All 4 branches covered.">    if (arg0 instanceof Object[] &amp;&amp; arg1 instanceof Object[]) {</span>
-<span class="fc" id="L840">      return arraysEqual((Object[]) arg0, (Object[]) arg1);</span>
-<span class="fc bfc" id="L841" title="All 4 branches covered.">    } else if (arg0 instanceof List &amp;&amp; arg1 instanceof List) {</span>
-<span class="fc" id="L842">      return listsEqual((List) arg0, (List) arg1);</span>
-<span class="fc bfc" id="L843" title="All 4 branches covered.">    } else if (arg0 instanceof Set &amp;&amp; arg1 instanceof Set) {</span>
-<span class="fc" id="L844">      return setsEqual((Set) arg0, (Set) arg1);</span>
-<span class="pc bpc" id="L845" title="1 of 4 branches missed.">    } else if (arg0 instanceof Map &amp;&amp; arg1 instanceof Map) {</span>
-<span class="fc" id="L846">      return mapsEqual((Map) arg0, (Map) arg1);</span>
+<span class="fc bfc" id="L828" title="All 4 branches covered.">    if (arg0 instanceof Object[] &amp;&amp; arg1 instanceof Object[]) {</span>
+<span class="fc" id="L829">      return arraysEqual((Object[]) arg0, (Object[]) arg1);</span>
+<span class="fc bfc" id="L830" title="All 4 branches covered.">    } else if (arg0 instanceof List &amp;&amp; arg1 instanceof List) {</span>
+<span class="fc" id="L831">      return listsEqual((List) arg0, (List) arg1);</span>
+<span class="fc bfc" id="L832" title="All 4 branches covered.">    } else if (arg0 instanceof Set &amp;&amp; arg1 instanceof Set) {</span>
+<span class="fc" id="L833">      return setsEqual((Set) arg0, (Set) arg1);</span>
+<span class="pc bpc" id="L834" title="1 of 4 branches missed.">    } else if (arg0 instanceof Map &amp;&amp; arg1 instanceof Map) {</span>
+<span class="fc" id="L835">      return mapsEqual((Map) arg0, (Map) arg1);</span>
     }
-<span class="fc" id="L848">    return Objects.deepEquals(arg0, arg1);</span>
+<span class="fc" id="L837">    return Objects.deepEquals(arg0, arg1);</span>
   }
 
   private static boolean arraysEqual(Object[] arr0, Object[] arr1) {
-<span class="fc bfc" id="L852" title="All 2 branches covered.">    if (arr0.length == arr1.length) {</span>
-<span class="fc bfc" id="L853" title="All 2 branches covered.">      for (int i = 0; i &lt; arr0.length; ++i) {</span>
-<span class="pc bpc" id="L854" title="1 of 2 branches missed.">        if (!e2nDeepEquals(arr0[i], arr1[i])) {</span>
-<span class="nc" id="L855">          return false;</span>
+<span class="fc bfc" id="L841" title="All 2 branches covered.">    if (arr0.length == arr1.length) {</span>
+<span class="fc bfc" id="L842" title="All 2 branches covered.">      for (int i = 0; i &lt; arr0.length; ++i) {</span>
+<span class="pc bpc" id="L843" title="1 of 2 branches missed.">        if (!e2nDeepEquals(arr0[i], arr1[i])) {</span>
+<span class="nc" id="L844">          return false;</span>
         }
       }
-<span class="fc" id="L858">      return true;</span>
+<span class="fc" id="L847">      return true;</span>
     }
-<span class="fc" id="L860">    return false;</span>
+<span class="fc" id="L849">    return false;</span>
   }
 
   private static boolean listsEqual(List list0, List list1) {
-<span class="pc bpc" id="L864" title="1 of 2 branches missed.">    if (list0.size() == list1.size()) {</span>
-<span class="fc" id="L865">      Iterator it0 = list0.iterator();</span>
-<span class="fc" id="L866">      Iterator it1 = list1.iterator();</span>
-<span class="fc bfc" id="L867" title="All 2 branches covered.">      while (it0.hasNext()) {</span>
-<span class="pc bpc" id="L868" title="2 of 4 branches missed.">        if (!it1.hasNext() || !e2nDeepEquals(it0.next(), it1.next())) {</span>
-<span class="nc" id="L869">          return false;</span>
+<span class="pc bpc" id="L853" title="1 of 2 branches missed.">    if (list0.size() == list1.size()) {</span>
+<span class="fc" id="L854">      Iterator it0 = list0.iterator();</span>
+<span class="fc" id="L855">      Iterator it1 = list1.iterator();</span>
+<span class="fc bfc" id="L856" title="All 2 branches covered.">      while (it0.hasNext()) {</span>
+<span class="pc bpc" id="L857" title="2 of 4 branches missed.">        if (!it1.hasNext() || !e2nDeepEquals(it0.next(), it1.next())) {</span>
+<span class="nc" id="L858">          return false;</span>
         }
       }
-<span class="fc" id="L872">      return true;</span>
+<span class="fc" id="L861">      return true;</span>
     }
-<span class="nc" id="L874">    return false;</span>
+<span class="nc" id="L863">    return false;</span>
   }
 
   private static boolean setsEqual(Set set0, Set set1) {
-<span class="fc" id="L878">    Set s0 = (Set) set0.stream().map(ObjectMethods::emptyToNull).collect(toSet());</span>
-<span class="fc" id="L879">    Set s1 = (Set) set1.stream().map(ObjectMethods::emptyToNull).collect(toSet());</span>
-<span class="fc bfc" id="L880" title="All 2 branches covered.">    if (s0.size() != s1.size()) {</span>
-<span class="fc" id="L881">      return false;</span>
-<span class="fc bfc" id="L882" title="All 2 branches covered.">    } else if (s0.equals(s1)) {</span>
-<span class="fc" id="L883">      return true;</span>
+<span class="fc" id="L867">    Set s0 = (Set) set0.stream().map(ObjectMethods::emptyToNull).collect(toSet());</span>
+<span class="fc" id="L868">    Set s1 = (Set) set1.stream().map(ObjectMethods::emptyToNull).collect(toSet());</span>
+<span class="fc bfc" id="L869" title="All 2 branches covered.">    if (s0.size() != s1.size()) {</span>
+<span class="fc" id="L870">      return false;</span>
+<span class="fc bfc" id="L871" title="All 2 branches covered.">    } else if (s0.equals(s1)) {</span>
+<span class="fc" id="L872">      return true;</span>
     }
-<span class="fc bfc" id="L885" title="All 2 branches covered.">    for (Object obj0 : s0) {</span>
-<span class="fc" id="L886">      boolean found = false;</span>
-<span class="fc bfc" id="L887" title="All 2 branches covered.">      for (Object obj1 : s1) {</span>
-<span class="fc bfc" id="L888" title="All 2 branches covered.">        if (e2nDeepEquals(obj0, obj1)) {</span>
-<span class="fc" id="L889">          found = true;</span>
-<span class="fc" id="L890">          s1.remove(obj0);</span>
-<span class="fc" id="L891">          break;</span>
+<span class="fc bfc" id="L874" title="All 2 branches covered.">    for (Object obj0 : s0) {</span>
+<span class="fc" id="L875">      boolean found = false;</span>
+<span class="fc bfc" id="L876" title="All 2 branches covered.">      for (Object obj1 : s1) {</span>
+<span class="fc bfc" id="L877" title="All 2 branches covered.">        if (e2nDeepEquals(obj0, obj1)) {</span>
+<span class="fc" id="L878">          found = true;</span>
+<span class="fc" id="L879">          s1.remove(obj0);</span>
+<span class="fc" id="L880">          break;</span>
         }
-<span class="fc" id="L893">      }</span>
-<span class="fc bfc" id="L894" title="All 2 branches covered.">      if (!found) {</span>
-<span class="fc" id="L895">        return false;</span>
+<span class="fc" id="L882">      }</span>
+<span class="fc bfc" id="L883" title="All 2 branches covered.">      if (!found) {</span>
+<span class="fc" id="L884">        return false;</span>
       }
-<span class="fc" id="L897">    }</span>
-<span class="fc" id="L898">    return true;</span>
+<span class="fc" id="L886">    }</span>
+<span class="fc" id="L887">    return true;</span>
   }
 
   private static boolean mapsEqual(Map map0, Map map1) {
-<span class="fc bfc" id="L902" title="All 2 branches covered.">    if (map0.size() == map1.size()) {</span>
-<span class="fc bfc" id="L903" title="All 2 branches covered.">      for (Object k : map0.keySet()) {</span>
-<span class="pc bpc" id="L904" title="1 of 4 branches missed.">        if (!map1.containsKey(k) || !e2nDeepEquals(map0.get(k), map1.get(k))) {</span>
-<span class="fc" id="L905">          return false;</span>
+<span class="fc bfc" id="L891" title="All 2 branches covered.">    if (map0.size() == map1.size()) {</span>
+<span class="fc bfc" id="L892" title="All 2 branches covered.">      for (Object k : map0.keySet()) {</span>
+<span class="pc bpc" id="L893" title="1 of 4 branches missed.">        if (!map1.containsKey(k) || !e2nDeepEquals(map0.get(k), map1.get(k))) {</span>
+<span class="fc" id="L894">          return false;</span>
         }
-<span class="fc" id="L907">      }</span>
-<span class="fc" id="L908">      return true;</span>
+<span class="fc" id="L896">      }</span>
+<span class="fc" id="L897">      return true;</span>
     }
-<span class="fc" id="L910">    return false;</span>
+<span class="fc" id="L899">    return false;</span>
   }
 
 }
