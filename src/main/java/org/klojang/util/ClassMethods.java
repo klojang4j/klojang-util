@@ -219,7 +219,7 @@ public final class ClassMethods {
    */
   public static boolean hasPrimitiveElements(Class<?> type) {
     Check.notNull(type);
-    return type.isArray() && ArrayMetaData.forType(type).getElementType().isPrimitive();
+    return type.isArray() && ArrayMetaData.of(type).getBaseType().isPrimitive();
   }
 
   /**
@@ -365,7 +365,7 @@ public final class ClassMethods {
   public static String className(Class<?> type) {
     Check.notNull(type);
     if (type.isArray()) {
-      return ArrayMetaData.forType(type).getArrayClassName();
+      return ArrayMetaData.of(type).getArrayClassName();
     }
     return type.getName();
   }
@@ -394,7 +394,7 @@ public final class ClassMethods {
   public static String simpleClassName(Class<?> clazz) {
     Check.notNull(clazz);
     if (clazz.isArray()) {
-      return ArrayMetaData.forType(clazz).toString();
+      return ArrayMetaData.of(clazz).toString();
     }
     return clazz.getSimpleName();
   }

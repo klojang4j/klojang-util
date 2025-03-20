@@ -1,27 +1,43 @@
 package org.klojang.util;
 
 import java.lang.invoke.MethodHandle;
-import java.util.HashMap;
+import java.lang.invoke.MethodHandles;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static java.lang.invoke.MethodHandles.*;
+import static java.lang.invoke.MethodHandles.publicLookup;
 import static java.lang.invoke.MethodType.methodType;
 
 /**
- * Dynamic invocation utility methods. <i>These methods are not meant to be used in
- * application-level software.</i> They very thinly wrap methods from the
- * {@code java.lang.invoke} package and do not perform any null checks, type checks,
- * range checks, etc.
+ * Dynamic invocation utility methods. These methods are not meant to be used in application-level code. They
+ * very thinly wrap methods from the {@code java.lang.invoke} package and <b>they do not perform any null
+ * checks, type checks, range checks, etc.</b> These checks are still necessary but are left to higher-level
+ * code.
  */
 public final class InvokeMethods {
 
-  private static final Map<Class<?>, MethodHandle> noArgConstructors = new HashMap<>();
-  private static final Map<Class<?>, MethodHandle> intArgConstructors = new HashMap<>();
+  //@formatter:off
+  private static final class Cache extends LinkedHashMap<Class<?>, MethodHandle> {
+    public Cache() {
+      super(16, 0.75f, true);
+    }
+    public boolean removeEldestEntry(Map.Entry<Class<?>, MethodHandle> eldest) {
+      return size() > 10;
+    }
+  }
+  //@formatter:on
+
+  private static final Cache noArgConstructors = new Cache();
+  private static final Cache intArgConstructors = new Cache();
+  private static final Cache arrayConstructors = new Cache();
+  private static final Cache arrayLengthGetters = new Cache();
+  private static final Cache elementGetters = new Cache();
+  private static final Cache elementSetters = new Cache();
 
   /**
    * Returns a new instance of the specified class using its no-arg constructor. The
-   * {@link NoSuchMethodException} thrown if there is no such constructor is
-   * converted to an {@link InvokeException}.
+   * {@link NoSuchMethodException}, thrown if there is no such constructor, is converted to an
+   * {@link InvokeException}.
    *
    * @param clazz the class to instantiate
    * @param <T> the type of the returned instance
@@ -40,9 +56,9 @@ public final class InvokeMethods {
   }
 
   /**
-   * Returns a new instance of the specified class using the constructor that takes a
-   * single {@code int} argument. The {@link NoSuchMethodException} thrown if there
-   * is no such constructor is converted to an {@link InvokeException}.
+   * Returns a new instance of the specified class using the constructor that takes a single {@code int}
+   * argument. The {@link NoSuchMethodException}, thrown if there is no such constructor, is converted to an
+   * {@link InvokeException}.
    *
    * @param clazz the class
    * @param arg0 the constructor argument
@@ -62,14 +78,15 @@ public final class InvokeMethods {
   }
 
   /**
-   * Returns a new array with the specified length.
+   * Returns a new array with the specified length. Higher-level code must check that the provided class does
+   * in fact represent an array type and that the specified length is not negative
    *
-   * @param arrayType the array class (not the class of its elements!)
-   * @param length the desired length of the array
+   * @param arrayType the array class
+   * @param length the length of the outermost array
    * @return the array
    */
   public static Object newArray(Class<?> arrayType, int length) {
-    MethodHandle mh = arrayConstructor(arrayType);
+    MethodHandle mh = getArrayConstructor(arrayType);
     try {
       return mh.invoke(length);
     } catch (Throwable t) {
@@ -78,14 +95,30 @@ public final class InvokeMethods {
   }
 
   /**
-   * Returns the length of the provided array.
+   * Returns a new array with the specified type of elements and with the specified length. The provided type
+   * may be an array type, but the returned array will then be an array of that array type. For example, if
+   * the provided type is {@code String[][].class}, and the provided length is 100, then this method will
+   * return {@code new String[100][][]}.
+   *
+   * @param elementType the type of the elements in the array.
+   * @param length the length of the array
+   * @return the array
+   */
+  public static Object arrayOf(Class<?> elementType, int length) {
+    ArrayMetaData metadata = ArrayMetaData.of(elementType, 1);
+    return newArray(metadata.getArrayClass(), length);
+  }
+
+  /**
+   * Returns the length of the provided array. Higher-level code must check that the provided object is in
+   * fact represent an array
    *
    * @param array the array
    * @return its length
    */
   public static int getArrayLength(Object array) {
     try {
-      return (int) arrayLength(array.getClass()).invoke(array);
+      return (int) getArrayLengthGetter(array.getClass()).invoke(array);
     } catch (Throwable t) {
       throw ExceptionMethods.uncheck(t);
     }
@@ -102,7 +135,7 @@ public final class InvokeMethods {
   @SuppressWarnings("unchecked")
   public static <T> T getArrayElement(Object array, int index) {
     try {
-      return (T) arrayElementGetter(array.getClass()).invoke(array, index);
+      return (T) getElementGetter(array.getClass()).invoke(array, index);
     } catch (Throwable t) {
       throw ExceptionMethods.uncheck(t);
     }
@@ -117,7 +150,7 @@ public final class InvokeMethods {
    */
   public static void setArrayElement(Object array, int idx, Object value) {
     try {
-      arrayElementSetter(array.getClass()).invoke(array, idx, value);
+      getElementSetter(array.getClass()).invoke(array, idx, value);
     } catch (Throwable t) {
       throw ExceptionMethods.uncheck(t);
     }
@@ -141,6 +174,22 @@ public final class InvokeMethods {
       intArgConstructors.put(clazz, mh);
     }
     return mh;
+  }
+
+  private static MethodHandle getArrayConstructor(Class<?> clazz) {
+    return arrayConstructors.computeIfAbsent(clazz, MethodHandles::arrayConstructor);
+  }
+
+  private static MethodHandle getArrayLengthGetter(Class<?> clazz) {
+    return arrayLengthGetters.computeIfAbsent(clazz, MethodHandles::arrayLength);
+  }
+
+  private static MethodHandle getElementGetter(Class<?> clazz) {
+    return elementGetters.computeIfAbsent(clazz, MethodHandles::arrayElementGetter);
+  }
+
+  private static MethodHandle getElementSetter(Class<?> clazz) {
+    return elementSetters.computeIfAbsent(clazz, MethodHandles::arrayElementSetter);
   }
 
 }

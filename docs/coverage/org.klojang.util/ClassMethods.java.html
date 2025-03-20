@@ -219,7 +219,7 @@ public final class ClassMethods {
    */
   public static boolean hasPrimitiveElements(Class&lt;?&gt; type) {
 <span class="nc" id="L221">    Check.notNull(type);</span>
-<span class="nc bnc" id="L222" title="All 4 branches missed.">    return type.isArray() &amp;&amp; ArrayMetaData.forType(type).getElementType().isPrimitive();</span>
+<span class="nc bnc" id="L222" title="All 4 branches missed.">    return type.isArray() &amp;&amp; ArrayMetaData.of(type).getBaseType().isPrimitive();</span>
   }
 
   /**
@@ -365,7 +365,7 @@ public final class ClassMethods {
   public static String className(Class&lt;?&gt; type) {
 <span class="nc" id="L366">    Check.notNull(type);</span>
 <span class="nc bnc" id="L367" title="All 2 branches missed.">    if (type.isArray()) {</span>
-<span class="nc" id="L368">      return ArrayMetaData.forType(type).getArrayClassName();</span>
+<span class="nc" id="L368">      return ArrayMetaData.of(type).getArrayClassName();</span>
     }
 <span class="nc" id="L370">    return type.getName();</span>
   }
@@ -394,7 +394,7 @@ public final class ClassMethods {
   public static String simpleClassName(Class&lt;?&gt; clazz) {
 <span class="fc" id="L395">    Check.notNull(clazz);</span>
 <span class="pc bpc" id="L396" title="1 of 2 branches missed.">    if (clazz.isArray()) {</span>
-<span class="nc" id="L397">      return ArrayMetaData.forType(clazz).toString();</span>
+<span class="nc" id="L397">      return ArrayMetaData.of(clazz).toString();</span>
     }
 <span class="fc" id="L399">    return clazz.getSimpleName();</span>
   }

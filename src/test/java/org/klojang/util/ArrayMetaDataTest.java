@@ -18,8 +18,8 @@ public class ArrayMetaDataTest {
   }
 
   @Test
-  public void forType00() {
-    ArrayMetaData metadata0 = ArrayMetaData.forType(String[][].class);
+  public void of00() {
+    ArrayMetaData metadata0 = ArrayMetaData.of(String[][].class);
     ArrayMetaData metadata1 = ArrayMetaData.forArray(new String[][] {{"hello", "world"}, {"foo"}});
     ArrayMetaData metadata2 = ArrayMetaData.of(String.class, 2);
     ArrayMetaData metadata3 = ArrayMetaData.of(String[].class, 1);
@@ -31,16 +31,16 @@ public class ArrayMetaDataTest {
   }
 
   @Test
-  public void forType01() {
-    ArrayMetaData metadata = ArrayMetaData.forType(String[][].class);
-    assertEquals(String.class, metadata.getElementType());
+  public void of01() {
+    ArrayMetaData metadata = ArrayMetaData.of(String[][].class);
+    assertEquals(String.class, metadata.getBaseType());
     assertEquals(2, metadata.getDimensions());
   }
 
   @Test
-  public void forType02() {
-    ArrayMetaData metadata = ArrayMetaData.forType(int[][][][][].class);
-    assertEquals(int.class, metadata.getElementType());
+  public void of02() {
+    ArrayMetaData metadata = ArrayMetaData.of(int[][][][][].class);
+    assertEquals(int.class, metadata.getBaseType());
     assertEquals(5, metadata.getDimensions());
   }
 
@@ -49,40 +49,40 @@ public class ArrayMetaDataTest {
     ArrayMetaData metadata0 = ArrayMetaData.forArray(new File[0][][]);
     ArrayMetaData metadata1 = ArrayMetaData.forArray(new File[6][][]);
     ArrayMetaData metadata2 = ArrayMetaData.forArray(new File[0][][]);
-    assertSame(metadata0.getElementType(), metadata1.getElementType());
+    assertSame(metadata0.getBaseType(), metadata1.getBaseType());
     assertEquals(metadata0, metadata2);
   }
 
   @Test
   public void constructor00() {
     ArrayMetaData metadata = ArrayMetaData.of(long.class, 1);
-    assertEquals(long.class, metadata.getElementType());
+    assertEquals(long.class, metadata.getBaseType());
     assertEquals(1, metadata.getDimensions());
-    assertEquals(long[].class, metadata.toClass());
+    assertEquals(long[].class, metadata.getArrayClass());
   }
 
   @Test
   public void constructor01() {
     ArrayMetaData metadata = ArrayMetaData.of(long[][].class, 1);
-    assertEquals(long.class, metadata.getElementType());
+    assertEquals(long.class, metadata.getBaseType());
     assertEquals(3, metadata.getDimensions());
-    assertEquals(long[][][].class, metadata.toClass());
+    assertEquals(long[][][].class, metadata.getArrayClass());
   }
 
   @Test
   public void constructor02() {
     ArrayMetaData metadata = ArrayMetaData.of(long[][].class, 0);
-    assertEquals(long.class, metadata.getElementType());
+    assertEquals(long.class, metadata.getBaseType());
     assertEquals(2, metadata.getDimensions());
-    assertEquals(long[][].class, metadata.toClass());
+    assertEquals(long[][].class, metadata.getArrayClass());
   }
 
   @Test
   public void constructor03() {
     ArrayMetaData metadata = ArrayMetaData.of(long[][].class, -1);
-    assertEquals(long.class, metadata.getElementType());
+    assertEquals(long.class, metadata.getBaseType());
     assertEquals(1, metadata.getDimensions());
-    assertEquals(long[].class, metadata.toClass());
+    assertEquals(long[].class, metadata.getArrayClass());
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -93,39 +93,32 @@ public class ArrayMetaDataTest {
   @Test
   public void forArray01() {
     ArrayMetaData metadata = ArrayMetaData.forArray(new File[0][][]);
-    assertEquals(File.class, metadata.getElementType());
+    assertEquals(File.class, metadata.getBaseType());
     assertEquals(3, metadata.getDimensions());
   }
 
   @Test
-  public void toClass00() {
+  public void getArrayClass00() {
     ArrayMetaData metadata = ArrayMetaData.of(short.class, 3);
-    assertEquals(short[][][].class, metadata.toClass());
+    assertEquals(short[][][].class, metadata.getArrayClass());
   }
 
   @Test
-  public void newArray00() {
+  public void withBaseType00() {
     ArrayMetaData metadata = ArrayMetaData.of(short.class, 3);
-    short[][][] array = metadata.newArray(10);
-    assertArrayEquals(new short[10][][], array);
+    assertEquals(int[][][].class, metadata.withBaseType(int.class).getArrayClass());
   }
 
   @Test
-  public void withElementType00() {
+  public void withBaseType01() {
     ArrayMetaData metadata = ArrayMetaData.of(short.class, 3);
-    assertEquals(int[][][].class, metadata.withElementType(int.class).toClass());
-  }
-
-  @Test
-  public void withElementType01() {
-    ArrayMetaData metadata = ArrayMetaData.of(short.class, 3);
-    assertSame(metadata, metadata.withElementType(short.class));
+    assertSame(metadata, metadata.withBaseType(short.class));
   }
 
   @Test
   public void withDimensions00() {
     ArrayMetaData metadata = ArrayMetaData.of(short.class, 3);
-    assertEquals(short[][][][].class, metadata.withDimensions(4).toClass());
+    assertEquals(short[][][][].class, metadata.withDimensions(4).getArrayClass());
   }
 
   @Test
@@ -149,13 +142,13 @@ public class ArrayMetaDataTest {
   @Test
   public void box00() {
     ArrayMetaData metadata = ArrayMetaData.of(short.class, 1);
-    assertEquals(Short[].class, metadata.box().toClass());
+    assertEquals(Short[].class, metadata.box().getArrayClass());
   }
 
   @Test
   public void unbox00() {
     ArrayMetaData metadata = ArrayMetaData.of(Double.class, 4);
-    assertEquals(double[][][][].class, metadata.unbox().toClass());
+    assertEquals(double[][][][].class, metadata.unbox().getArrayClass());
   }
 
   @Test
@@ -195,5 +188,45 @@ public class ArrayMetaDataTest {
   public void describe01() {
     describe("hello");
   }
+
+  @Test
+  public void newArray00() {
+    ArrayMetaData metadata = ArrayMetaData.of(float[][][].class);
+    float[][][] array = metadata.newArray(10, 12, 40);
+    assertEquals(10, array.length);
+    assertEquals(12, array[0].length);
+    assertEquals(12, array[1].length);
+    assertEquals(40, array[0][0].length);
+    assertEquals(40, array[1][1].length);
+  }
+
+  @Test
+  public void newArray01() {
+    ArrayMetaData metadata = ArrayMetaData.of(float[][][].class);
+    float[][][] array = metadata.newArray(10, 12);
+    assertEquals(10, array.length);
+    assertEquals(12, array[0].length);
+    assertEquals(12, array[1].length);
+    assertNull(array[0][0]);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void newArray02() {
+    ArrayMetaData metadata = ArrayMetaData.of(float[][][].class);
+    metadata.newArray(10, 12, 40, 50);
+  }
+
+  @Test
+  public void newHyperCube00() {
+    ArrayMetaData metadata = ArrayMetaData.of(float[][][].class);
+    float[][][] array = metadata.newHyperCube(10);
+    assertEquals(10, array.length);
+    assertEquals(10, array[0].length);
+    assertEquals(10, array[1].length);
+    assertEquals(10, array[0][0].length);
+    assertEquals(10, array[1][1].length);
+  }
+
+
 
 }
