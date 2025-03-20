@@ -168,6 +168,32 @@ public class ArrayMethodsTest {
   }
 
   @Test
+  public void intPrefix01() {
+    int[] array = {1, 2, 3};
+    assertArrayEquals(new int[] {0, 1, 2, 3}, prefix(array, 0));
+  }
+
+  @Test
+  public void intPrefix02() {
+    int[] array = {2, 3, 4};
+    assertArrayEquals(new int[] {0, 1, 2, 3, 4}, prefix(array, 0, 1));
+  }
+
+  @Test
+  public void intPrefix03() {
+    int[] array = {2, 3, 4};
+    assertArrayEquals(new int[] {-1, 0, 1, 2, 3, 4}, prefix(array, -1, 0, 1));
+  }
+
+  @Test
+  public void repeat00() {
+    assertArrayEquals(new int[] {}, repeat(42, 0));
+    assertArrayEquals(new int[] {42}, repeat(42, 1));
+    assertArrayEquals(new int[] {42, 42}, repeat(42, 2));
+    assertArrayEquals(new int[] {42, 42, 42}, repeat(42, 3));
+  }
+
+  @Test
   public void implodeInts00() {
     int[] ints = {1, 2, 3, 4, 5};
     assertEquals("2|4", implodeInts(ints, i -> "" + (2 * i), "|", 0, 2));

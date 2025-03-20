@@ -9,7 +9,7 @@ Klojang Util,org.klojang.util,StringMethods,71,1720,14,222,9,352,14,173,2,67
 Klojang Util,org.klojang.util,CollectionMethods,71,892,6,33,13,158,7,62,3,45
 Klojang Util,org.klojang.util,Tuple2,0,29,0,0,0,6,0,3,0,3
 Klojang Util,org.klojang.util,InvokeMethods.Cache,0,14,0,2,0,3,0,3,0,2
-Klojang Util,org.klojang.util,ArrayMethods,123,1229,7,61,25,233,16,106,11,77
+Klojang Util,org.klojang.util,ArrayMethods,77,1275,7,61,16,242,15,107,10,78
 Klojang Util,org.klojang.util,IOMethods,55,468,1,15,22,94,5,36,4,29
 Klojang Util,org.klojang.util,IOMethods.new SimpleFileVisitor() {...},0,11,0,0,0,5,0,3,0,3
 Klojang Util,org.klojang.util,MapBuilder,21,593,2,42,4,133,5,52,3,32

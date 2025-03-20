@@ -965,15 +965,15 @@ public final class ArrayMethods {
    * @return a new array containing the specified {@code int} values and the elements of the specified array
    */
   public static int[] prefix(int[] array, int i0, int i1, int... moreInts) {
-<span class="nc" id="L968">    Check.notNull(array, ARRAY);</span>
-<span class="nc" id="L969">    Check.notNull(moreInts, VARARGS);</span>
-<span class="nc" id="L970">    int sz = array.length + 2 + moreInts.length;</span>
-<span class="nc" id="L971">    int[] res = new int[sz];</span>
-<span class="nc" id="L972">    res[0] = i0;</span>
-<span class="nc" id="L973">    res[1] = i1;</span>
-<span class="nc" id="L974">    arraycopy(moreInts, 0, res, 2, moreInts.length);</span>
-<span class="nc" id="L975">    arraycopy(array, 0, res, 2 + moreInts.length, array.length);</span>
-<span class="nc" id="L976">    return res;</span>
+<span class="fc" id="L968">    Check.notNull(array, ARRAY);</span>
+<span class="fc" id="L969">    Check.notNull(moreInts, VARARGS);</span>
+<span class="fc" id="L970">    int sz = array.length + 2 + moreInts.length;</span>
+<span class="fc" id="L971">    int[] res = new int[sz];</span>
+<span class="fc" id="L972">    res[0] = i0;</span>
+<span class="fc" id="L973">    res[1] = i1;</span>
+<span class="fc" id="L974">    arraycopy(moreInts, 0, res, 2, moreInts.length);</span>
+<span class="fc" id="L975">    arraycopy(array, 0, res, 2 + moreInts.length, array.length);</span>
+<span class="fc" id="L976">    return res;</span>
   }
 
   /**

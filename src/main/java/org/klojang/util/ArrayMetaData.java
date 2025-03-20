@@ -12,14 +12,16 @@ import static org.klojang.util.ArrayMethods.repeat;
 import static org.klojang.util.InvokeMethods.getArrayLength;
 
 /**
- * Provides metadata about an array or array type and allows you to generate arrays with a different base type
- * or dimensionality. The base type is the {@linkplain Class#getComponentType() component type} of the
+ * <p>Provides metadata about an array or array type and allows you to generate arrays with a different base
+ * type or dimensionality. The base type is the {@linkplain Class#getComponentType() component type} of the
  * innermost array of an n-dimensional array. So for {@code int[][][]} that would be {@code int}.
  * {@code int[][]} is the component type of {@code int[][][]}; {@code int} is its base type. In other words:
  * <i>the base type of an array always is a non-array type</i>. (NB while <i>component type</i> is standard
  * terminology, there is no commonly accepted term for the type of objects that ultimately occupy the slots in
  * the array &#8212; in any dimension. Here we use the term <i>base type</i>. <i>Element type</i> would
  * another reasonable option.)
+ *
+ * <p>Example usage:
  *
  * <blockquote><pre>{@code
  * ArrayMetaData metadata = ArrayMetaData.of(int[][].class);
@@ -230,7 +232,6 @@ public final class ArrayMetaData {
     IntStream.of(lengths).forEach(x -> Check.that(x, "array length").is(gte(), 0));
     return (T) populate(this, prefix(lengths, length));
   }
-
 
   /**
    * Creates a "hyper cube" in which all arrays in all dimensions have the same length (as in
