@@ -473,6 +473,13 @@ public class CollectionMethodsTest {
   }
 
   @Test
+  public void isNullRepellent01() {
+    assertFalse(isNullRepellent(new HashMap<>()));
+    assertTrue(isNullRepellent(Map.of()));
+    assertTrue(isNullRepellent(Map.of("k0","v0")));
+  }
+
+  @Test
   public void findFirst00() {
     assertNull(findFirst(List.of(1, 2, 3, 4, 5), i -> i == 7));
   }

@@ -18,6 +18,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.klojang.check.CommonChecks.notNull;
 import static org.klojang.util.ArrayMethods.isElementOf;
 import static org.klojang.util.ClassMethods.isPrimitiveArray;
+import static org.klojang.util.CollectionMethods.isNullRepellent;
 import static org.klojang.util.InvokeMethods.getArrayLength;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
@@ -225,28 +226,26 @@ public class ObjectMethods {
 
   /**
    * Verifies that the argument is not null and, if it is array, {@link Collection} or {@link Map}, does not
-   * contain any null values. It may still be an empty array, {@code Collection} or {@code Map}, however. For
+   * contain any null values. It may still be an empty array, {@code Collection} or {@code Map}, though. For
    * maps, both keys and values are tested for {@code null}.
    *
    * @param arg the object to be tested
    * @return whether it is not null and does not contain any null values
    */
   public static boolean isDeepNotNull(Object arg) {
-    if (arg == null) {
-      return false;
-    } else if (arg instanceof Object[] x) {
-      return Arrays.stream(x).allMatch(notNull());
-    } else if (arg instanceof Collection c) {
-      if (CollectionMethods.isNullRepellent(c)) {
-        return true;
-      }
-      return c.stream().allMatch(notNull());
-    } else if (arg instanceof Map<?, ?> m) {
-      return m.entrySet().stream()
-          .allMatch(e -> e.getKey() != null && e.getValue() != null);
-    }
-    return true;
+    return switch (arg) {
+      case null -> false;
+      case Object[] a -> Arrays.stream(a).allMatch(notNull());
+      case Collection<?> c -> isNullRepellent(c) || c.stream().allMatch(notNull());
+      case Map<?, ?> m -> isNullRepellent(m) || noNullsInEntrySet(m);
+      default -> true;
+    };
   }
+
+  private static boolean noNullsInEntrySet(Map<?, ?> m) {
+    return m.entrySet().stream().allMatch(e -> e.getKey() != null && e.getValue() != null);
+  }
+
 
   /**
    * Tests the provided arguments for equality using <i>empty-equals-null</i> semantics. This is roughly
@@ -692,14 +691,42 @@ public class ObjectMethods {
   }
 
   /**
-   * Empty-to-null: returns {@code null} if the argument is empty (as per {@link #isEmpty(Object)}), else the
-   * argument itself.
+   * Returns {@code null} if the argument is empty as per {@link #isEmpty(Object)}, else the argument itself.
    *
-   * @param <T> the type of the argument
    * @param arg the argument
    * @return the argument itself if not empty, else {@code null}
    */
-  public static <T> T emptyToNull(T arg) {
+  public static Object emptyToNull(Object arg) {
+    return isEmpty(arg) ? null : arg;
+  }
+
+  /**
+   * Returns {@code null} if the string is {@code null} or empty, else the string itself.
+   *
+   * @param arg the string
+   * @return the string itself if not {@code null} or empty, else {@code null}
+   */
+  public static String emptyToNull(String arg) {
+    return isEmpty(arg) ? null : arg;
+  }
+
+  /**
+   * Returns {@code null} if the collection is {@code null} or empty, else the collection itself.
+   *
+   * @param arg the collection
+   * @return the collection itself if not {@code null} or empty, else {@code null}
+   */
+  public static <T> Collection<T> emptyToNull(Collection<T> arg) {
+    return isEmpty(arg) ? null : arg;
+  }
+
+  /**
+   * Returns {@code null} if the map is {@code null} or empty, else the map itself.
+   *
+   * @param arg the map
+   * @return the map itself if not {@code null} or empty, else {@code null}
+   */
+  public static <K,V> Map<K,V> emptyToNull(Map<K,V> arg) {
     return isEmpty(arg) ? null : arg;
   }
 

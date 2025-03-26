@@ -150,12 +150,12 @@ public final class CollectionMethods {
    */
   @SuppressWarnings({&quot;unchecked&quot;})
   public static &lt;K, V&gt; Map&lt;K, V&gt; initializedMap(Object... kvPairs) {
-<span class="nc" id="L153">    Check.notNull(kvPairs, VARARGS).has(length(), even());</span>
-<span class="nc" id="L154">    var map = HashMap.newHashMap(kvPairs.length / 2);</span>
-<span class="nc bnc" id="L155" title="All 2 branches missed.">    for (int x = 0; x &lt; kvPairs.length; x += 2) {</span>
-<span class="nc" id="L156">      map.put(kvPairs[x], kvPairs[x + 1]);</span>
+<span class="fc" id="L153">    Check.notNull(kvPairs, VARARGS).has(length(), even());</span>
+<span class="fc" id="L154">    var map = HashMap.newHashMap(kvPairs.length / 2);</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">    for (int x = 0; x &lt; kvPairs.length; x += 2) {</span>
+<span class="fc" id="L156">      map.put(kvPairs[x], kvPairs[x + 1]);</span>
     }
-<span class="nc" id="L158">    return (Map&lt;K, V&gt;) map;</span>
+<span class="fc" id="L158">    return (Map&lt;K, V&gt;) map;</span>
   }
 
   /**
@@ -674,35 +674,61 @@ public final class CollectionMethods {
   }
 
   @SuppressWarnings(&quot;rawtypes&quot;)
-<span class="fc" id="L677">  private static final Set&lt;Class&gt; NULL_REPELLERS =</span>
-      // Actually, List.of(1) and List.of(1, 2) currently have the same type, but
-      // better safe than sorry. They will anyhow be de-duplicated when entering
-      // the HashSet
-<span class="fc" id="L681">      Set.copyOf(new HashSet&lt;&gt;(</span>
-<span class="fc" id="L682">          Arrays.asList(</span>
-<span class="fc" id="L683">              Collections.emptyList().getClass(),</span>
-<span class="fc" id="L684">              Collections.emptySet().getClass(),</span>
-<span class="fc" id="L685">              List.of().getClass(),</span>
-<span class="fc" id="L686">              List.of(1).getClass(),</span>
-<span class="fc" id="L687">              List.of(1, 2).getClass(),</span>
-<span class="fc" id="L688">              List.of(1, 2, 3).getClass(),</span>
-<span class="fc" id="L689">              Set.of().getClass(),</span>
-<span class="fc" id="L690">              Set.of(1).getClass(),</span>
-<span class="fc" id="L691">              Set.of(1, 2).getClass(),</span>
-<span class="fc" id="L692">              Set.of(1, 2, 3).getClass())));</span>
+<span class="fc" id="L677">  private static final Set&lt;Class&gt; NULL_REPELLENT_COLLECTIONS =</span>
+      // First collect everything into a HashSet so we can be sure be don't have duplicate classes
+      // (forbidden by Set.copyOf())
+<span class="fc" id="L680">      Set.copyOf(new HashSet&lt;&gt;(</span>
+<span class="fc" id="L681">          Arrays.asList(</span>
+<span class="fc" id="L682">              Collections.emptyList().getClass(),</span>
+<span class="fc" id="L683">              Collections.emptySet().getClass(),</span>
+<span class="fc" id="L684">              List.of().getClass(),</span>
+<span class="fc" id="L685">              List.of(&quot;e1&quot;).getClass(),</span>
+<span class="fc" id="L686">              List.of(&quot;e1&quot;, &quot;e2&quot;).getClass(),</span>
+<span class="fc" id="L687">              List.of(&quot;e1&quot;, &quot;e2&quot;, &quot;e3&quot;).getClass(),</span>
+<span class="fc" id="L688">              Set.of().getClass(),</span>
+<span class="fc" id="L689">              Set.of(&quot;e1&quot;).getClass(),</span>
+<span class="fc" id="L690">              Set.of(&quot;e1&quot;, &quot;e2&quot;).getClass(),</span>
+<span class="fc" id="L691">              Set.of(&quot;e1&quot;, &quot;e2&quot;, &quot;e3&quot;).getClass()</span>
+          )));
 
   /**
-   * Returns {@code true} if the provided collection is a well-known, null-repellent collection like those
-   * obtained via {@code List.of(...)} and {@code Set.of(...)}. Note that if this method returns
-   * {@code false}, it does not mean that the collection is &lt;i&gt;not&lt;/i&gt; null-repellent. The only sure thing is
-   * that if this method returns {@code true}, the collection is guaranteed not to contain {@code null}
-   * values.
+   * Returns {@code true} if the provided collection is a null-repellent collection. Null-repellent
+   * collections are those obtained via {@code List.of(...)} and {@code Set.of(...)}. Note: if this method
+   * returns {@code true}, the collection is guaranteed to be null-repellent, but if this method returns
+   * {@code false}, it does &lt;b&gt;not&lt;/b&gt; mean that the collection is guaranteed to allow {@code null} values. It
+   * just means that the collection is not known to be null-repellent.
    *
    * @param c the collection to inspect
    * @return {@code true} if the provided collection is a null-repellent collection
    */
   public static boolean isNullRepellent(Collection&lt;?&gt; c) {
-<span class="fc" id="L705">    return NULL_REPELLERS.contains(c.getClass());</span>
+<span class="fc" id="L705">    Check.notNull(c);</span>
+<span class="fc" id="L706">    return NULL_REPELLENT_COLLECTIONS.contains(c.getClass());</span>
+  }
+
+  @SuppressWarnings(&quot;rawtypes&quot;)
+<span class="fc" id="L710">  private static final Set&lt;Class&gt; NULL_REPELLENT_MAPS =</span>
+<span class="fc" id="L711">      Set.copyOf(new HashSet&lt;&gt;(</span>
+<span class="fc" id="L712">          Arrays.asList(</span>
+<span class="fc" id="L713">              Collections.emptyMap().getClass(),</span>
+<span class="fc" id="L714">              Map.of().getClass(),</span>
+<span class="fc" id="L715">              Map.of(&quot;k0&quot;, &quot;v0&quot;).getClass(),</span>
+<span class="fc" id="L716">              Map.of(&quot;k0&quot;, &quot;v0&quot;, &quot;k1&quot;, &quot;v2&quot;).getClass(),</span>
+<span class="fc" id="L717">              Map.copyOf(initializedMap(&quot;k0&quot;, &quot;v0&quot;, &quot;k1&quot;, &quot;v2&quot;)).getClass()</span>
+          )));
+
+  /**
+   * Returns {@code true} if the provided map is a null-repellent map. Note: if this method returns
+   * {@code true}, the map is guaranteed to be null-repellent, but if this method returns {@code false}, it
+   * does &lt;b&gt;not&lt;/b&gt; mean that the map is guaranteed to allow {@code null} values. It just means that the map
+   * is not known to be null-repellent.
+   *
+   * @param m the collection to inspect
+   * @return {@code true} if the provided collection is a null-repellent collection
+   */
+  public static boolean isNullRepellent(Map&lt;?, ?&gt; m) {
+<span class="fc" id="L730">    Check.notNull(m);</span>
+<span class="fc" id="L731">    return NULL_REPELLENT_MAPS.contains(m.getClass());</span>
   }
 
 }

@@ -674,35 +674,61 @@ public final class CollectionMethods {
   }
 
   @SuppressWarnings("rawtypes")
-  private static final Set<Class> NULL_REPELLERS =
-      // Actually, List.of(1) and List.of(1, 2) currently have the same type, but
-      // better safe than sorry. They will anyhow be de-duplicated when entering
-      // the HashSet
+  private static final Set<Class> NULL_REPELLENT_COLLECTIONS =
+      // First collect everything into a HashSet so we can be sure be don't have duplicate classes
+      // (forbidden by Set.copyOf())
       Set.copyOf(new HashSet<>(
           Arrays.asList(
               Collections.emptyList().getClass(),
               Collections.emptySet().getClass(),
               List.of().getClass(),
-              List.of(1).getClass(),
-              List.of(1, 2).getClass(),
-              List.of(1, 2, 3).getClass(),
+              List.of("e1").getClass(),
+              List.of("e1", "e2").getClass(),
+              List.of("e1", "e2", "e3").getClass(),
               Set.of().getClass(),
-              Set.of(1).getClass(),
-              Set.of(1, 2).getClass(),
-              Set.of(1, 2, 3).getClass())));
+              Set.of("e1").getClass(),
+              Set.of("e1", "e2").getClass(),
+              Set.of("e1", "e2", "e3").getClass()
+          )));
 
   /**
-   * Returns {@code true} if the provided collection is a well-known, null-repellent collection like those
-   * obtained via {@code List.of(...)} and {@code Set.of(...)}. Note that if this method returns
-   * {@code false}, it does not mean that the collection is <i>not</i> null-repellent. The only sure thing is
-   * that if this method returns {@code true}, the collection is guaranteed not to contain {@code null}
-   * values.
+   * Returns {@code true} if the provided collection is a null-repellent collection. Null-repellent
+   * collections are those obtained via {@code List.of(...)} and {@code Set.of(...)}. Note: if this method
+   * returns {@code true}, the collection is guaranteed to be null-repellent, but if this method returns
+   * {@code false}, it does <b>not</b> mean that the collection is guaranteed to allow {@code null} values. It
+   * just means that the collection is not known to be null-repellent.
    *
    * @param c the collection to inspect
    * @return {@code true} if the provided collection is a null-repellent collection
    */
   public static boolean isNullRepellent(Collection<?> c) {
-    return NULL_REPELLERS.contains(c.getClass());
+    Check.notNull(c);
+    return NULL_REPELLENT_COLLECTIONS.contains(c.getClass());
+  }
+
+  @SuppressWarnings("rawtypes")
+  private static final Set<Class> NULL_REPELLENT_MAPS =
+      Set.copyOf(new HashSet<>(
+          Arrays.asList(
+              Collections.emptyMap().getClass(),
+              Map.of().getClass(),
+              Map.of("k0", "v0").getClass(),
+              Map.of("k0", "v0", "k1", "v2").getClass(),
+              Map.copyOf(initializedMap("k0", "v0", "k1", "v2")).getClass()
+          )));
+
+  /**
+   * Returns {@code true} if the provided map is a null-repellent map. Note: if this method returns
+   * {@code true}, the map is guaranteed to be null-repellent, but if this method returns {@code false}, it
+   * does <b>not</b> mean that the map is guaranteed to allow {@code null} values. It just means that the map
+   * is not known to be null-repellent.
+   *
+   * @param m the collection to inspect
+   * @return {@code true} if the provided collection is a null-repellent collection
+   */
+  public static boolean isNullRepellent(Map<?, ?> m) {
+    Check.notNull(m);
+    return NULL_REPELLENT_MAPS.contains(m.getClass());
   }
 
 }
