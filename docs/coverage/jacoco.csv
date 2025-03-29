@@ -20,7 +20,7 @@ Klojang Util,org.klojang.util,MapBuilder.PathBlockedException,0,34,0,2,0,8,0,4,0
 Klojang Util,org.klojang.util,InvokeMethods,92,86,4,0,27,21,8,9,6,9
 Klojang Util,org.klojang.util,ArrayMetaData,67,432,11,27,16,89,14,36,5,26
 Klojang Util,org.klojang.util,Path.new Iterator() {...},0,42,0,4,0,5,0,5,0,3
-Klojang Util,org.klojang.util,ExceptionMethods,22,308,3,25,6,57,4,25,1,14
+Klojang Util,org.klojang.util,ExceptionMethods,134,308,17,25,26,57,13,25,3,14
 Klojang Util,org.klojang.util,InvokeException,0,35,0,0,0,7,0,3,0,3
 Klojang Util,org.klojang.util.collection,UnmodifiableIntList,2,290,1,19,1,62,1,46,0,37
 Klojang Util,org.klojang.util.collection,SaturatedEnumToIntMap,124,297,5,3,20,61,14,26,10,26
