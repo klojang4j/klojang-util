@@ -581,7 +581,7 @@ public class ObjectMethods {
    *
    * <blockquote><pre>{@code
    * import static nl.naturalis.check.ObjectMethods.clamp;
-   * import static nl.naturalis.check.CommonChecks.GT;
+   * import static nl.naturalis.check.CommonChecks.LTE;
    *
    * // Prevent dates from lying in the future:
    * LocalDate dateVar = clamp(dateArg, LTE(), LocalDate.now());
@@ -716,7 +716,7 @@ public class ObjectMethods {
    * @param arg the collection
    * @return the collection itself if not {@code null} or empty, else {@code null}
    */
-  public static <T> Collection<T> emptyToNull(Collection<T> arg) {
+  public static <T, C extends Collection<T>> C emptyToNull(C arg) {
     return isEmpty(arg) ? null : arg;
   }
 
@@ -726,7 +726,7 @@ public class ObjectMethods {
    * @param arg the map
    * @return the map itself if not {@code null} or empty, else {@code null}
    */
-  public static <K,V> Map<K,V> emptyToNull(Map<K,V> arg) {
+  public static <K, V, M extends Map<K,V>> M emptyToNull(M arg) {
     return isEmpty(arg) ? null : arg;
   }
 

@@ -46,7 +46,7 @@ public class IOMethodsTest {
   public void getContents01() throws IOException {
     File f = createTempFile();
     try {
-      write(f.getPath(), "Hello, World!");
+      setContents(f.getPath(), "Hello, World!");
       String s = getContents(f.getPath());
       assertEquals("Hello, World!", s);
     } finally {
@@ -55,17 +55,17 @@ public class IOMethodsTest {
   }
 
   @Test
-  public void write00() throws IOException {
+  public void setContents00() throws IOException {
     File f = createTempFile();
     try {
-      write(f.getPath(), "Hello, World!");
-      append(f.getPath(), " How are you?");
+      setContents(f.getPath(), "Hello, World!");
+      appendContents(f.getPath(), " How are you?");
       String s = getContents(f.getPath());
       assertEquals("Hello, World! How are you?", s);
-      append(f.getPath(), " I am fine.");
+      appendContents(f.getPath(), " I am fine.");
       s = getContents(f.getPath());
       assertEquals("Hello, World! How are you? I am fine.", s);
-      write(f.getPath(), "Hello, World!");
+      setContents(f.getPath(), "Hello, World!");
       s = getContents(f.getPath());
       assertEquals("Hello, World!", s);
     } finally {

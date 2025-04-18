@@ -536,7 +536,20 @@ public final class ArrayMethods {
    * @return a concatenation of the elements in the array.
    */
   public static String implodeInts(int[] array, IntFunction<String> stringifier) {
-    return implodeInts(array, stringifier, IMPLODE_SEPARATOR, 0, -1);
+    return implodeInts(array, stringifier, IMPLODE_SEPARATOR);
+  }
+
+  /**
+   * PHP-style implode method, concatenating at most {@code limit} array elements using ", " (comma+space) as
+   * separator.
+   *
+   * @param array the array to implode
+   * @param stringifier A {@code Function} that converts the array elements to strings
+   * @param separator the string used to separate the elements
+   * @return a concatenation of the elements in the array.
+   */
+  public static String implodeInts(int[] array, IntFunction<String> stringifier, String separator) {
+    return implodeInts(array, stringifier, separator, 0, -1);
   }
 
   /**

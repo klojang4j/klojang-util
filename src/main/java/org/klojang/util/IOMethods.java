@@ -55,11 +55,10 @@ public class IOMethods {
   }
 
   /**
-   * Returns the contents of the specified resource. Bytes are read in chunks of 512
-   * bytes.
+   * Returns the contents of the specified resource. Bytes are read in chunks of 512 bytes.
    *
-   * @param clazz the {@code Class} to call
-   *     {@link Class#getResourceAsStream(String) getResourceAsStream} on
+   * @param clazz the {@code Class} to call {@link Class#getResourceAsStream(String) getResourceAsStream}
+   *     on
    * @param path the path to the resource
    * @return the contents of the specified resource
    */
@@ -70,8 +69,8 @@ public class IOMethods {
   /**
    * Returns the contents of the specified resource.
    *
-   * @param clazz the {@code Class} to call
-   *     {@link Class#getResourceAsStream(String) getResourceAsStream} on
+   * @param clazz the {@code Class} to call {@link Class#getResourceAsStream(String) getResourceAsStream}
+   *     on
    * @param path the path to the resource
    * @param chunkSize the number of bytes to read at a time
    * @return the contents of the specified resource
@@ -87,9 +86,8 @@ public class IOMethods {
   }
 
   /**
-   * Returns a {@code String} created from the bytes read from the specified input
-   * stream. Bytes are read in chunks of 512 bytes. The input stream is <i>not</i>
-   * closed once all bytes have been read.
+   * Returns a {@code String} created from the bytes read from the specified input stream. Bytes are read in
+   * chunks of 512 bytes. The input stream is <i>not</i> closed once all bytes have been read.
    *
    * @param in the input stream
    * @return a {@code String} from the bytes read from the specified input stream
@@ -99,8 +97,9 @@ public class IOMethods {
   }
 
   /**
-   * Returns a {@code String} created from the bytes read from the specified input
-   * stream. The input stream is <i>not</i> closed once all bytes have been read.
+   * Returns a {@code String} created from the bytes read from the specified input stream. The input stream
+   * is
+   * <i>not</i> closed once all bytes have been read.
    *
    * @param in the input stream
    * @param chunkSize the number of bytes to read at a time
@@ -114,13 +113,12 @@ public class IOMethods {
   }
 
   /**
-   * Simple file-write method. Not efficient, but easy to use. Overwrites
-   * pre-existing contents.
+   * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
    *
    * @param path the path to the file
    * @param contents The contents to be written
    */
-  public static void write(String path, String contents) {
+  public static void setContents(String path, String contents) {
     Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());
     try {
       Files.writeString(Path.of(path), contents, UTF_8, CREATE, TRUNCATE_EXISTING);
@@ -130,13 +128,49 @@ public class IOMethods {
   }
 
   /**
-   * Simple file-write method. Not efficient, but easy to use. Appends the specified
-   * string to the contents of the specified file.
+   * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
+   *
+   * @param file the file to write
+   * @param contents The contents to be written
+   */
+  public static void setContents(File file, String contents) {
+    setContents(file.getAbsolutePath(), contents);
+  }
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
    *
    * @param path the path to the file
    * @param contents The contents to be written
    */
-  public static void append(String path, String contents) {
+  public static void setContents(String path, byte[] contents) {
+    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());
+    try {
+      Files.write(Path.of(path), contents, CREATE, TRUNCATE_EXISTING);
+    } catch (IOException e) {
+      throw ExceptionMethods.uncheck(e);
+    }
+  }
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
+   *
+   * @param file the file to write
+   * @param contents The contents to be written
+   */
+  public static void setContents(File file, byte[] contents) {
+    setContents(file.getAbsolutePath(), contents);
+  }
+
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
+   * the specified file.
+   *
+   * @param path the path to the file
+   * @param contents The contents to be written
+   */
+  public static void appendContents(String path, String contents) {
     Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());
     try {
       Files.writeString(Path.of(path), contents, UTF_8, CREATE, APPEND);
@@ -146,11 +180,48 @@ public class IOMethods {
   }
 
   /**
-   * Returns the contents of the specified resource as a byte array. Bytes are read
-   * in chunks of 512 bytes.
+   * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
+   * the specified file.
    *
-   * @param clazz the {@code Class} to call
-   *     {@link Class#getResourceAsStream(String) getResourceAsStream} on
+   * @param file the file to write
+   * @param contents The contents to be written
+   */
+  public static void appendContents(File file, String contents) {
+    appendContents(file.getAbsolutePath(), contents);
+  }
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
+   * the specified file.
+   *
+   * @param path the path to the file
+   * @param contents The contents to be written
+   */
+  public static void appendContents(String path, byte[] contents) {
+    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());
+    try {
+      Files.write(Path.of(path), contents, CREATE, APPEND);
+    } catch (IOException e) {
+      throw ExceptionMethods.uncheck(e);
+    }
+  }
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
+   * the specified file.
+   *
+   * @param file the file to write
+   * @param contents The contents to be written
+   */
+  public static void appendContents(File file, byte[] contents) {
+    appendContents(file.getAbsolutePath(), contents);
+  }
+
+  /**
+   * Returns the contents of the specified resource as a byte array. Bytes are read in chunks of 512 bytes.
+   *
+   * @param clazz the {@code Class} to call {@link Class#getResourceAsStream(String) getResourceAsStream}
+   *     on
    * @param path the path to the resource
    * @return the bytes contained in the specified resource
    */
@@ -161,8 +232,8 @@ public class IOMethods {
   /**
    * Returns the contents of the specified resource as a byte array.
    *
-   * @param clazz the {@code Class} to call
-   *     {@link Class#getResourceAsStream(String) getResourceAsStream} on
+   * @param clazz the {@code Class} to call {@link Class#getResourceAsStream(String) getResourceAsStream}
+   *     on
    * @param path the path to the resource
    * @param chunkSize the number of bytes to read at a time
    * @return the contents of the specified resource
@@ -178,27 +249,23 @@ public class IOMethods {
   }
 
   /**
-   * Returns a {@code byte[]} array containing the bytes read from the specified
-   * input stream. Bytes are read in chunks of 512 bytes. <i>The input stream is not
-   * closed by this method.</i>
+   * Returns a {@code byte[]} array containing the bytes read from the specified input stream. Bytes are read
+   * in chunks of 512 bytes. <i>The input stream is not closed by this method.</i>
    *
    * @param in the input stream
-   * @return a {@code byte[]} array containing the bytes read from the specified
-   *     input stream
+   * @return a {@code byte[]} array containing the bytes read from the specified input stream
    */
   public static byte[] readBytes(InputStream in) {
     return readBytes(in, 512);
   }
 
   /**
-   * Returns a {@code byte[]} array containing the bytes read from the specified
-   * input stream. Bytes are read in chunks of the specified size. <i>The input
-   * stream is not closed by this method.</i>
+   * Returns a {@code byte[]} array containing the bytes read from the specified input stream. Bytes are read
+   * in chunks of the specified size. <i>The input stream is not closed by this method.</i>
    *
    * @param in the input stream
    * @param chunkSize the number of bytes to read at a time
-   * @return a {@code byte[]} array containing the bytes read from the specified
-   *     input stream
+   * @return a {@code byte[]} array containing the bytes read from the specified input stream
    */
   public static byte[] readBytes(InputStream in, int chunkSize) {
     ByteArrayOutputStream out = new ByteArrayOutputStream(chunkSize);
@@ -207,8 +274,8 @@ public class IOMethods {
   }
 
   /**
-   * Reads all bytes from the specified input stream and writes them to the specified
-   * output stream. Bytes are read and written in chunks of 512 bytes at a time.
+   * Reads all bytes from the specified input stream and writes them to the specified output stream. Bytes are
+   * read and written in chunks of 512 bytes at a time.
    * <i>The input stream and the output stream are not closed by this method.</i>
    *
    * @param in the input stream
@@ -219,8 +286,8 @@ public class IOMethods {
   }
 
   /**
-   * Reads all bytes from the specified input stream and writes them to the specified
-   * output stream. Bytes are read and written in chunks of the specified size.
+   * Reads all bytes from the specified input stream and writes them to the specified output stream. Bytes are
+   * read and written in chunks of the specified size.
    * <i>The input stream and the output stream are not closed by this method.</i>
    *
    * @param in the input stream
@@ -251,8 +318,7 @@ public class IOMethods {
    * createTempFile(IOMethods.class, ".tmp", true)
    * }</pre></blockquote>
    *
-   * @return a {@code File} object for a new, empty file in the file system's temp
-   *     directory
+   * @return a {@code File} object for a new, empty file in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempFile() throws IOException {
@@ -266,10 +332,9 @@ public class IOMethods {
    * createTempFile(requester ".tmp", true)
    * }</pre></blockquote>
    *
-   * @param requester the class requesting the temp file (its simple name will
-   *     become part of the file name)
-   * @return a {@code File} object for a new, empty file in the file system's temp
-   *     directory
+   * @param requester the class requesting the temp file (its simple name will become part of the file
+   *     name)
+   * @return a {@code File} object for a new, empty file in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempFile(Class<?> requester) throws IOException {
@@ -277,18 +342,17 @@ public class IOMethods {
   }
 
   /**
-   * Creates a {@code File} object with a unique file name, located file system's
-   * temp directory. Equivalent to:
+   * Creates a {@code File} object with a unique file name, located file system's temp directory. Equivalent
+   * to:
    *
    * <blockquote><pre>{@code
    * createTempFile(requester "tmp", touch)
    * }</pre></blockquote>
    *
-   * @param requester the class requesting the temp file (its simple name will
-   *     become part of the file name)
+   * @param requester the class requesting the temp file (its simple name will become part of the file
+   *     name)
    * @param touch whether to actually create the file on the file system
-   * @return a {@code File} object for a new, empty file in the file system's temp
-   *     directory
+   * @return a {@code File} object for a new, empty file in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempFile(Class<?> requester, boolean touch)
@@ -297,18 +361,15 @@ public class IOMethods {
   }
 
   /**
-   * Creates a {@code File} object with a unique file name, located in file system's
-   * temp directory.
+   * Creates a {@code File} object with a unique file name, located in file system's temp directory.
    *
-   * @param requester the class requesting the temp file (its simple name will
-   *     become part of the file name)
-   * @param extension the extension to append to the generated directory name. If
-   *     empty or {@code null}, no extension will be appended to the file name.
-   *     Otherwise the extension may or may not start with "." (the dot will be
-   *     prepended if absent).
+   * @param requester the class requesting the temp file (its simple name will become part of the file
+   *     name)
+   * @param extension the extension to append to the generated directory name. If empty or {@code null},
+   *     no extension will be appended to the file name. Otherwise the extension may or may not start with "."
+   *     (the dot will be prepended if absent).
    * @param touch whether to actually create the file on the file system
-   * @return a {@code File} object for a new, empty file in the file system's temp
-   *     directory
+   * @return a {@code File} object for a new, empty file in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempFile(Class<?> requester,
@@ -320,23 +381,19 @@ public class IOMethods {
   }
 
   /**
-   * Creates a {@code File} object with a unique file name, located in file system's
-   * temp directory.
+   * Creates a {@code File} object with a unique file name, located in file system's temp directory.
    *
-   * @param requester the class requesting the temp directory (its simple name
-   *     will become part of the file name)
-   * @param relativePath any intermediate directories between the file system's
-   *     temp directory and the file to be created. "/" means the file will be
-   *     created directly underneath the file system's temp directory. Intermediate
-   *     directories will be created if necessary. If the path does not start and/or
+   * @param requester the class requesting the temp directory (its simple name will become part of the
+   *     file name)
+   * @param relativePath any intermediate directories between the file system's temp directory and the
+   *     file to be created. "/" means the file will be created directly underneath the file system's temp
+   *     directory. Intermediate directories will be created if necessary. If the path does not start and/or
    *     end with "/" ({@link File#separator}), it will be prepended resp. appended.
-   * @param extension the extension to append to the generated directory name. If
-   *     empty or {@code null}, no extension will be appended to the directory name.
-   *     Otherwise the extension may or may not start with "." (the dot will be
-   *     prepended if absent).
+   * @param extension the extension to append to the generated directory name. If empty or {@code null},
+   *     no extension will be appended to the directory name. Otherwise the extension may or may not start
+   *     with "." (the dot will be prepended if absent).
    * @param touch whether to actually create the directory on the file system
-   * @return a {@code File} object for a new, empty file in the file system's temp
-   *     directory
+   * @return a {@code File} object for a new, empty file in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempFile(
@@ -348,15 +405,13 @@ public class IOMethods {
   }
 
   /**
-   * Creates a new, empty directory under the file system's temp directory.
-   * Equivalent to:
+   * Creates a new, empty directory under the file system's temp directory. Equivalent to:
    *
    * <blockquote><pre>{@code
    * createTempFile(requester ".d", true)
    * }</pre></blockquote>
    *
-   * @return a {@code File} object for a new, empty directory in the file system's
-   *     temp directory
+   * @return a {@code File} object for a new, empty directory in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempDir() throws IOException {
@@ -364,17 +419,15 @@ public class IOMethods {
   }
 
   /**
-   * Creates a new, empty directory under the file system's temp directory.
-   * Equivalent to:
+   * Creates a new, empty directory under the file system's temp directory. Equivalent to:
    *
    * <blockquote><pre>{@code
    * createTempFile(requester, ".d", true)
    * }</pre></blockquote>
    *
-   * @param requester the class requesting the temp file (its simple name will
-   *     become part of the file name)
-   * @return a {@code File} object for a new, empty file in the file system's temp
-   *     directory
+   * @param requester the class requesting the temp file (its simple name will become part of the file
+   *     name)
+   * @return a {@code File} object for a new, empty file in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempDir(Class<?> requester) throws IOException {
@@ -382,18 +435,17 @@ public class IOMethods {
   }
 
   /**
-   * Creates a {@code File} object with a unique file name, located file system's
-   * temp directory. Equivalent to:
+   * Creates a {@code File} object with a unique file name, located file system's temp directory. Equivalent
+   * to:
    *
    * <blockquote><pre>{@code
    * createTempDir(requester ".d", touch)
    * }</pre></blockquote>
    *
-   * @param requester the class requesting the temp directory (its simple name
-   *     will become part of the file name)
+   * @param requester the class requesting the temp directory (its simple name will become part of the
+   *     file name)
    * @param touch whether to actually create the directory on the file system
-   * @return a {@code File} object for a new, empty directory in the file system's
-   *     temp directory
+   * @return a {@code File} object for a new, empty directory in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempDir(Class<?> requester, boolean touch)
@@ -403,19 +455,17 @@ public class IOMethods {
   }
 
   /**
-   * Creates a {@code File} object with a unique file name, located in file system's
-   * temp directory. If {@code touch} equals {@code true}, the {@code File} object
-   * will be used to create a directory underneath the temp directory.
+   * Creates a {@code File} object with a unique file name, located in file system's temp directory. If
+   * {@code touch} equals {@code true}, the {@code File} object will be used to create a directory underneath
+   * the temp directory.
    *
-   * @param requester the class requesting the temp directory (its simple name
-   *     will become part of the file name)
-   * @param extension the extension to append to the generated directory name. If
-   *     empty or {@code null}, no extension will be appended to the directory name.
-   *     Otherwise the extension may or may not start with "." (the dot will be
-   *     prepended if absent).
+   * @param requester the class requesting the temp directory (its simple name will become part of the
+   *     file name)
+   * @param extension the extension to append to the generated directory name. If empty or {@code null},
+   *     no extension will be appended to the directory name. Otherwise the extension may or may not start
+   *     with "." (the dot will be prepended if absent).
    * @param touch whether to actually create the directory on the file system
-   * @return a {@code File} object for a new, empty directory in the file system's
-   *     temp directory
+   * @return a {@code File} object for a new, empty directory in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempDir(Class<?> requester,
@@ -427,25 +477,21 @@ public class IOMethods {
   }
 
   /**
-   * Creates a {@code File} object with a unique file name, located in file system's
-   * temp directory. If {@code touch} equals {@code true}, the {@code File} object
-   * will be used to create a directory underneath the temp directory.
+   * Creates a {@code File} object with a unique file name, located in file system's temp directory. If
+   * {@code touch} equals {@code true}, the {@code File} object will be used to create a directory underneath
+   * the temp directory.
    *
-   * @param requester the class requesting the temp directory (its simple name
-   *     will become part of the file name)
-   * @param relativePath any intermediate directories between the file system's
-   *     temp directory and the directory to be created. "/" means the directory will
-   *     be created directly underneath the file system's temp directory.
-   *     Intermediate directories will be created if necessary. If the path does not
-   *     start or end with "/" ({@link File#separator}), it will be prepended resp.
-   *     appended.
-   * @param extension the extension to append to the generated directory name. If
-   *     empty or {@code null}, no extension will be appended to the directory name.
-   *     Otherwise the extension may or may not start with "." (the dot will be
-   *     prepended if absent).
+   * @param requester the class requesting the temp directory (its simple name will become part of the
+   *     file name)
+   * @param relativePath any intermediate directories between the file system's temp directory and the
+   *     directory to be created. "/" means the directory will be created directly underneath the file
+   *     system's temp directory. Intermediate directories will be created if necessary. If the path does not
+   *     start or end with "/" ({@link File#separator}), it will be prepended resp. appended.
+   * @param extension the extension to append to the generated directory name. If empty or {@code null},
+   *     no extension will be appended to the directory name. Otherwise the extension may or may not start
+   *     with "." (the dot will be prepended if absent).
    * @param touch whether to actually create the directory on the file system
-   * @return a {@code File} object for a new, empty directory in the file system's
-   *     temp directory
+   * @return a {@code File} object for a new, empty directory in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempDir(
@@ -457,8 +503,8 @@ public class IOMethods {
   }
 
   /**
-   * Deletes a file or directory. Directories need not be empty. If the file or
-   * directory does not exist, this method returns quietly.
+   * Deletes a file or directory. Directories need not be empty. If the file or directory does not exist, this
+   * method returns quietly.
    *
    * @param path the path of the file/directory to be deleted
    */
@@ -474,8 +520,8 @@ public class IOMethods {
   }
 
   /**
-   * Deletes a file or directory. Directories need not be empty. If the file or
-   * directory does not exist, this method returns quietly.
+   * Deletes a file or directory. Directories need not be empty. If the file or directory does not exist, this
+   * method returns quietly.
    *
    * @param file The file or directory to delete.
    */

@@ -55,172 +55,239 @@ public class IOMethods {
   }
 
   /**
-   * Returns the contents of the specified resource. Bytes are read in chunks of 512
-   * bytes.
+   * Returns the contents of the specified resource. Bytes are read in chunks of 512 bytes.
    *
-   * @param clazz the {@code Class} to call
-   *     {@link Class#getResourceAsStream(String) getResourceAsStream} on
+   * @param clazz the {@code Class} to call {@link Class#getResourceAsStream(String) getResourceAsStream}
+   *     on
    * @param path the path to the resource
    * @return the contents of the specified resource
    */
   public static String getContents(Class&lt;?&gt; clazz, String path) {
-<span class="fc" id="L67">    return getContents(clazz, path, 512);</span>
+<span class="fc" id="L66">    return getContents(clazz, path, 512);</span>
   }
 
   /**
    * Returns the contents of the specified resource.
    *
-   * @param clazz the {@code Class} to call
-   *     {@link Class#getResourceAsStream(String) getResourceAsStream} on
+   * @param clazz the {@code Class} to call {@link Class#getResourceAsStream(String) getResourceAsStream}
+   *     on
    * @param path the path to the resource
    * @param chunkSize the number of bytes to read at a time
    * @return the contents of the specified resource
    */
   public static String getContents(Class&lt;?&gt; clazz, String path, int chunkSize) {
-<span class="fc" id="L80">    Check.that(clazz, CLASS).is(notNull()).and(path, PATH).is(notNull());</span>
-<span class="fc" id="L81">    try (InputStream in = clazz.getResourceAsStream(path)) {</span>
-<span class="fc" id="L82">      Check.that(in).is(notNull(), INVALID_PATH, path);</span>
-<span class="fc" id="L83">      return getContents(in, chunkSize);</span>
-<span class="nc" id="L84">    } catch (IOException e) {</span>
-<span class="nc" id="L85">      throw ExceptionMethods.uncheck(e);</span>
+<span class="fc" id="L79">    Check.that(clazz, CLASS).is(notNull()).and(path, PATH).is(notNull());</span>
+<span class="fc" id="L80">    try (InputStream in = clazz.getResourceAsStream(path)) {</span>
+<span class="fc" id="L81">      Check.that(in).is(notNull(), INVALID_PATH, path);</span>
+<span class="fc" id="L82">      return getContents(in, chunkSize);</span>
+<span class="nc" id="L83">    } catch (IOException e) {</span>
+<span class="nc" id="L84">      throw ExceptionMethods.uncheck(e);</span>
     }
   }
 
   /**
-   * Returns a {@code String} created from the bytes read from the specified input
-   * stream. Bytes are read in chunks of 512 bytes. The input stream is &lt;i&gt;not&lt;/i&gt;
-   * closed once all bytes have been read.
+   * Returns a {@code String} created from the bytes read from the specified input stream. Bytes are read in
+   * chunks of 512 bytes. The input stream is &lt;i&gt;not&lt;/i&gt; closed once all bytes have been read.
    *
    * @param in the input stream
    * @return a {@code String} from the bytes read from the specified input stream
    */
   public static String getContents(InputStream in) {
-<span class="fc" id="L98">    return getContents(in, 512);</span>
+<span class="fc" id="L96">    return getContents(in, 512);</span>
   }
 
   /**
-   * Returns a {@code String} created from the bytes read from the specified input
-   * stream. The input stream is &lt;i&gt;not&lt;/i&gt; closed once all bytes have been read.
+   * Returns a {@code String} created from the bytes read from the specified input stream. The input stream
+   * is
+   * &lt;i&gt;not&lt;/i&gt; closed once all bytes have been read.
    *
    * @param in the input stream
    * @param chunkSize the number of bytes to read at a time
    * @return a {@code String} from the bytes read from the specified input stream
    */
   public static String getContents(InputStream in, int chunkSize) {
-<span class="fc" id="L110">    Check.that(chunkSize, CHUNK_SIZE).is(gt(), 0);</span>
-<span class="fc" id="L111">    ByteArrayOutputStream out = new ByteArrayOutputStream(chunkSize);</span>
-<span class="fc" id="L112">    pipe(in, out, chunkSize);</span>
-<span class="fc" id="L113">    return out.toString(UTF_8);</span>
+<span class="fc" id="L109">    Check.that(chunkSize, CHUNK_SIZE).is(gt(), 0);</span>
+<span class="fc" id="L110">    ByteArrayOutputStream out = new ByteArrayOutputStream(chunkSize);</span>
+<span class="fc" id="L111">    pipe(in, out, chunkSize);</span>
+<span class="fc" id="L112">    return out.toString(UTF_8);</span>
   }
 
   /**
-   * Simple file-write method. Not efficient, but easy to use. Overwrites
-   * pre-existing contents.
+   * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
    *
    * @param path the path to the file
    * @param contents The contents to be written
    */
-  public static void write(String path, String contents) {
-<span class="fc" id="L124">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
+  public static void setContents(String path, String contents) {
+<span class="fc" id="L122">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
     try {
-<span class="fc" id="L126">      Files.writeString(Path.of(path), contents, UTF_8, CREATE, TRUNCATE_EXISTING);</span>
-<span class="nc" id="L127">    } catch (IOException e) {</span>
-<span class="nc" id="L128">      throw ExceptionMethods.uncheck(e);</span>
-<span class="fc" id="L129">    }</span>
-<span class="fc" id="L130">  }</span>
+<span class="fc" id="L124">      Files.writeString(Path.of(path), contents, UTF_8, CREATE, TRUNCATE_EXISTING);</span>
+<span class="nc" id="L125">    } catch (IOException e) {</span>
+<span class="nc" id="L126">      throw ExceptionMethods.uncheck(e);</span>
+<span class="fc" id="L127">    }</span>
+<span class="fc" id="L128">  }</span>
 
   /**
-   * Simple file-write method. Not efficient, but easy to use. Appends the specified
-   * string to the contents of the specified file.
+   * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
+   *
+   * @param file the file to write
+   * @param contents The contents to be written
+   */
+  public static void setContents(File file, String contents) {
+<span class="nc" id="L137">    setContents(file.getAbsolutePath(), contents);</span>
+<span class="nc" id="L138">  }</span>
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
    *
    * @param path the path to the file
    * @param contents The contents to be written
    */
-  public static void append(String path, String contents) {
-<span class="fc" id="L140">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
+  public static void setContents(String path, byte[] contents) {
+<span class="nc" id="L147">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
     try {
-<span class="fc" id="L142">      Files.writeString(Path.of(path), contents, UTF_8, CREATE, APPEND);</span>
-<span class="nc" id="L143">    } catch (IOException e) {</span>
-<span class="nc" id="L144">      throw ExceptionMethods.uncheck(e);</span>
-<span class="fc" id="L145">    }</span>
-<span class="fc" id="L146">  }</span>
+<span class="nc" id="L149">      Files.write(Path.of(path), contents, CREATE, TRUNCATE_EXISTING);</span>
+<span class="nc" id="L150">    } catch (IOException e) {</span>
+<span class="nc" id="L151">      throw ExceptionMethods.uncheck(e);</span>
+<span class="nc" id="L152">    }</span>
+<span class="nc" id="L153">  }</span>
 
   /**
-   * Returns the contents of the specified resource as a byte array. Bytes are read
-   * in chunks of 512 bytes.
+   * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
    *
-   * @param clazz the {@code Class} to call
-   *     {@link Class#getResourceAsStream(String) getResourceAsStream} on
+   * @param file the file to write
+   * @param contents The contents to be written
+   */
+  public static void setContents(File file, byte[] contents) {
+<span class="nc" id="L162">    setContents(file.getAbsolutePath(), contents);</span>
+<span class="nc" id="L163">  }</span>
+
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
+   * the specified file.
+   *
+   * @param path the path to the file
+   * @param contents The contents to be written
+   */
+  public static void appendContents(String path, String contents) {
+<span class="fc" id="L174">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
+    try {
+<span class="fc" id="L176">      Files.writeString(Path.of(path), contents, UTF_8, CREATE, APPEND);</span>
+<span class="nc" id="L177">    } catch (IOException e) {</span>
+<span class="nc" id="L178">      throw ExceptionMethods.uncheck(e);</span>
+<span class="fc" id="L179">    }</span>
+<span class="fc" id="L180">  }</span>
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
+   * the specified file.
+   *
+   * @param file the file to write
+   * @param contents The contents to be written
+   */
+  public static void appendContents(File file, String contents) {
+<span class="nc" id="L190">    appendContents(file.getAbsolutePath(), contents);</span>
+<span class="nc" id="L191">  }</span>
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
+   * the specified file.
+   *
+   * @param path the path to the file
+   * @param contents The contents to be written
+   */
+  public static void appendContents(String path, byte[] contents) {
+<span class="nc" id="L201">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
+    try {
+<span class="nc" id="L203">      Files.write(Path.of(path), contents, CREATE, APPEND);</span>
+<span class="nc" id="L204">    } catch (IOException e) {</span>
+<span class="nc" id="L205">      throw ExceptionMethods.uncheck(e);</span>
+<span class="nc" id="L206">    }</span>
+<span class="nc" id="L207">  }</span>
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
+   * the specified file.
+   *
+   * @param file the file to write
+   * @param contents The contents to be written
+   */
+  public static void appendContents(File file, byte[] contents) {
+<span class="nc" id="L217">    appendContents(file.getAbsolutePath(), contents);</span>
+<span class="nc" id="L218">  }</span>
+
+  /**
+   * Returns the contents of the specified resource as a byte array. Bytes are read in chunks of 512 bytes.
+   *
+   * @param clazz the {@code Class} to call {@link Class#getResourceAsStream(String) getResourceAsStream}
+   *     on
    * @param path the path to the resource
    * @return the bytes contained in the specified resource
    */
   public static byte[] readBytes(Class&lt;?&gt; clazz, String path) {
-<span class="fc" id="L158">    return readBytes(clazz, path, 512);</span>
+<span class="fc" id="L229">    return readBytes(clazz, path, 512);</span>
   }
 
   /**
    * Returns the contents of the specified resource as a byte array.
    *
-   * @param clazz the {@code Class} to call
-   *     {@link Class#getResourceAsStream(String) getResourceAsStream} on
+   * @param clazz the {@code Class} to call {@link Class#getResourceAsStream(String) getResourceAsStream}
+   *     on
    * @param path the path to the resource
    * @param chunkSize the number of bytes to read at a time
    * @return the contents of the specified resource
    */
   public static byte[] readBytes(Class&lt;?&gt; clazz, String path, int chunkSize) {
-<span class="fc" id="L171">    Check.that(clazz, CLASS).is(notNull()).and(path, PATH).is(notNull());</span>
-<span class="fc" id="L172">    try (InputStream in = clazz.getResourceAsStream(path)) {</span>
-<span class="fc" id="L173">      Check.that(in).is(notNull(), INVALID_PATH, path);</span>
-<span class="fc" id="L174">      return readBytes(in, chunkSize);</span>
-<span class="nc" id="L175">    } catch (IOException e) {</span>
-<span class="nc" id="L176">      throw ExceptionMethods.uncheck(e);</span>
+<span class="fc" id="L242">    Check.that(clazz, CLASS).is(notNull()).and(path, PATH).is(notNull());</span>
+<span class="fc" id="L243">    try (InputStream in = clazz.getResourceAsStream(path)) {</span>
+<span class="fc" id="L244">      Check.that(in).is(notNull(), INVALID_PATH, path);</span>
+<span class="fc" id="L245">      return readBytes(in, chunkSize);</span>
+<span class="nc" id="L246">    } catch (IOException e) {</span>
+<span class="nc" id="L247">      throw ExceptionMethods.uncheck(e);</span>
     }
   }
 
   /**
-   * Returns a {@code byte[]} array containing the bytes read from the specified
-   * input stream. Bytes are read in chunks of 512 bytes. &lt;i&gt;The input stream is not
-   * closed by this method.&lt;/i&gt;
+   * Returns a {@code byte[]} array containing the bytes read from the specified input stream. Bytes are read
+   * in chunks of 512 bytes. &lt;i&gt;The input stream is not closed by this method.&lt;/i&gt;
    *
    * @param in the input stream
-   * @return a {@code byte[]} array containing the bytes read from the specified
-   *     input stream
+   * @return a {@code byte[]} array containing the bytes read from the specified input stream
    */
   public static byte[] readBytes(InputStream in) {
-<span class="fc" id="L190">    return readBytes(in, 512);</span>
+<span class="fc" id="L259">    return readBytes(in, 512);</span>
   }
 
   /**
-   * Returns a {@code byte[]} array containing the bytes read from the specified
-   * input stream. Bytes are read in chunks of the specified size. &lt;i&gt;The input
-   * stream is not closed by this method.&lt;/i&gt;
+   * Returns a {@code byte[]} array containing the bytes read from the specified input stream. Bytes are read
+   * in chunks of the specified size. &lt;i&gt;The input stream is not closed by this method.&lt;/i&gt;
    *
    * @param in the input stream
    * @param chunkSize the number of bytes to read at a time
-   * @return a {@code byte[]} array containing the bytes read from the specified
-   *     input stream
+   * @return a {@code byte[]} array containing the bytes read from the specified input stream
    */
   public static byte[] readBytes(InputStream in, int chunkSize) {
-<span class="fc" id="L204">    ByteArrayOutputStream out = new ByteArrayOutputStream(chunkSize);</span>
-<span class="fc" id="L205">    pipe(in, out, chunkSize);</span>
-<span class="fc" id="L206">    return out.toByteArray();</span>
+<span class="fc" id="L271">    ByteArrayOutputStream out = new ByteArrayOutputStream(chunkSize);</span>
+<span class="fc" id="L272">    pipe(in, out, chunkSize);</span>
+<span class="fc" id="L273">    return out.toByteArray();</span>
   }
 
   /**
-   * Reads all bytes from the specified input stream and writes them to the specified
-   * output stream. Bytes are read and written in chunks of 512 bytes at a time.
+   * Reads all bytes from the specified input stream and writes them to the specified output stream. Bytes are
+   * read and written in chunks of 512 bytes at a time.
    * &lt;i&gt;The input stream and the output stream are not closed by this method.&lt;/i&gt;
    *
    * @param in the input stream
    * @param out the output stream
    */
   public static void pipe(InputStream in, OutputStream out) {
-<span class="fc" id="L218">    pipe(in, out, 512);</span>
-<span class="fc" id="L219">  }</span>
+<span class="fc" id="L285">    pipe(in, out, 512);</span>
+<span class="fc" id="L286">  }</span>
 
   /**
-   * Reads all bytes from the specified input stream and writes them to the specified
-   * output stream. Bytes are read and written in chunks of the specified size.
+   * Reads all bytes from the specified input stream and writes them to the specified output stream. Bytes are
+   * read and written in chunks of the specified size.
    * &lt;i&gt;The input stream and the output stream are not closed by this method.&lt;/i&gt;
    *
    * @param in the input stream
@@ -228,21 +295,21 @@ public class IOMethods {
    * @param chunkSize the number of bytes read/written at a time
    */
   public static void pipe(InputStream in, OutputStream out, int chunkSize) {
-<span class="fc" id="L231">    Check.that(in, IN).is(notNull())</span>
-<span class="fc" id="L232">        .and(out, OUT).is(notNull())</span>
-<span class="fc" id="L233">        .and(chunkSize, CHUNK_SIZE).is(gt(), 0);</span>
-<span class="fc" id="L234">    byte[] data = new byte[chunkSize];</span>
+<span class="fc" id="L298">    Check.that(in, IN).is(notNull())</span>
+<span class="fc" id="L299">        .and(out, OUT).is(notNull())</span>
+<span class="fc" id="L300">        .and(chunkSize, CHUNK_SIZE).is(gt(), 0);</span>
+<span class="fc" id="L301">    byte[] data = new byte[chunkSize];</span>
     try {
-<span class="fc" id="L236">      int n = in.read(data, 0, data.length);</span>
-<span class="fc bfc" id="L237" title="All 2 branches covered.">      while (n != -1) {</span>
-<span class="fc" id="L238">        out.write(data, 0, n);</span>
-<span class="fc" id="L239">        out.flush();</span>
-<span class="fc" id="L240">        n = in.read(data, 0, data.length);</span>
+<span class="fc" id="L303">      int n = in.read(data, 0, data.length);</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">      while (n != -1) {</span>
+<span class="fc" id="L305">        out.write(data, 0, n);</span>
+<span class="fc" id="L306">        out.flush();</span>
+<span class="fc" id="L307">        n = in.read(data, 0, data.length);</span>
       }
-<span class="nc" id="L242">    } catch (IOException e) {</span>
-<span class="nc" id="L243">      throw ExceptionMethods.uncheck(e);</span>
-<span class="fc" id="L244">    }</span>
-<span class="fc" id="L245">  }</span>
+<span class="nc" id="L309">    } catch (IOException e) {</span>
+<span class="nc" id="L310">      throw ExceptionMethods.uncheck(e);</span>
+<span class="fc" id="L311">    }</span>
+<span class="fc" id="L312">  }</span>
 
   /**
    * Creates a new, empty file in the file system's temp directory. Equivalent to:
@@ -251,12 +318,11 @@ public class IOMethods {
    * createTempFile(IOMethods.class, &quot;.tmp&quot;, true)
    * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
-   * @return a {@code File} object for a new, empty file in the file system's temp
-   *     directory
+   * @return a {@code File} object for a new, empty file in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempFile() throws IOException {
-<span class="fc" id="L259">    return createTempFile(IOMethods.class);</span>
+<span class="fc" id="L325">    return createTempFile(IOMethods.class);</span>
   }
 
   /**
@@ -266,303 +332,283 @@ public class IOMethods {
    * createTempFile(requester &quot;.tmp&quot;, true)
    * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
-   * @param requester the class requesting the temp file (its simple name will
-   *     become part of the file name)
-   * @return a {@code File} object for a new, empty file in the file system's temp
-   *     directory
+   * @param requester the class requesting the temp file (its simple name will become part of the file
+   *     name)
+   * @return a {@code File} object for a new, empty file in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempFile(Class&lt;?&gt; requester) throws IOException {
-<span class="fc" id="L276">    return createTempFile(requester, true);</span>
+<span class="fc" id="L341">    return createTempFile(requester, true);</span>
   }
 
   /**
-   * Creates a {@code File} object with a unique file name, located file system's
-   * temp directory. Equivalent to:
+   * Creates a {@code File} object with a unique file name, located file system's temp directory. Equivalent
+   * to:
    *
    * &lt;blockquote&gt;&lt;pre&gt;{@code
    * createTempFile(requester &quot;tmp&quot;, touch)
    * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
-   * @param requester the class requesting the temp file (its simple name will
-   *     become part of the file name)
+   * @param requester the class requesting the temp file (its simple name will become part of the file
+   *     name)
    * @param touch whether to actually create the file on the file system
-   * @return a {@code File} object for a new, empty file in the file system's temp
-   *     directory
+   * @return a {@code File} object for a new, empty file in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempFile(Class&lt;?&gt; requester, boolean touch)
       throws IOException {
-<span class="fc" id="L296">    return createTempFile(requester, &quot;.tmp&quot;, touch);</span>
+<span class="fc" id="L360">    return createTempFile(requester, &quot;.tmp&quot;, touch);</span>
   }
 
   /**
-   * Creates a {@code File} object with a unique file name, located in file system's
-   * temp directory.
+   * Creates a {@code File} object with a unique file name, located in file system's temp directory.
    *
-   * @param requester the class requesting the temp file (its simple name will
-   *     become part of the file name)
-   * @param extension the extension to append to the generated directory name. If
-   *     empty or {@code null}, no extension will be appended to the file name.
-   *     Otherwise the extension may or may not start with &quot;.&quot; (the dot will be
-   *     prepended if absent).
+   * @param requester the class requesting the temp file (its simple name will become part of the file
+   *     name)
+   * @param extension the extension to append to the generated directory name. If empty or {@code null},
+   *     no extension will be appended to the file name. Otherwise the extension may or may not start with &quot;.&quot;
+   *     (the dot will be prepended if absent).
    * @param touch whether to actually create the file on the file system
-   * @return a {@code File} object for a new, empty file in the file system's temp
-   *     directory
+   * @return a {@code File} object for a new, empty file in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempFile(Class&lt;?&gt; requester,
       String extension,
       boolean touch)
       throws IOException {
-<span class="fc" id="L318">    Check.notNull(requester, REQUESTER);</span>
-<span class="fc" id="L319">    return doCreateTempFile(requester, File.separator, extension, touch);</span>
+<span class="fc" id="L379">    Check.notNull(requester, REQUESTER);</span>
+<span class="fc" id="L380">    return doCreateTempFile(requester, File.separator, extension, touch);</span>
   }
 
   /**
-   * Creates a {@code File} object with a unique file name, located in file system's
-   * temp directory.
+   * Creates a {@code File} object with a unique file name, located in file system's temp directory.
    *
-   * @param requester the class requesting the temp directory (its simple name
-   *     will become part of the file name)
-   * @param relativePath any intermediate directories between the file system's
-   *     temp directory and the file to be created. &quot;/&quot; means the file will be
-   *     created directly underneath the file system's temp directory. Intermediate
-   *     directories will be created if necessary. If the path does not start and/or
+   * @param requester the class requesting the temp directory (its simple name will become part of the
+   *     file name)
+   * @param relativePath any intermediate directories between the file system's temp directory and the
+   *     file to be created. &quot;/&quot; means the file will be created directly underneath the file system's temp
+   *     directory. Intermediate directories will be created if necessary. If the path does not start and/or
    *     end with &quot;/&quot; ({@link File#separator}), it will be prepended resp. appended.
-   * @param extension the extension to append to the generated directory name. If
-   *     empty or {@code null}, no extension will be appended to the directory name.
-   *     Otherwise the extension may or may not start with &quot;.&quot; (the dot will be
-   *     prepended if absent).
+   * @param extension the extension to append to the generated directory name. If empty or {@code null},
+   *     no extension will be appended to the directory name. Otherwise the extension may or may not start
+   *     with &quot;.&quot; (the dot will be prepended if absent).
    * @param touch whether to actually create the directory on the file system
-   * @return a {@code File} object for a new, empty file in the file system's temp
-   *     directory
+   * @return a {@code File} object for a new, empty file in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempFile(
       Class&lt;?&gt; requester, String relativePath, String extension, boolean touch)
       throws IOException {
-<span class="fc" id="L345">    Check.notNull(requester, REQUESTER);</span>
-<span class="fc" id="L346">    Check.notNull(relativePath, REL_PATH);</span>
-<span class="fc" id="L347">    return doCreateTempFile(requester, relativePath, extension, touch);</span>
+<span class="fc" id="L402">    Check.notNull(requester, REQUESTER);</span>
+<span class="fc" id="L403">    Check.notNull(relativePath, REL_PATH);</span>
+<span class="fc" id="L404">    return doCreateTempFile(requester, relativePath, extension, touch);</span>
   }
 
   /**
-   * Creates a new, empty directory under the file system's temp directory.
-   * Equivalent to:
+   * Creates a new, empty directory under the file system's temp directory. Equivalent to:
    *
    * &lt;blockquote&gt;&lt;pre&gt;{@code
    * createTempFile(requester &quot;.d&quot;, true)
    * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
-   * @return a {@code File} object for a new, empty directory in the file system's
-   *     temp directory
+   * @return a {@code File} object for a new, empty directory in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempDir() throws IOException {
-<span class="nc" id="L363">    return createTempDir(IOMethods.class);</span>
+<span class="nc" id="L418">    return createTempDir(IOMethods.class);</span>
   }
 
   /**
-   * Creates a new, empty directory under the file system's temp directory.
-   * Equivalent to:
+   * Creates a new, empty directory under the file system's temp directory. Equivalent to:
    *
    * &lt;blockquote&gt;&lt;pre&gt;{@code
    * createTempFile(requester, &quot;.d&quot;, true)
    * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
-   * @param requester the class requesting the temp file (its simple name will
-   *     become part of the file name)
-   * @return a {@code File} object for a new, empty file in the file system's temp
-   *     directory
+   * @param requester the class requesting the temp file (its simple name will become part of the file
+   *     name)
+   * @return a {@code File} object for a new, empty file in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempDir(Class&lt;?&gt; requester) throws IOException {
-<span class="nc" id="L381">    return createTempDir(requester, true);</span>
+<span class="nc" id="L434">    return createTempDir(requester, true);</span>
   }
 
   /**
-   * Creates a {@code File} object with a unique file name, located file system's
-   * temp directory. Equivalent to:
+   * Creates a {@code File} object with a unique file name, located file system's temp directory. Equivalent
+   * to:
    *
    * &lt;blockquote&gt;&lt;pre&gt;{@code
    * createTempDir(requester &quot;.d&quot;, touch)
    * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
-   * @param requester the class requesting the temp directory (its simple name
-   *     will become part of the file name)
+   * @param requester the class requesting the temp directory (its simple name will become part of the
+   *     file name)
    * @param touch whether to actually create the directory on the file system
-   * @return a {@code File} object for a new, empty directory in the file system's
-   *     temp directory
+   * @return a {@code File} object for a new, empty directory in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempDir(Class&lt;?&gt; requester, boolean touch)
       throws IOException {
-<span class="nc" id="L401">    Check.notNull(requester, REQUESTER);</span>
-<span class="nc" id="L402">    return doCreateTempDir(requester, File.separator, &quot;.d&quot;, touch);</span>
+<span class="nc" id="L453">    Check.notNull(requester, REQUESTER);</span>
+<span class="nc" id="L454">    return doCreateTempDir(requester, File.separator, &quot;.d&quot;, touch);</span>
   }
 
   /**
-   * Creates a {@code File} object with a unique file name, located in file system's
-   * temp directory. If {@code touch} equals {@code true}, the {@code File} object
-   * will be used to create a directory underneath the temp directory.
+   * Creates a {@code File} object with a unique file name, located in file system's temp directory. If
+   * {@code touch} equals {@code true}, the {@code File} object will be used to create a directory underneath
+   * the temp directory.
    *
-   * @param requester the class requesting the temp directory (its simple name
-   *     will become part of the file name)
-   * @param extension the extension to append to the generated directory name. If
-   *     empty or {@code null}, no extension will be appended to the directory name.
-   *     Otherwise the extension may or may not start with &quot;.&quot; (the dot will be
-   *     prepended if absent).
+   * @param requester the class requesting the temp directory (its simple name will become part of the
+   *     file name)
+   * @param extension the extension to append to the generated directory name. If empty or {@code null},
+   *     no extension will be appended to the directory name. Otherwise the extension may or may not start
+   *     with &quot;.&quot; (the dot will be prepended if absent).
    * @param touch whether to actually create the directory on the file system
-   * @return a {@code File} object for a new, empty directory in the file system's
-   *     temp directory
+   * @return a {@code File} object for a new, empty directory in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempDir(Class&lt;?&gt; requester,
       String extension,
       boolean touch)
       throws IOException {
-<span class="fc" id="L425">    Check.notNull(requester, REQUESTER);</span>
-<span class="fc" id="L426">    return doCreateTempDir(requester, File.separator, extension, touch);</span>
+<span class="fc" id="L475">    Check.notNull(requester, REQUESTER);</span>
+<span class="fc" id="L476">    return doCreateTempDir(requester, File.separator, extension, touch);</span>
   }
 
   /**
-   * Creates a {@code File} object with a unique file name, located in file system's
-   * temp directory. If {@code touch} equals {@code true}, the {@code File} object
-   * will be used to create a directory underneath the temp directory.
+   * Creates a {@code File} object with a unique file name, located in file system's temp directory. If
+   * {@code touch} equals {@code true}, the {@code File} object will be used to create a directory underneath
+   * the temp directory.
    *
-   * @param requester the class requesting the temp directory (its simple name
-   *     will become part of the file name)
-   * @param relativePath any intermediate directories between the file system's
-   *     temp directory and the directory to be created. &quot;/&quot; means the directory will
-   *     be created directly underneath the file system's temp directory.
-   *     Intermediate directories will be created if necessary. If the path does not
-   *     start or end with &quot;/&quot; ({@link File#separator}), it will be prepended resp.
-   *     appended.
-   * @param extension the extension to append to the generated directory name. If
-   *     empty or {@code null}, no extension will be appended to the directory name.
-   *     Otherwise the extension may or may not start with &quot;.&quot; (the dot will be
-   *     prepended if absent).
+   * @param requester the class requesting the temp directory (its simple name will become part of the
+   *     file name)
+   * @param relativePath any intermediate directories between the file system's temp directory and the
+   *     directory to be created. &quot;/&quot; means the directory will be created directly underneath the file
+   *     system's temp directory. Intermediate directories will be created if necessary. If the path does not
+   *     start or end with &quot;/&quot; ({@link File#separator}), it will be prepended resp. appended.
+   * @param extension the extension to append to the generated directory name. If empty or {@code null},
+   *     no extension will be appended to the directory name. Otherwise the extension may or may not start
+   *     with &quot;.&quot; (the dot will be prepended if absent).
    * @param touch whether to actually create the directory on the file system
-   * @return a {@code File} object for a new, empty directory in the file system's
-   *     temp directory
+   * @return a {@code File} object for a new, empty directory in the file system's temp directory
    * @throws IOException if an I/O error occurs
    */
   public static File createTempDir(
       Class&lt;?&gt; requester, String relativePath, String extension, boolean touch)
       throws IOException {
-<span class="fc" id="L454">    Check.notNull(requester, REQUESTER);</span>
-<span class="fc" id="L455">    Check.notNull(relativePath, REL_PATH);</span>
-<span class="fc" id="L456">    return doCreateTempDir(requester, relativePath, extension, touch);</span>
+<span class="fc" id="L500">    Check.notNull(requester, REQUESTER);</span>
+<span class="fc" id="L501">    Check.notNull(relativePath, REL_PATH);</span>
+<span class="fc" id="L502">    return doCreateTempDir(requester, relativePath, extension, touch);</span>
   }
 
   /**
-   * Deletes a file or directory. Directories need not be empty. If the file or
-   * directory does not exist, this method returns quietly.
+   * Deletes a file or directory. Directories need not be empty. If the file or directory does not exist, this
+   * method returns quietly.
    *
    * @param path the path of the file/directory to be deleted
    */
   public static void rm(String path) {
-<span class="fc" id="L466">    Path p = Check.notNull(path).ok(Path::of);</span>
-<span class="fc bfc" id="L467" title="All 2 branches covered.">    if (Files.exists(p)) {</span>
+<span class="fc" id="L512">    Path p = Check.notNull(path).ok(Path::of);</span>
+<span class="fc bfc" id="L513" title="All 2 branches covered.">    if (Files.exists(p)) {</span>
       try {
-<span class="fc" id="L469">        rm(p);</span>
-<span class="nc" id="L470">      } catch (IOException e) {</span>
-<span class="nc" id="L471">        throw ExceptionMethods.uncheck(e);</span>
-<span class="fc" id="L472">      }</span>
+<span class="fc" id="L515">        rm(p);</span>
+<span class="nc" id="L516">      } catch (IOException e) {</span>
+<span class="nc" id="L517">        throw ExceptionMethods.uncheck(e);</span>
+<span class="fc" id="L518">      }</span>
     }
-<span class="fc" id="L474">  }</span>
+<span class="fc" id="L520">  }</span>
 
   /**
-   * Deletes a file or directory. Directories need not be empty. If the file or
-   * directory does not exist, this method returns quietly.
+   * Deletes a file or directory. Directories need not be empty. If the file or directory does not exist, this
+   * method returns quietly.
    *
    * @param file The file or directory to delete.
    */
   public static void rm(File file) {
-<span class="fc" id="L483">    Path p = Check.notNull(file).ok(File::toPath);</span>
-<span class="fc bfc" id="L484" title="All 2 branches covered.">    if (Files.exists(p)) {</span>
+<span class="fc" id="L529">    Path p = Check.notNull(file).ok(File::toPath);</span>
+<span class="fc bfc" id="L530" title="All 2 branches covered.">    if (Files.exists(p)) {</span>
       try {
-<span class="fc" id="L486">        rm(p);</span>
-<span class="nc" id="L487">      } catch (IOException e) {</span>
-<span class="nc" id="L488">        throw ExceptionMethods.uncheck(e);</span>
-<span class="fc" id="L489">      }</span>
+<span class="fc" id="L532">        rm(p);</span>
+<span class="nc" id="L533">      } catch (IOException e) {</span>
+<span class="nc" id="L534">        throw ExceptionMethods.uncheck(e);</span>
+<span class="fc" id="L535">      }</span>
     }
-<span class="fc" id="L491">  }</span>
+<span class="fc" id="L537">  }</span>
 
   private static void rm(Path p) throws IOException {
-<span class="fc" id="L494">    Files.walkFileTree(</span>
+<span class="fc" id="L540">    Files.walkFileTree(</span>
         p,
-<span class="fc" id="L496">        new SimpleFileVisitor&lt;&gt;() {</span>
+<span class="fc" id="L542">        new SimpleFileVisitor&lt;&gt;() {</span>
           @Override
           public FileVisitResult postVisitDirectory(Path dir, IOException exc)
               throws IOException {
-<span class="fc" id="L500">            Files.delete(dir);</span>
-<span class="fc" id="L501">            return FileVisitResult.CONTINUE;</span>
+<span class="fc" id="L546">            Files.delete(dir);</span>
+<span class="fc" id="L547">            return FileVisitResult.CONTINUE;</span>
           }
 
           @Override
           public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
               throws IOException {
-<span class="fc" id="L507">            Files.delete(file);</span>
-<span class="fc" id="L508">            return FileVisitResult.CONTINUE;</span>
+<span class="fc" id="L553">            Files.delete(file);</span>
+<span class="fc" id="L554">            return FileVisitResult.CONTINUE;</span>
           }
         });
-<span class="fc" id="L511">  }</span>
+<span class="fc" id="L557">  }</span>
 
   private static synchronized File doCreateTempFile(
       Class&lt;?&gt; requester, String relPath, String ext, boolean touch)
       throws IOException {
-<span class="fc" id="L516">    String path = uniquePath(requester, relPath, ext);</span>
-<span class="fc" id="L517">    File file = new File(path);</span>
-<span class="fc bfc" id="L518" title="All 2 branches covered.">    if (touch) {</span>
-<span class="pc bpc" id="L519" title="1 of 4 branches missed.">      if (!relPath.isEmpty() &amp;&amp; !relPath.equals(File.separator)) {</span>
-<span class="fc" id="L520">        File dir = Path.of(tmpDir(), relPath).toFile();</span>
-<span class="fc" id="L521">        dir.mkdirs();</span>
+<span class="fc" id="L562">    String path = uniquePath(requester, relPath, ext);</span>
+<span class="fc" id="L563">    File file = new File(path);</span>
+<span class="fc bfc" id="L564" title="All 2 branches covered.">    if (touch) {</span>
+<span class="pc bpc" id="L565" title="1 of 4 branches missed.">      if (!relPath.isEmpty() &amp;&amp; !relPath.equals(File.separator)) {</span>
+<span class="fc" id="L566">        File dir = Path.of(tmpDir(), relPath).toFile();</span>
+<span class="fc" id="L567">        dir.mkdirs();</span>
       }
-<span class="fc" id="L523">      Check.on(IO, file.createNewFile()).is(yes(),</span>
+<span class="fc" id="L569">      Check.on(IO, file.createNewFile()).is(yes(),</span>
           &quot;Unable to create temp file \&quot;{arg}\&quot;&quot;);
     }
-<span class="fc" id="L526">    return file;</span>
+<span class="fc" id="L572">    return file;</span>
   }
 
   private static synchronized File doCreateTempDir(
       Class&lt;?&gt; requester, String relPath, String ext, boolean touch)
       throws IOException {
-<span class="fc" id="L532">    String path = uniquePath(requester, relPath, ext);</span>
-<span class="fc" id="L533">    File dir = new File(path);</span>
-<span class="fc bfc" id="L534" title="All 2 branches covered.">    if (touch) {</span>
-<span class="fc" id="L535">      Check.on(IO, dir.mkdirs()).is(yes(), &quot;Unable to create temp dir \&quot;{arg}\&quot;&quot;);</span>
+<span class="fc" id="L578">    String path = uniquePath(requester, relPath, ext);</span>
+<span class="fc" id="L579">    File dir = new File(path);</span>
+<span class="fc bfc" id="L580" title="All 2 branches covered.">    if (touch) {</span>
+<span class="fc" id="L581">      Check.on(IO, dir.mkdirs()).is(yes(), &quot;Unable to create temp dir \&quot;{arg}\&quot;&quot;);</span>
     }
-<span class="fc" id="L537">    return dir;</span>
+<span class="fc" id="L583">    return dir;</span>
   }
 
-<span class="fc" id="L540">  private static final AtomicLong counter = new AtomicLong();</span>
+<span class="fc" id="L586">  private static final AtomicLong counter = new AtomicLong();</span>
 
   private static String uniquePath(Class&lt;?&gt; requester,
       String relativePath,
       String extension) {
-<span class="fc" id="L545">    String sep = File.separator;</span>
-<span class="fc" id="L546">    relativePath = ensureSuffix(ensurePrefix(relativePath, sep), sep);</span>
-<span class="fc bfc" id="L547" title="All 2 branches covered.">    if (isEmpty(extension)) {</span>
-<span class="fc" id="L548">      extension = EMPTY_STRING;</span>
+<span class="fc" id="L591">    String sep = File.separator;</span>
+<span class="fc" id="L592">    relativePath = ensureSuffix(ensurePrefix(relativePath, sep), sep);</span>
+<span class="fc bfc" id="L593" title="All 2 branches covered.">    if (isEmpty(extension)) {</span>
+<span class="fc" id="L594">      extension = EMPTY_STRING;</span>
     } else {
-<span class="fc" id="L550">      extension = ensurePrefix(extension, DOT);</span>
+<span class="fc" id="L596">      extension = ensurePrefix(extension, DOT);</span>
     }
-<span class="fc" id="L552">    return tmpDir()</span>
+<span class="fc" id="L598">    return tmpDir()</span>
         + relativePath
-<span class="fc" id="L554">        + requester.getSimpleName()</span>
+<span class="fc" id="L600">        + requester.getSimpleName()</span>
         + DOT
-<span class="fc" id="L556">        + Thread.currentThread().getName()</span>
+<span class="fc" id="L602">        + Thread.currentThread().getName()</span>
         + DOT
-<span class="fc" id="L558">        + System.currentTimeMillis()</span>
+<span class="fc" id="L604">        + System.currentTimeMillis()</span>
         + DOT
-<span class="fc" id="L560">        + lpad(counter.incrementAndGet(), 8, '0')</span>
+<span class="fc" id="L606">        + lpad(counter.incrementAndGet(), 8, '0')</span>
         + extension;
   }
 
   private static String tmpDir() {
-<span class="fc" id="L565">    return System.getProperty(&quot;java.io.tmpdir&quot;);</span>
+<span class="fc" id="L611">    return System.getProperty(&quot;java.io.tmpdir&quot;);</span>
   }
 
 }

@@ -536,7 +536,20 @@ public final class ArrayMethods {
    * @return a concatenation of the elements in the array.
    */
   public static String implodeInts(int[] array, IntFunction&lt;String&gt; stringifier) {
-<span class="fc" id="L539">    return implodeInts(array, stringifier, IMPLODE_SEPARATOR, 0, -1);</span>
+<span class="fc" id="L539">    return implodeInts(array, stringifier, IMPLODE_SEPARATOR);</span>
+  }
+
+  /**
+   * PHP-style implode method, concatenating at most {@code limit} array elements using &quot;, &quot; (comma+space) as
+   * separator.
+   *
+   * @param array the array to implode
+   * @param stringifier A {@code Function} that converts the array elements to strings
+   * @param separator the string used to separate the elements
+   * @return a concatenation of the elements in the array.
+   */
+  public static String implodeInts(int[] array, IntFunction&lt;String&gt; stringifier, String separator) {
+<span class="fc" id="L552">    return implodeInts(array, stringifier, separator, 0, -1);</span>
   }
 
   /**
@@ -551,7 +564,7 @@ public final class ArrayMethods {
    * @return a concatenation of the elements in the array.
    */
   public static String implodeInts(int[] array, String separator, int limit) {
-<span class="fc" id="L554">    return implodeInts(array, String::valueOf, separator, 0, limit);</span>
+<span class="fc" id="L567">    return implodeInts(array, String::valueOf, separator, 0, limit);</span>
   }
 
   /**
@@ -573,14 +586,14 @@ public final class ArrayMethods {
       String separator,
       int from,
       int to) {
-<span class="fc" id="L576">    Check.notNull(array, ARRAY);</span>
-<span class="fc" id="L577">    Check.notNull(separator, SEPARATOR);</span>
-<span class="fc" id="L578">    Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), array.length);</span>
-<span class="fc bfc" id="L579" title="All 2 branches covered.">    int x = to == -1 ? array.length : Math.min(to, array.length);</span>
-<span class="fc" id="L580">    Check.that(x, TO_INDEX).is(gte(), from);</span>
-<span class="fc" id="L581">    return Arrays.stream(array, from, x)</span>
-<span class="fc" id="L582">        .mapToObj(stringifier)</span>
-<span class="fc" id="L583">        .collect(joining(separator));</span>
+<span class="fc" id="L589">    Check.notNull(array, ARRAY);</span>
+<span class="fc" id="L590">    Check.notNull(separator, SEPARATOR);</span>
+<span class="fc" id="L591">    Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), array.length);</span>
+<span class="fc bfc" id="L592" title="All 2 branches covered.">    int x = to == -1 ? array.length : Math.min(to, array.length);</span>
+<span class="fc" id="L593">    Check.that(x, TO_INDEX).is(gte(), from);</span>
+<span class="fc" id="L594">    return Arrays.stream(array, from, x)</span>
+<span class="fc" id="L595">        .mapToObj(stringifier)</span>
+<span class="fc" id="L596">        .collect(joining(separator));</span>
   }
 
   /**
@@ -594,7 +607,7 @@ public final class ArrayMethods {
    * @see CollectionMethods#implode(Collection, String)
    */
   public static String implodeAny(Object array) {
-<span class="fc" id="L597">    return implodeAny(array, Objects::toString, IMPLODE_SEPARATOR, 0, -1);</span>
+<span class="fc" id="L610">    return implodeAny(array, Objects::toString, IMPLODE_SEPARATOR, 0, -1);</span>
   }
 
   /**
@@ -609,7 +622,7 @@ public final class ArrayMethods {
    * @see CollectionMethods#implode(Collection, String)
    */
   public static String implodeAny(Object array, String separator) {
-<span class="fc" id="L612">    return implodeAny(array, separator, -1);</span>
+<span class="fc" id="L625">    return implodeAny(array, separator, -1);</span>
   }
 
   /**
@@ -626,7 +639,7 @@ public final class ArrayMethods {
   public static String implodeAny(
       Object array,
       Function&lt;Object, String&gt; stringifier) {
-<span class="fc" id="L629">    return implodeAny(array, stringifier, IMPLODE_SEPARATOR, 0, -1);</span>
+<span class="fc" id="L642">    return implodeAny(array, stringifier, IMPLODE_SEPARATOR, 0, -1);</span>
   }
 
 
@@ -646,7 +659,7 @@ public final class ArrayMethods {
       Object array,
       Function&lt;Object, String&gt; stringifier,
       String separator) {
-<span class="nc" id="L649">    return implodeAny(array, stringifier, separator, 0, -1);</span>
+<span class="nc" id="L662">    return implodeAny(array, stringifier, separator, 0, -1);</span>
   }
 
   /**
@@ -662,7 +675,7 @@ public final class ArrayMethods {
    * @return a concatenation of the elements in the array.
    */
   public static String implodeAny(Object array, int limit) {
-<span class="fc" id="L665">    return implodeAny(array, IMPLODE_SEPARATOR, limit);</span>
+<span class="fc" id="L678">    return implodeAny(array, IMPLODE_SEPARATOR, limit);</span>
   }
 
   /**
@@ -679,7 +692,7 @@ public final class ArrayMethods {
    * @return a concatenation of the elements in the array.
    */
   public static String implodeAny(Object array, String separator, int limit) {
-<span class="fc" id="L682">    return implodeAny(array, Objects::toString, separator, 0, limit);</span>
+<span class="fc" id="L695">    return implodeAny(array, Objects::toString, separator, 0, limit);</span>
   }
 
   /**
@@ -703,18 +716,18 @@ public final class ArrayMethods {
       String separator,
       int from,
       int to) {
-<span class="fc" id="L706">    int len = Check.notNull(array, ARRAY)</span>
-<span class="fc" id="L707">        .is(array())</span>
-<span class="fc" id="L708">        .ok(InvokeMethods::getArrayLength);</span>
-<span class="fc" id="L709">    Check.notNull(stringifier, STRINGIFIER);</span>
-<span class="fc" id="L710">    Check.notNull(separator, SEPARATOR);</span>
-<span class="fc" id="L711">    Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), len);</span>
-<span class="fc bfc" id="L712" title="All 2 branches covered.">    int x = to == -1 ? len : Math.min(to, len);</span>
-<span class="fc" id="L713">    Check.that(x, TO_INDEX).is(gte(), from);</span>
-<span class="fc" id="L714">    return IntStream.range(from, x)</span>
-<span class="fc" id="L715">        .mapToObj(i -&gt; getArrayElement(array, i))</span>
-<span class="fc" id="L716">        .map(stringifier)</span>
-<span class="fc" id="L717">        .collect(joining(separator));</span>
+<span class="fc" id="L719">    int len = Check.notNull(array, ARRAY)</span>
+<span class="fc" id="L720">        .is(array())</span>
+<span class="fc" id="L721">        .ok(InvokeMethods::getArrayLength);</span>
+<span class="fc" id="L722">    Check.notNull(stringifier, STRINGIFIER);</span>
+<span class="fc" id="L723">    Check.notNull(separator, SEPARATOR);</span>
+<span class="fc" id="L724">    Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), len);</span>
+<span class="fc bfc" id="L725" title="All 2 branches covered.">    int x = to == -1 ? len : Math.min(to, len);</span>
+<span class="fc" id="L726">    Check.that(x, TO_INDEX).is(gte(), from);</span>
+<span class="fc" id="L727">    return IntStream.range(from, x)</span>
+<span class="fc" id="L728">        .mapToObj(i -&gt; getArrayElement(array, i))</span>
+<span class="fc" id="L729">        .map(stringifier)</span>
+<span class="fc" id="L730">        .collect(joining(separator));</span>
   }
 
   /**
@@ -726,7 +739,7 @@ public final class ArrayMethods {
    * @see CollectionMethods#implode(Collection)
    */
   public static &lt;T&gt; String implode(T[] array) {
-<span class="fc" id="L729">    return implode(array, IMPLODE_SEPARATOR);</span>
+<span class="fc" id="L742">    return implode(array, IMPLODE_SEPARATOR);</span>
   }
 
   /**
@@ -739,8 +752,8 @@ public final class ArrayMethods {
    * @see CollectionMethods#implode(Collection, String)
    */
   public static &lt;T&gt; String implode(T[] array, String separator) {
-<span class="fc" id="L742">    Check.notNull(array);</span>
-<span class="fc" id="L743">    return implode(array, Objects::toString, separator, 0, -1);</span>
+<span class="fc" id="L755">    Check.notNull(array);</span>
+<span class="fc" id="L756">    return implode(array, Objects::toString, separator, 0, -1);</span>
   }
 
   /**
@@ -756,7 +769,7 @@ public final class ArrayMethods {
    * @see CollectionMethods#implode(Collection, int)
    */
   public static &lt;T&gt; String implode(T[] array, int limit) {
-<span class="fc" id="L759">    return implode(array, IMPLODE_SEPARATOR, limit);</span>
+<span class="fc" id="L772">    return implode(array, IMPLODE_SEPARATOR, limit);</span>
   }
 
   /**
@@ -770,7 +783,7 @@ public final class ArrayMethods {
    * @see CollectionMethods#implode(Collection, int)
    */
   public static &lt;T&gt; String implode(T[] array, Function&lt;T, String&gt; stringifier) {
-<span class="fc" id="L773">    return implode(array, stringifier, IMPLODE_SEPARATOR, 0, -1);</span>
+<span class="fc" id="L786">    return implode(array, stringifier, IMPLODE_SEPARATOR, 0, -1);</span>
   }
 
   /**
@@ -788,7 +801,7 @@ public final class ArrayMethods {
       T[] array,
       Function&lt;T, String&gt; stringifier,
       String separator) {
-<span class="fc" id="L791">    return implode(array, stringifier, separator, 0, -1);</span>
+<span class="fc" id="L804">    return implode(array, stringifier, separator, 0, -1);</span>
   }
 
   /**
@@ -805,7 +818,7 @@ public final class ArrayMethods {
    * @see CollectionMethods#implode(Collection, String, int)
    */
   public static &lt;T&gt; String implode(T[] array, String separator, int limit) {
-<span class="fc" id="L808">    return implode(array, Objects::toString, separator, 0, limit);</span>
+<span class="fc" id="L821">    return implode(array, Objects::toString, separator, 0, limit);</span>
   }
 
   /**
@@ -828,15 +841,15 @@ public final class ArrayMethods {
       String separator,
       int from,
       int to) {
-<span class="fc" id="L831">    Check.notNull(array, ARRAY);</span>
-<span class="fc" id="L832">    Check.notNull(stringifier, STRINGIFIER);</span>
-<span class="fc" id="L833">    Check.notNull(separator, SEPARATOR);</span>
-<span class="fc" id="L834">    Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), array.length);</span>
-<span class="fc bfc" id="L835" title="All 2 branches covered.">    int x = to == -1 ? array.length : Math.min(to, array.length);</span>
-<span class="fc" id="L836">    Check.that(x, TO_INDEX).is(gte(), from);</span>
-<span class="fc" id="L837">    return Arrays.stream(array, from, x)</span>
-<span class="fc" id="L838">        .map(stringifier)</span>
-<span class="fc" id="L839">        .collect(joining(separator));</span>
+<span class="fc" id="L844">    Check.notNull(array, ARRAY);</span>
+<span class="fc" id="L845">    Check.notNull(stringifier, STRINGIFIER);</span>
+<span class="fc" id="L846">    Check.notNull(separator, SEPARATOR);</span>
+<span class="fc" id="L847">    Check.that(from, FROM_INDEX).is(gte(), 0).is(lte(), array.length);</span>
+<span class="fc bfc" id="L848" title="All 2 branches covered.">    int x = to == -1 ? array.length : Math.min(to, array.length);</span>
+<span class="fc" id="L849">    Check.that(x, TO_INDEX).is(gte(), from);</span>
+<span class="fc" id="L850">    return Arrays.stream(array, from, x)</span>
+<span class="fc" id="L851">        .map(stringifier)</span>
+<span class="fc" id="L852">        .collect(joining(separator));</span>
   }
 
   /**
@@ -848,7 +861,7 @@ public final class ArrayMethods {
    */
   @SafeVarargs
   public static &lt;T&gt; T[] pack(T... objs) {
-<span class="fc" id="L851">    return Check.notNull(objs).ok();</span>
+<span class="fc" id="L864">    return Check.notNull(objs).ok();</span>
   }
 
   /**
@@ -858,7 +871,7 @@ public final class ArrayMethods {
    * @return the same array
    */
   public static int[] ints(int... ints) {
-<span class="fc" id="L861">    return Check.notNull(ints).ok();</span>
+<span class="fc" id="L874">    return Check.notNull(ints).ok();</span>
   }
 
   /**
@@ -868,7 +881,7 @@ public final class ArrayMethods {
    * @return the same array
    */
   public static char[] chars(char... chars) {
-<span class="fc" id="L871">    return Check.notNull(chars).ok();</span>
+<span class="fc" id="L884">    return Check.notNull(chars).ok();</span>
   }
 
   /**
@@ -878,7 +891,7 @@ public final class ArrayMethods {
    * @return the same array
    */
   public static double[] doubles(double... doubles) {
-<span class="fc" id="L881">    return Check.notNull(doubles).ok();</span>
+<span class="fc" id="L894">    return Check.notNull(doubles).ok();</span>
   }
 
   /**
@@ -888,7 +901,7 @@ public final class ArrayMethods {
    * @return the same array
    */
   public static long[] longs(long... longs) {
-<span class="fc" id="L891">    return Check.notNull(longs).ok();</span>
+<span class="fc" id="L904">    return Check.notNull(longs).ok();</span>
   }
 
   /**
@@ -898,7 +911,7 @@ public final class ArrayMethods {
    * @return the same array
    */
   public static float[] floats(float... floats) {
-<span class="fc" id="L901">    return Check.notNull(floats).ok();</span>
+<span class="fc" id="L914">    return Check.notNull(floats).ok();</span>
   }
 
   /**
@@ -910,11 +923,11 @@ public final class ArrayMethods {
    * @return a new array containing the specified object and the elements of the specified array
    */
   public static &lt;T&gt; T[] prefix(T[] array, T obj) {
-<span class="fc" id="L913">    Check.notNull(array, ARRAY);</span>
-<span class="fc" id="L914">    T[] res = fromTemplate(array, array.length + 1);</span>
-<span class="fc" id="L915">    res[0] = obj;</span>
-<span class="fc" id="L916">    arraycopy(array, 0, res, 1, array.length);</span>
-<span class="fc" id="L917">    return res;</span>
+<span class="fc" id="L926">    Check.notNull(array, ARRAY);</span>
+<span class="fc" id="L927">    T[] res = fromTemplate(array, array.length + 1);</span>
+<span class="fc" id="L928">    res[0] = obj;</span>
+<span class="fc" id="L929">    arraycopy(array, 0, res, 1, array.length);</span>
+<span class="fc" id="L930">    return res;</span>
   }
 
   /**
@@ -929,15 +942,15 @@ public final class ArrayMethods {
    */
   @SafeVarargs
   public static &lt;T&gt; T[] prefix(T[] array, T obj0, T obj1, T... moreObjs) {
-<span class="fc" id="L932">    Check.notNull(array, ARRAY);</span>
-<span class="fc" id="L933">    Check.notNull(moreObjs, VARARGS);</span>
-<span class="fc" id="L934">    int sz = array.length + 2 + moreObjs.length;</span>
-<span class="fc" id="L935">    T[] res = fromTemplate(array, sz);</span>
-<span class="fc" id="L936">    res[0] = obj0;</span>
-<span class="fc" id="L937">    res[1] = obj1;</span>
-<span class="fc" id="L938">    arraycopy(moreObjs, 0, res, 2, moreObjs.length);</span>
-<span class="fc" id="L939">    arraycopy(array, 0, res, 2 + moreObjs.length, array.length);</span>
-<span class="fc" id="L940">    return res;</span>
+<span class="fc" id="L945">    Check.notNull(array, ARRAY);</span>
+<span class="fc" id="L946">    Check.notNull(moreObjs, VARARGS);</span>
+<span class="fc" id="L947">    int sz = array.length + 2 + moreObjs.length;</span>
+<span class="fc" id="L948">    T[] res = fromTemplate(array, sz);</span>
+<span class="fc" id="L949">    res[0] = obj0;</span>
+<span class="fc" id="L950">    res[1] = obj1;</span>
+<span class="fc" id="L951">    arraycopy(moreObjs, 0, res, 2, moreObjs.length);</span>
+<span class="fc" id="L952">    arraycopy(array, 0, res, 2 + moreObjs.length, array.length);</span>
+<span class="fc" id="L953">    return res;</span>
   }
 
   /**
@@ -948,11 +961,11 @@ public final class ArrayMethods {
    * @return a new array containing the specified {@code int} and the elements of the specified array
    */
   public static int[] prefix(int[] array, int i) {
-<span class="fc" id="L951">    Check.notNull(array, ARRAY);</span>
-<span class="fc" id="L952">    int[] res = new int[array.length + 1];</span>
-<span class="fc" id="L953">    res[0] = i;</span>
-<span class="fc" id="L954">    arraycopy(array, 0, res, 1, array.length);</span>
-<span class="fc" id="L955">    return res;</span>
+<span class="fc" id="L964">    Check.notNull(array, ARRAY);</span>
+<span class="fc" id="L965">    int[] res = new int[array.length + 1];</span>
+<span class="fc" id="L966">    res[0] = i;</span>
+<span class="fc" id="L967">    arraycopy(array, 0, res, 1, array.length);</span>
+<span class="fc" id="L968">    return res;</span>
   }
 
   /**
@@ -965,15 +978,15 @@ public final class ArrayMethods {
    * @return a new array containing the specified {@code int} values and the elements of the specified array
    */
   public static int[] prefix(int[] array, int i0, int i1, int... moreInts) {
-<span class="fc" id="L968">    Check.notNull(array, ARRAY);</span>
-<span class="fc" id="L969">    Check.notNull(moreInts, VARARGS);</span>
-<span class="fc" id="L970">    int sz = array.length + 2 + moreInts.length;</span>
-<span class="fc" id="L971">    int[] res = new int[sz];</span>
-<span class="fc" id="L972">    res[0] = i0;</span>
-<span class="fc" id="L973">    res[1] = i1;</span>
-<span class="fc" id="L974">    arraycopy(moreInts, 0, res, 2, moreInts.length);</span>
-<span class="fc" id="L975">    arraycopy(array, 0, res, 2 + moreInts.length, array.length);</span>
-<span class="fc" id="L976">    return res;</span>
+<span class="fc" id="L981">    Check.notNull(array, ARRAY);</span>
+<span class="fc" id="L982">    Check.notNull(moreInts, VARARGS);</span>
+<span class="fc" id="L983">    int sz = array.length + 2 + moreInts.length;</span>
+<span class="fc" id="L984">    int[] res = new int[sz];</span>
+<span class="fc" id="L985">    res[0] = i0;</span>
+<span class="fc" id="L986">    res[1] = i1;</span>
+<span class="fc" id="L987">    arraycopy(moreInts, 0, res, 2, moreInts.length);</span>
+<span class="fc" id="L988">    arraycopy(array, 0, res, 2 + moreInts.length, array.length);</span>
+<span class="fc" id="L989">    return res;</span>
   }
 
   /**
@@ -984,10 +997,10 @@ public final class ArrayMethods {
    * @return an array of the specified length, filled with the specified value
    */
   public static int[] repeat(int value, int length) {
-<span class="fc" id="L987">    Check.that(length, &quot;number of repetitions&quot;).isNot(negative());</span>
-<span class="fc" id="L988">    int[] res = new int[length];</span>
-<span class="fc" id="L989">    Arrays.fill(res, value);</span>
-<span class="fc" id="L990">    return res;</span>
+<span class="fc" id="L1000">    Check.that(length, &quot;number of repetitions&quot;).isNot(negative());</span>
+<span class="fc" id="L1001">    int[] res = new int[length];</span>
+<span class="fc" id="L1002">    Arrays.fill(res, value);</span>
+<span class="fc" id="L1003">    return res;</span>
   }
 
   /**
@@ -997,7 +1010,7 @@ public final class ArrayMethods {
    * @return a {@code List} containing the same elements in the same order
    */
   public static List&lt;Integer&gt; asList(int[] values) {
-<span class="fc" id="L1000">    return Arrays.asList(box(values));</span>
+<span class="fc" id="L1013">    return Arrays.asList(box(values));</span>
   }
 
   /**
@@ -1007,7 +1020,7 @@ public final class ArrayMethods {
    * @return a {@code List} containing the same elements in the same order
    */
   public static List&lt;Float&gt; asList(float[] values) {
-<span class="fc" id="L1010">    return Arrays.asList(box(values));</span>
+<span class="fc" id="L1023">    return Arrays.asList(box(values));</span>
   }
 
   /**
@@ -1017,7 +1030,7 @@ public final class ArrayMethods {
    * @return a {@code List} containing the same elements in the same order
    */
   public static List&lt;Double&gt; asList(double[] values) {
-<span class="fc" id="L1020">    return Arrays.asList(box(values));</span>
+<span class="fc" id="L1033">    return Arrays.asList(box(values));</span>
   }
 
   /**
@@ -1027,7 +1040,7 @@ public final class ArrayMethods {
    * @return a {@code List} containing the same elements in the same order
    */
   public static List&lt;Long&gt; asList(long[] values) {
-<span class="fc" id="L1030">    return Arrays.asList(box(values));</span>
+<span class="fc" id="L1043">    return Arrays.asList(box(values));</span>
   }
 
   /**
@@ -1037,7 +1050,7 @@ public final class ArrayMethods {
    * @return a {@code List} containing the same elements in the same order
    */
   public static List&lt;Short&gt; asList(short[] values) {
-<span class="fc" id="L1040">    return Arrays.asList(box(values));</span>
+<span class="fc" id="L1053">    return Arrays.asList(box(values));</span>
   }
 
   /**
@@ -1047,7 +1060,7 @@ public final class ArrayMethods {
    * @return a {@code List} containing the same elements in the same order
    */
   public static List&lt;Byte&gt; asList(byte[] values) {
-<span class="fc" id="L1050">    return Arrays.asList(box(values));</span>
+<span class="fc" id="L1063">    return Arrays.asList(box(values));</span>
   }
 
   /**
@@ -1057,7 +1070,7 @@ public final class ArrayMethods {
    * @return a {@code List} containing the same elements in the same order
    */
   public static List&lt;Character&gt; asList(char[] values) {
-<span class="fc" id="L1060">    return Arrays.asList(box(values));</span>
+<span class="fc" id="L1073">    return Arrays.asList(box(values));</span>
   }
 
   /**
@@ -1067,7 +1080,7 @@ public final class ArrayMethods {
    * @return a {@code List} containing the same elements in the same order
    */
   public static List&lt;Boolean&gt; asList(boolean[] values) {
-<span class="fc" id="L1070">    return Arrays.asList(box(values));</span>
+<span class="fc" id="L1083">    return Arrays.asList(box(values));</span>
   }
 
   /**
@@ -1078,8 +1091,8 @@ public final class ArrayMethods {
    * @return the {@code int} array
    */
   public static int[] unbox(Integer[] values, int dfault) {
-<span class="fc" id="L1081">    Check.notNull(values);</span>
-<span class="fc" id="L1082">    return Arrays.stream(values).mapToInt(i -&gt; ifNull(i, dfault)).toArray();</span>
+<span class="fc" id="L1094">    Check.notNull(values);</span>
+<span class="fc" id="L1095">    return Arrays.stream(values).mapToInt(i -&gt; ifNull(i, dfault)).toArray();</span>
   }
 
   /**
@@ -1090,7 +1103,7 @@ public final class ArrayMethods {
    * @return the {@code int} array
    */
   public static int[] unbox(Integer[] values) {
-<span class="fc" id="L1093">    return unbox(values, 0);</span>
+<span class="fc" id="L1106">    return unbox(values, 0);</span>
   }
 
   /**
@@ -1100,7 +1113,7 @@ public final class ArrayMethods {
    * @return the {@code Integer} array
    */
   public static Integer[] box(int[] values) {
-<span class="fc" id="L1103">    return Check.notNull(values).ok(Arrays::stream).boxed().toArray(Integer[]::new);</span>
+<span class="fc" id="L1116">    return Check.notNull(values).ok(Arrays::stream).boxed().toArray(Integer[]::new);</span>
   }
 
   /**
@@ -1110,7 +1123,7 @@ public final class ArrayMethods {
    * @return the {@code Double} array
    */
   public static Double[] box(double[] values) {
-<span class="fc" id="L1113">    return Check.notNull(values).ok(Arrays::stream).boxed().toArray(Double[]::new);</span>
+<span class="fc" id="L1126">    return Check.notNull(values).ok(Arrays::stream).boxed().toArray(Double[]::new);</span>
   }
 
   /**
@@ -1120,7 +1133,7 @@ public final class ArrayMethods {
    * @return the {@code Long} array
    */
   public static Long[] box(long[] values) {
-<span class="fc" id="L1123">    return Check.notNull(values).ok(Arrays::stream).boxed().toArray(Long[]::new);</span>
+<span class="fc" id="L1136">    return Check.notNull(values).ok(Arrays::stream).boxed().toArray(Long[]::new);</span>
   }
 
   /**
@@ -1130,11 +1143,11 @@ public final class ArrayMethods {
    * @return the {@code Float} array
    */
   public static Float[] box(float[] values) {
-<span class="fc" id="L1133">    var res = new Float[Check.notNull(values).ok().length];</span>
-<span class="fc bfc" id="L1134" title="All 2 branches covered.">    for (int i = 0; i &lt; values.length; ++i) {</span>
-<span class="fc" id="L1135">      res[i] = values[i];</span>
+<span class="fc" id="L1146">    var res = new Float[Check.notNull(values).ok().length];</span>
+<span class="fc bfc" id="L1147" title="All 2 branches covered.">    for (int i = 0; i &lt; values.length; ++i) {</span>
+<span class="fc" id="L1148">      res[i] = values[i];</span>
     }
-<span class="fc" id="L1137">    return res;</span>
+<span class="fc" id="L1150">    return res;</span>
   }
 
   /**
@@ -1144,11 +1157,11 @@ public final class ArrayMethods {
    * @return the {@code Short} array
    */
   public static Short[] box(short[] values) {
-<span class="fc" id="L1147">    var res = new Short[Check.notNull(values).ok().length];</span>
-<span class="fc bfc" id="L1148" title="All 2 branches covered.">    for (int i = 0; i &lt; values.length; ++i) {</span>
-<span class="fc" id="L1149">      res[i] = values[i];</span>
+<span class="fc" id="L1160">    var res = new Short[Check.notNull(values).ok().length];</span>
+<span class="fc bfc" id="L1161" title="All 2 branches covered.">    for (int i = 0; i &lt; values.length; ++i) {</span>
+<span class="fc" id="L1162">      res[i] = values[i];</span>
     }
-<span class="fc" id="L1151">    return res;</span>
+<span class="fc" id="L1164">    return res;</span>
   }
 
   /**
@@ -1158,11 +1171,11 @@ public final class ArrayMethods {
    * @return the {@code Byte} array
    */
   public static Byte[] box(byte[] values) {
-<span class="fc" id="L1161">    var res = new Byte[Check.notNull(values).ok().length];</span>
-<span class="fc bfc" id="L1162" title="All 2 branches covered.">    for (int i = 0; i &lt; values.length; ++i) {</span>
-<span class="fc" id="L1163">      res[i] = values[i];</span>
+<span class="fc" id="L1174">    var res = new Byte[Check.notNull(values).ok().length];</span>
+<span class="fc bfc" id="L1175" title="All 2 branches covered.">    for (int i = 0; i &lt; values.length; ++i) {</span>
+<span class="fc" id="L1176">      res[i] = values[i];</span>
     }
-<span class="fc" id="L1165">    return res;</span>
+<span class="fc" id="L1178">    return res;</span>
   }
 
   /**
@@ -1172,11 +1185,11 @@ public final class ArrayMethods {
    * @return the {@code Character} array
    */
   public static Character[] box(char[] values) {
-<span class="fc" id="L1175">    var res = new Character[Check.notNull(values).ok().length];</span>
-<span class="fc bfc" id="L1176" title="All 2 branches covered.">    for (int i = 0; i &lt; values.length; ++i) {</span>
-<span class="fc" id="L1177">      res[i] = values[i];</span>
+<span class="fc" id="L1188">    var res = new Character[Check.notNull(values).ok().length];</span>
+<span class="fc bfc" id="L1189" title="All 2 branches covered.">    for (int i = 0; i &lt; values.length; ++i) {</span>
+<span class="fc" id="L1190">      res[i] = values[i];</span>
     }
-<span class="fc" id="L1179">    return res;</span>
+<span class="fc" id="L1192">    return res;</span>
   }
 
   /**
@@ -1186,16 +1199,16 @@ public final class ArrayMethods {
    * @return the {@code Boolean} array
    */
   public static Boolean[] box(boolean[] values) {
-<span class="fc" id="L1189">    var res = new Boolean[Check.notNull(values).ok().length];</span>
-<span class="fc bfc" id="L1190" title="All 2 branches covered.">    for (int i = 0; i &lt; values.length; ++i) {</span>
-<span class="fc" id="L1191">      res[i] = values[i];</span>
+<span class="fc" id="L1202">    var res = new Boolean[Check.notNull(values).ok().length];</span>
+<span class="fc bfc" id="L1203" title="All 2 branches covered.">    for (int i = 0; i &lt; values.length; ++i) {</span>
+<span class="fc" id="L1204">      res[i] = values[i];</span>
     }
-<span class="fc" id="L1193">    return res;</span>
+<span class="fc" id="L1206">    return res;</span>
   }
 
   @SuppressWarnings(&quot;unchecked&quot;)
   private static &lt;T&gt; T[] fromTemplate(T[] template, int length) {
-<span class="fc" id="L1198">    return (T[]) newArray(template.getClass(), length);</span>
+<span class="fc" id="L1211">    return (T[]) newArray(template.getClass(), length);</span>
   }
 
 }
