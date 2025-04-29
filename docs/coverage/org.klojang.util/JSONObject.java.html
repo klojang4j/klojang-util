@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JSONObject.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Util</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util</a> &gt; <span class="el_source">JSONObject.java</span></div><h1>JSONObject.java</h1><pre class="source lang-java linenums">package org.klojang.util;
+
+import org.klojang.check.Check;
+import org.klojang.check.CommonChecks;
+import org.klojang.check.Tag;
+import org.klojang.check.extra.Result;
+
+import java.util.*;
+
+import static org.klojang.check.CommonChecks.*;
+import static org.klojang.check.CommonExceptions.STATE;
+import static org.klojang.check.CommonProperties.strlen;
+import static org.klojang.check.Tag.VALUE;
+import static org.klojang.util.ObjectMethods.ifNull;
+import static org.klojang.util.StringMethods.EMPTY_STRING;
+
+/**
+ * &lt;p&gt;An elaborate reader/writer class for Map&amp;lt;String, Object&amp;gt; (map-in-map) pseudo-objects. A
+ * {@code JSONObject} lets you read deeply nested values using path strings (e.g.
+ * {@code person.address.street}). It also lets you write deeply nested values without having to create the
+ * intermediate maps first. If they are missing, they will tacitly be created. Map keys must not be
+ * {@code null} and they must not be empty strings. Map values can be anything, including {@code null}.
+ * Internally, a {@code JSONObject} works with {@link Path} objects. See the documentation for the
+ * {@code Path} class for how to specify path strings.
+ *
+ * &lt;p&gt;Note that, notwithstanding its name, this class does not require that you use it within the context of
+ * JSON serialization or deserialization. It is more akin to a {@code MapDecorator}.
+ *
+ * &lt;p&gt;&lt;b&gt;Example 1 (writing):&lt;/b&gt;
+ *
+ * &lt;blockquote&gt;&lt;pre&gt;{@code
+ * Map&lt;String, Object&gt; map = JSONObject.empty()
+ *     .set(&quot;person.address.street&quot;, &quot;12 Revolutionary Rd.&quot;)
+ *     .set(&quot;person.address.state&quot;, &quot;CA&quot;)
+ *     .set(&quot;person.firstName&quot;, &quot;John&quot;)
+ *     .set(&quot;person.lastName&quot;, &quot;Smith&quot;)
+ *     .set(&quot;person.dateOfBirth&quot;, LocalDate.of(1967, 4, 4));
+ *     .build();
+ * }&lt;/pre&gt;&lt;/blockquote&gt;
+ *
+ * &lt;p&gt;&lt;b&gt;Example 2 (writing):&lt;/b&gt;
+ *
+ * &lt;blockquote&gt;&lt;pre&gt;{@code
+ * Map&lt;String, Object&gt; map = JSONObject.empty()
+ *     .in(&quot;person&quot;)
+ *         .set(&quot;firstName&quot;, &quot;John&quot;)
+ *         .set(&quot;lastName&quot;, &quot;Smith&quot;)
+ *         .set(&quot;dateOfBirth&quot;, LocalDate.of(1967, 4, 4))
+ *         .in(&quot;address&quot;)
+ *             .set(&quot;street&quot;, &quot;12 Revolutionary Rd.&quot;)
+ *             .set(&quot;state&quot;, &quot;CA&quot;)
+ *             .up(&quot;person&quot;)
+ *         .in(&quot;medicalStatus&quot;)
+ *             .set(&quot;allergies&quot;, List.of(&quot;peanuts&quot;))
+ *             .set(&quot;smoker&quot;, true)
+ *             .set(&quot;prescriptions&quot;, null)
+ *     .build();
+ * }&lt;/pre&gt;&lt;/blockquote&gt;
+ *
+ * &lt;p&gt;&lt;b&gt;Example 3 (reading):&lt;/b&gt;
+ *
+ * &lt;blockquote&gt;&lt;pre&gt;{@code
+ * String street = JSONObject.of(someMap).get(&quot;person.address.street&quot;);
+ * }&lt;/pre&gt;&lt;/blockquote&gt;
+ *
+ * &lt;p&gt;For more flexibility, use the {@code org.klojang.path.PathWalker PathWalker} class of the
+ * klojang-invoke library.
+ *
+ * @author Ayco Holleman
+ */
+public final class JSONObject {
+
+  private static final String ERR_HOME_ALREADY = &quot;already in root map&quot;;
+  private static final String NO_SUCH_PARENT = &quot;Parent of \&quot;${0}\&quot; is not \&quot;${arg}\&quot;. Expected: \&quot;${obj}\&quot;.&quot;;
+
+  /**
+   * Thrown when trying to write to a path that has already been set, or that extends beyond a path segment
+   * with a terminal value (anything other than a map).
+   *
+   * @author Ayco Holleman
+   */
+  public static final class PathBlockedException extends IllegalArgumentException {
+
+    private PathBlockedException(Path path, Object value) {
+<span class="fc" id="L85">      super(createMessage(path, value));</span>
+<span class="fc" id="L86">    }</span>
+
+    private PathBlockedException(String msg) {
+<span class="fc" id="L89">      super(msg);</span>
+<span class="fc" id="L90">    }</span>
+
+    private static String createMessage(Path path, Object value) {
+<span class="fc" id="L93">      String fmt = &quot;path \&quot;%s\&quot; blocked by terminal value %s&quot;;</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">      if (value instanceof String s) {</span>
+<span class="fc" id="L95">        value = '&quot;' + s + '&quot;';</span>
+      }
+<span class="fc" id="L97">      return String.format(fmt, path, value);</span>
+    }
+
+  }
+
+  /*
+   * When setting a path, or when processing the source map passed to the
+   * constructor, we replace null with this value. This way, if Map.get(key) returns
+   * null, we know for sure that the map does not contain the key. No need to follow
+   * it up with a containsKey call. On its way out, _NULL_ is replaced again with
+   * null.
+   */
+<span class="fc" id="L109">  private static final Object _NULL_ = new Object();</span>
+
+
+  /**
+   * Creates a new {@code JSONObject}.
+   *
+   * @return a new {@code JSONObject}
+   */
+  public static JSONObject empty() {
+<span class="fc" id="L118">    return new JSONObject();</span>
+  }
+
+  /**
+   * Creates a {@code JSONObject} that starts out with the entries in the specified map. The provided map is
+   * read, but not modified.
+   *
+   * @param map the initial {@code Map}
+   * @return a {@code JSONObject} that starts out with the entries in the specified map
+   */
+  public static JSONObject of(Map&lt;String, Object&gt; map) {
+<span class="fc" id="L129">    return new JSONObject(map);</span>
+  }
+
+  private final Map&lt;String, Object&gt; map;
+  private final Path root;
+  private final JSONObject parent;
+
+  private JSONObject() {
+<span class="fc" id="L137">    this(new LinkedHashMap&lt;&gt;());</span>
+<span class="fc" id="L138">  }</span>
+
+  /**
+   * Creates a {@code JSONObject} that starts out with the entries in the specified map. The map is read, but
+   * not modified.
+   *
+   * @param map the initial {@code Map}
+   */
+<span class="fc" id="L146">  private JSONObject(Map&lt;String, Object&gt; map) {</span>
+<span class="fc" id="L147">    Check.notNull(map, Tag.MAP);</span>
+<span class="fc" id="L148">    this.map = LinkedHashMap.newLinkedHashMap(map.size() + 10);</span>
+<span class="fc" id="L149">    this.root = Path.empty();</span>
+<span class="fc" id="L150">    this.parent = null;</span>
+<span class="fc" id="L151">    init(this, map);</span>
+<span class="fc" id="L152">  }</span>
+
+<span class="fc" id="L154">  private JSONObject(Path root, JSONObject parent) {</span>
+<span class="fc" id="L155">    this.root = root;</span>
+<span class="fc" id="L156">    this.map = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L157">    this.parent = parent;</span>
+<span class="fc" id="L158">  }</span>
+
+  /**
+   * &lt;p&gt;Sets the specified path to the specified value. It is not allowed to
+   * overwrite the value of a path that has already been set, even if set to {@code null}. If necessary, use
+   * {@link #unset(String)} to unset the path's value first.
+   *
+   * &lt;p&gt;The value can be anything except a {@code Map} or {@code JSONObject}. Use the
+   * {@link #in(String) in()} method to create a new map at the specified path. It is allowed to set a path's
+   * value to {@code null}.
+   *
+   * @param path the path at which to write the value
+   * @param value the value
+   * @return this {@code JSONObject}
+   */
+  public JSONObject set(String path, Object value) {
+<span class="fc" id="L174">    Check.notNull(path, Tag.PATH);</span>
+<span class="fc" id="L175">    set(this, Path.from(path), value);</span>
+<span class="fc" id="L176">    return this;</span>
+  }
+
+  /**
+   * &lt;p&gt;Appends the specified element to the {@code Collection} found at the
+   * specified path. If the path has not been set yet, it will first be set to an empty {@link ArrayList}, to
+   * which the element will then be added. If the path is already set to a non-{@code Collection} type, a
+   * {@link PathBlockedException} is thrown.
+   *
+   * @param path the path
+   * @param element the element to add to the collection found or created at the specified path
+   * @return this {@code JSONObject}
+   */
+  @SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
+  public JSONObject append(String path, Object element) {
+<span class="fc" id="L191">    Check.notNull(path, Tag.PATH);</span>
+<span class="fc" id="L192">    Result&lt;Object&gt; result = poll(path);</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">    if (result.isAvailable()) {</span>
+<span class="fc" id="L194">      Object obj = result.get();</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">      if (obj instanceof Collection c) {</span>
+<span class="fc" id="L196">        c.add(element);</span>
+      } else {
+<span class="fc" id="L198">        String fmt = &quot;\&quot;%s\&quot; must be a collection (was %s)&quot;;</span>
+<span class="fc" id="L199">        String msg = fmt.formatted(path, obj.getClass());</span>
+<span class="fc" id="L200">        throw new PathBlockedException(msg);</span>
+      }
+<span class="fc" id="L202">    } else {</span>
+<span class="fc" id="L203">      List&lt;Object&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L204">      list.add(element);</span>
+<span class="fc" id="L205">      set(path, list);</span>
+    }
+<span class="fc" id="L207">    return this;</span>
+  }
+
+  /**
+   * Returns a {@link Result} object containing the value of the specified path, or
+   * {@link Result#notAvailable} if the path is not set.
+   *
+   * @param path the path
+   * @return a {@link Result} object containing the value of the specified path, or
+   *     {@link Result#notAvailable} if the path is not set
+   * @see #isSet(String)
+   */
+  public Result&lt;Object&gt; poll(String path) {
+<span class="fc" id="L220">    Check.notNull(path, Tag.PATH);</span>
+<span class="fc" id="L221">    return poll(this, Path.from(path));</span>
+  }
+
+  /**
+   * Returns the value of the specified path if set, else {@code null}.
+   *
+   * @param path the path
+   * @param &lt;T&gt; The type to cast the path's value to
+   * @return the value of the specified path if set, else {@code null}
+   */
+  @SuppressWarnings(&quot;unchecked&quot;)
+  public &lt;T&gt; T get(String path) {
+<span class="nc" id="L233">    return (T) poll(path).orElse(null);</span>
+  }
+
+  /**
+   * Returns a {@code JSONObject} for the map at the specified path. Once this method has been called, &lt;i&gt;all
+   * subsequently specified paths&lt;/i&gt; (including for subsequent calls to {@code in()}) are taken relative to
+   * the specified path. If there is no map yet at the specified path, it will be created. Ancestral maps will
+   * be created as and when needed. If any of the segments in the path (including the last segment) has
+   * already been set, a {@link PathBlockedException} is thrown.
+   *
+   * @param path the path to be used as the base path. The path will itself be interpreted as relative to
+   *     the &lt;i&gt;current&lt;/i&gt; base path
+   * @return a {@code JSONObject} for the map found or created at the specified path
+   */
+  public JSONObject in(String path) {
+<span class="fc" id="L248">    Check.notNull(path, Tag.PATH);</span>
+<span class="fc" id="L249">    return in(this, Path.from(path));</span>
+  }
+
+  /**
+   * Jumps to another branch in the tree of nested maps. The difference between {@code jump} and
+   * {@link #in(String) in} is that the path passed to {@code jump} is always taken as an absolute path (i.e.
+   * relative to the root map), while the path passed to {@code in} is taken relative to the path(s) passed to
+   * previous calls to {@code in} and {@code jump}.
+   *
+   * @param path the absolute path to be used as the base path
+   * @return a {@code JSONObject} for the map found or created at the specified path
+   * @see #in(String)
+   */
+  public JSONObject jump(String path) {
+<span class="fc bfc" id="L263" title="All 2 branches covered.">    return parent == null ? in(path) : root().in(path);</span>
+  }
+
+  /**
+   * &lt;p&gt;Returns a {@code JSONObject} for the parent map of the map currently being edited. All subsequently
+   * specified paths will be taken relative to the parent map's path. An {@link IllegalStateException} is
+   * thrown when trying to exit out of the root map. You must pass the name of the parent map (the last path
+   * segment of the parent map's path). An {@link IllegalArgumentException} is thrown if the argument does not
+   * equal the parent map's name. This is to make sure you will not accidentally start writing to the wrong
+   * map, and it makes the map-building code more intelligible.
+   *
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * Map&lt;String, Object&gt; map = new MapBuilder()
+   *  .in(&quot;person&quot;)
+   *    .set(&quot;firstName&quot;, &quot;John&quot;)
+   *    .set(&quot;lastName&quot;, &quot;Smith&quot;)
+   *    .in(&quot;address&quot;)
+   *      .set(&quot;street&quot;, &quot;12 Revolutionary Rd.&quot;)
+   *      .set(&quot;state&quot;, &quot;CA&quot;)
+   *      .up(&quot;person&quot;)
+   *    .set(&quot;dateOfBirth&quot;, LocalDate.of(1967, 4, 4))
+   *  .build();
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   *
+   * &lt;p&gt;You can chain {@code up()} calls. To exit from a map directly under the root map, specify {@code &quot;&quot;}
+   * (an empty string):
+   *
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * MapBuilder mb = new MapBuilder();
+   *  .in(&quot;department.manager.address&quot;)
+   *    .set(&quot;street&quot;, &quot;Sunset Blvd&quot;)
+   *    .up(&quot;manager&quot;)
+   *    .up(&quot;department&quot;)
+   *    .up(&quot;&quot;)
+   *  .set(&quot;foo&quot;, &quot;bar&quot;);
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   *
+   * @param parent the name of the parent map
+   * @return a {@code JSONObject} for the parent map of the map currently being written to
+   */
+  public JSONObject up(String parent) {
+<span class="fc" id="L304">    Check.notNull(parent);</span>
+<span class="fc" id="L305">    JSONObject mother = this.parent;</span>
+<span class="fc" id="L306">    Check.on(STATE, mother).is(notNull(), ERR_HOME_ALREADY);</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">    if (root.size() == 1) {</span>
+<span class="fc" id="L308">      Check.that(parent).is(CommonChecks.empty(), &quot;specify \&quot;\&quot; to go up to root map&quot;);</span>
+    } else {
+<span class="fc" id="L310">      Check.that(parent).is(equalTo(), mother.name(), NO_SUCH_PARENT, name());</span>
+    }
+<span class="fc" id="L312">    return this.parent;</span>
+  }
+
+  /**
+   * Takes you back to the root map. All paths you specify will be interpreted as absolute paths again.
+   *
+   * @return a {@code JSONObject} for the root map
+   */
+  public JSONObject root() {
+<span class="pc bpc" id="L321" title="1 of 2 branches missed.">    if (parent == null) {</span>
+<span class="nc" id="L322">      return this;</span>
+    }
+<span class="fc" id="L324">    JSONObject mb = parent;</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">    while (mb.parent != null) {</span>
+<span class="fc" id="L326">      mb = mb.parent;</span>
+    }
+<span class="fc" id="L328">    return mb;</span>
+  }
+
+  /**
+   * Returns the key used to embed the current map within the parent map. If the current map is the root map,
+   * an empty string is returned.
+   *
+   * @return the key used to embed the current map within the parent map
+   */
+  public String name() {
+<span class="fc bfc" id="L338" title="All 2 branches covered.">    if (parent == null) {</span>
+<span class="fc" id="L339">      return EMPTY_STRING;</span>
+    }
+<span class="fc" id="L341">    return name(root);</span>
+  }
+
+  /**
+   * Returns the full path to the current map. That is, the path relative to which all {@code path} arguments
+   * (e.g. for the {@link #set(String, Object) set()} method) are taken.
+   *
+   * @return the full path to the current map
+   */
+  public String where() {
+<span class="fc" id="L351">    return root.toString();</span>
+  }
+
+  /**
+   * Returns whether the specified path is set to a terminal value (and hence cannot be extended).
+   *
+   * @param path the path
+   * @return whether it is set to a terminal value
+   */
+  public boolean isSet(String path) {
+<span class="fc" id="L361">    Check.notNull(path);</span>
+<span class="fc" id="L362">    return isSet(this, Path.from(path));</span>
+  }
+
+  /**
+   * Unsets the value of the specified path. This method returns quietly for non-existent paths.
+   *
+   * @param path the path to unset.
+   * @return this {@code JSONObject}
+   */
+  public JSONObject unset(String path) {
+<span class="fc" id="L372">    Check.notNull(path);</span>
+<span class="fc" id="L373">    unset(this, Path.from(path));</span>
+<span class="fc" id="L374">    return this;</span>
+  }
+
+  /**
+   * Returns the {@code Map} resulting from the write actions. The returned map is modifiable and retains the
+   * order in which the paths (now keys) were written. You can continue to use the {@code JSONObject} after a
+   * call to this method.
+   *
+   * @return the {@code Map} resulting from the write actions
+   */
+  public Map&lt;String, Object&gt; build() {
+<span class="fc" id="L385">    JSONObject mb = this;</span>
+<span class="pc bpc" id="L386" title="1 of 2 branches missed.">    for (; mb.parent != null; mb = mb.parent)</span>
+      ;
+<span class="fc" id="L388">    return createMap(mb);</span>
+  }
+
+  /**
+   * Returns a string representation of the map created thus far.
+   *
+   * @return a string representation of the map created thus far
+   */
+  @Override
+  public String toString() {
+<span class="fc" id="L398">    return build().toString();</span>
+  }
+
+  @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+  private static void init(JSONObject writer, Map map) {
+<span class="fc" id="L403">    map.forEach((key, val) -&gt; processEntry(writer, key, val));</span>
+<span class="fc" id="L404">  }</span>
+
+  @SuppressWarnings(&quot;rawtypes&quot;)
+  private static void processEntry(JSONObject writer, Object key, Object val) {
+<span class="fc" id="L408">    Check.that(key)</span>
+<span class="fc" id="L409">        .is(notNull(), &quot;illegal null key in source map&quot;)</span>
+<span class="fc" id="L410">        .is(notEmpty(), &quot;illegal empty key in source map&quot;)</span>
+<span class="fc" id="L411">        .is(instanceOf(), String.class, &quot;illegal key type in source map: ${type}&quot;);</span>
+<span class="fc" id="L412">    String k = key.toString();</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">    if (val instanceof Map nested) {</span>
+<span class="fc" id="L414">      Path path = writer.root.append(k);</span>
+<span class="fc" id="L415">      JSONObject mb = new JSONObject(path, writer);</span>
+<span class="fc" id="L416">      writer.map.put(k, mb);</span>
+<span class="fc" id="L417">      init(mb, nested);</span>
+<span class="fc" id="L418">    } else {</span>
+<span class="fc" id="L419">      Check.that(val, VALUE).isNot(instanceOf(), JSONObject.class); // stifle nasty usage</span>
+<span class="fc" id="L420">      writer.map.put(k, ifNull(val, _NULL_));</span>
+    }
+<span class="fc" id="L422">  }</span>
+
+  private static void set(JSONObject writer, Path path, Object val) {
+<span class="fc" id="L425">    String key = firstSegment(path);</span>
+<span class="fc bfc" id="L426" title="All 2 branches covered.">    if (path.size() == 1) {</span>
+<span class="fc bfc" id="L427" title="All 2 branches covered.">      if (writer.map.containsKey(key)) {</span>
+<span class="fc" id="L428">        throw alreadySet(writer, key);</span>
+      }
+<span class="fc" id="L430">      Check.that(val, VALUE)</span>
+<span class="fc" id="L431">          .isNot(instanceOf(), Map.class)</span>
+<span class="fc" id="L432">          .isNot(instanceOf(), JSONObject.class); // stifle nasty usage</span>
+<span class="fc" id="L433">      writer.map.put(key, ifNull(val, _NULL_));</span>
+    } else {
+<span class="fc" id="L435">      set(getNestedWriter(writer, key), path.shift(), val);</span>
+    }
+<span class="fc" id="L437">  }</span>
+
+  private static Result&lt;Object&gt; poll(JSONObject writer, Path path) {
+<span class="fc" id="L440">    String key = path.segment(0);</span>
+<span class="fc" id="L441">    Object val = writer.map.get(key);</span>
+<span class="fc bfc" id="L442" title="All 2 branches covered.">    if (val instanceof JSONObject nested) {</span>
+<span class="fc bfc" id="L443" title="All 2 branches covered.">      if (path.size() == 1) {</span>
+<span class="fc" id="L444">        return Result.of(createMap(nested));</span>
+      }
+<span class="fc" id="L446">      return poll(nested, path.shift());</span>
+<span class="fc bfc" id="L447" title="All 4 branches covered.">    } else if (path.size() == 1 &amp;&amp; val != null) {</span>
+<span class="fc" id="L448">      return Result.of(ObjectMethods.when(val, sameAs(), _NULL_, null));</span>
+    }
+<span class="fc" id="L450">    return Result.notAvailable();</span>
+  }
+
+  private static JSONObject in(JSONObject writer, Path path) {
+<span class="fc bfc" id="L454" title="All 2 branches covered.">    if (path.isEmpty()) {</span>
+<span class="fc" id="L455">      return writer;</span>
+    }
+<span class="fc" id="L457">    String key = firstSegment(path);</span>
+<span class="fc" id="L458">    return in(getNestedWriter(writer, key), path.shift());</span>
+  }
+
+  private static boolean isSet(JSONObject writer, Path path) {
+<span class="fc" id="L462">    String key = firstSegment(path);</span>
+<span class="fc" id="L463">    Object val = writer.map.get(key);</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">    if (val == null) {</span>
+<span class="fc" id="L465">      return false;</span>
+<span class="fc bfc" id="L466" title="All 4 branches covered.">    } else if (path.size() == 1 || !(val instanceof JSONObject)) {</span>
+<span class="fc" id="L467">      return true;</span>
+    }
+<span class="fc" id="L469">    return isSet((JSONObject) val, path.shift());</span>
+  }
+
+  private static void unset(JSONObject writer, Path path) {
+<span class="fc" id="L473">    String key = firstSegment(path);</span>
+<span class="fc bfc" id="L474" title="All 2 branches covered.">    if (path.size() == 1) {</span>
+<span class="fc" id="L475">      writer.map.remove(key);</span>
+    } else {
+<span class="fc" id="L477">      unset(getNestedWriter(writer, key), path.shift());</span>
+    }
+<span class="fc" id="L479">  }</span>
+
+  private static Map&lt;String, Object&gt; createMap(JSONObject writer) {
+<span class="fc" id="L482">    Map&lt;String, Object&gt; m = LinkedHashMap.newLinkedHashMap(writer.map.size());</span>
+<span class="fc" id="L483">    writer.map.forEach((key, val) -&gt; {</span>
+<span class="fc bfc" id="L484" title="All 2 branches covered.">      if (val instanceof JSONObject mb) {</span>
+<span class="fc" id="L485">        m.put(key, createMap(mb));</span>
+      } else {
+<span class="fc" id="L487">        m.put(key, ObjectMethods.when(val, sameAs(), _NULL_, null));</span>
+      }
+<span class="fc" id="L489">    });</span>
+<span class="fc" id="L490">    return m;</span>
+  }
+
+  private static JSONObject getNestedWriter(JSONObject writer, String key) {
+<span class="fc" id="L494">    Path root = writer.root.append(key);</span>
+<span class="fc" id="L495">    Object val = writer.map.computeIfAbsent(key, k -&gt; new JSONObject(root, writer));</span>
+<span class="fc bfc" id="L496" title="All 2 branches covered.">    if (val instanceof JSONObject mb) {</span>
+<span class="fc" id="L497">      return mb;</span>
+    }
+<span class="fc" id="L499">    throw new PathBlockedException(root, val);</span>
+  }
+
+  private static PathBlockedException alreadySet(JSONObject writer, String key) {
+<span class="fc" id="L503">    Path absPath = writer.root.append(key);</span>
+<span class="fc" id="L504">    Object curVal = writer.map.get(key);</span>
+<span class="fc" id="L505">    return new PathBlockedException(absPath, curVal);</span>
+  }
+
+  private static String name(Path path) {
+<span class="fc" id="L509">    return path.segment(-1);</span>
+  }
+
+  private static String firstSegment(Path path) {
+<span class="fc" id="L513">    return Check.that(path.segment(0))</span>
+<span class="fc" id="L514">        .isNot(NULL(), &quot;illegal null segment in path \&quot;${0}\&quot;&quot;, path)</span>
+<span class="fc" id="L515">        .has(strlen(), gt(), 0, &quot;illegal empty segment in path \&quot;${0}\&quot;&quot;, path)</span>
+<span class="fc" id="L516">        .ok();</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

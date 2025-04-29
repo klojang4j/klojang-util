@@ -7,13 +7,13 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.klojang.util.MapBuilder.PathBlockedException;
+import static org.klojang.util.JSONObject.PathBlockedException;
 
-public class MapBuilderTest {
+public class JSONObjectTest {
 
   @Test
   public void set00() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "12 Revolutionary Rd.")
         .set("person.address.state", "CA")
         .set("person.firstName", "John")
@@ -27,7 +27,7 @@ public class MapBuilderTest {
 
   @Test // Are we OK with null values?
   public void set01() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb
         .set("person.address.street", "12 Revolutionary Rd.")
         .set("person.address.state", null)
@@ -42,7 +42,7 @@ public class MapBuilderTest {
 
   @Test(expected = PathBlockedException.class)
   public void set02() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb
         .set("person.address.street", "12 Revolutionary Rd.")
         .set("person.address.street.foo", "bar");
@@ -50,7 +50,7 @@ public class MapBuilderTest {
 
   @Test(expected = PathBlockedException.class)
   public void set03() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb
         .set("person.address.street", null)
         .set("person.address.street", null);
@@ -58,19 +58,19 @@ public class MapBuilderTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void set04() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", new HashMap<>());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void set05() {
-    MapBuilder mb = new MapBuilder();
-    mb.set("person.address.street", new MapBuilder());
+    JSONObject mb = JSONObject.empty();
+    mb.set("person.address.street", JSONObject.empty());
   }
 
   @Test(expected = PathBlockedException.class)
   public void set06() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb
         .set("person.address", "foo")
         .set("person.address.street", "Sunset Blvd");
@@ -78,7 +78,7 @@ public class MapBuilderTest {
 
   @Test // do we make the null -> _NULL_ -> null round trip?
   public void set07() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb
         .set("foo.bar.teapot", null)
         .set("foo.bar.fun", true)
@@ -93,7 +93,7 @@ public class MapBuilderTest {
 
   @Test
   public void get00() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "foo");
     assertEquals("foo", mb.poll("person.address.street").get());
     assertEquals(Map.of("street", "foo"), mb.poll("person.address").get());
@@ -109,7 +109,7 @@ public class MapBuilderTest {
 
   @Test // do we make the null -> _NULL_ -> null round trip?
   public void get01() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", null);
     assertTrue(mb.isSet("person.address.street"));
     assertNull(mb.poll("person.address.street").get());
@@ -117,7 +117,7 @@ public class MapBuilderTest {
 
   @Test
   public void in00() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.in("person")
         .set("firstName", "John")
         .set("lastName", "Smith")
@@ -133,11 +133,11 @@ public class MapBuilderTest {
 
   @Test(expected = PathBlockedException.class)
   public void in01() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("foo.bar.bozo", "teapot");
     try {
       mb.in("foo.bar.bozo");
-    } catch (MapBuilder.PathBlockedException e) {
+    } catch (JSONObject.PathBlockedException e) {
       System.out.println(e.getMessage());
       throw e;
     }
@@ -145,7 +145,7 @@ public class MapBuilderTest {
 
   @Test
   public void in02() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("foo.bar.bozo", "teapot");
     mb.in("foo.bar").set("ping", "pong");
     Map<String, Object> expected = Map.of("foo",
@@ -155,7 +155,7 @@ public class MapBuilderTest {
 
   @Test
   public void in03() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("foo.bar.bozo", "teapot");
     //@formatter:off
     mb
@@ -177,7 +177,7 @@ public class MapBuilderTest {
 
   @Test(expected = PathBlockedException.class)
   public void in04() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("foo.bar.bozo", "teapot");
     mb
         .in("foo.bar")
@@ -188,7 +188,7 @@ public class MapBuilderTest {
 
   @Test
   public void up00() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.in("person.address")
         .set("street", "Sunset Blvd")
         .up("person")
@@ -199,7 +199,7 @@ public class MapBuilderTest {
 
   @Test
   public void up01() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.in("person.address")
         .set("street", "Sunset Blvd")
         .up("person")
@@ -211,7 +211,7 @@ public class MapBuilderTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void up02() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     try {
       mb.in("person.address")
           .set("street", "Sunset Blvd")
@@ -224,7 +224,7 @@ public class MapBuilderTest {
 
   @Test(expected = IllegalStateException.class)
   public void up03() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     try {
       mb.up("teapot");
     } catch (IllegalStateException e) {
@@ -235,7 +235,7 @@ public class MapBuilderTest {
 
   @Test
   public void up04() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.in("department.manager.address")
         .set("street", "Sunset Blvd")
         .up("manager")
@@ -252,7 +252,7 @@ public class MapBuilderTest {
 
   @Test
   public void up05() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.in("department.manager.address")
         .set("street", "Sunset Blvd")
         .up("manager")
@@ -268,7 +268,7 @@ public class MapBuilderTest {
 
   @Test
   public void up06() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.in("department.manager.address")
         .set("street", "Sunset Blvd")
         .up("manager")
@@ -284,7 +284,7 @@ public class MapBuilderTest {
 
   @Test
   public void reset00() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.in("person.address")
         .set("street", "Sunset Blvd")
         .root()
@@ -294,83 +294,83 @@ public class MapBuilderTest {
   }
 
   public void reset01() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     assertSame(mb, mb.root());
   }
 
   @Test
   public void isSet00() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "foo");
     assertTrue(mb.isSet("person.address.street.teapot"));
   }
 
   @Test
   public void isSet01() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "foo");
     assertTrue(mb.isSet("person.address.street"));
   }
 
   @Test
   public void isSet02() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "foo");
     assertTrue(mb.isSet("person.address"));
   }
 
   @Test
   public void isSet03() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "foo");
     assertTrue(mb.isSet("person"));
   }
 
   @Test
   public void isSet04() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "foo");
     assertFalse(mb.isSet("teapot"));
   }
 
   @Test
   public void isSet05() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "foo");
     assertFalse(mb.isSet("person.teapot"));
   }
 
   @Test
   public void isSet06() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "foo");
     assertFalse(mb.isSet("person.address.teapot"));
   }
 
   @Test
   public void isSet07() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "foo");
     assertFalse(mb.isSet("person.teapot.address"));
   }
 
   @Test
   public void isSet08() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "foo");
     assertFalse(mb.isSet("person.teapot.address.coffee"));
   }
 
   @Test
   public void isSet09() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "foo");
     assertFalse(mb.isSet("person.teapot.address.coffee.pot"));
   }
 
   @Test
   public void name00() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "foo");
     assertEquals("", mb.name());
     assertEquals("person", mb.jump("person").name());
@@ -379,7 +379,7 @@ public class MapBuilderTest {
 
   @Test
   public void where00() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "foo");
     assertEquals("", mb.where());
     assertEquals("person", mb.jump("person").where());
@@ -388,7 +388,7 @@ public class MapBuilderTest {
 
   @Test
   public void unset00() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person", "foo");
     assertTrue(mb.isSet("person"));
     mb.unset("person");
@@ -397,7 +397,7 @@ public class MapBuilderTest {
 
   @Test
   public void unset01() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address", "foo");
     assertTrue(mb.isSet("person.address"));
     assertTrue(mb.isSet("person"));
@@ -410,7 +410,7 @@ public class MapBuilderTest {
 
   @Test
   public void unset02() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "Sunset Blvd");
     mb.set("person.address.zipcode", "CA 12345");
 
@@ -434,7 +434,7 @@ public class MapBuilderTest {
 
   @Test
   public void unset03() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb.set("person.address.street", "Sunset Blvd");
     mb.set("person.address.zipcode", "CA 12345");
 
@@ -462,7 +462,7 @@ public class MapBuilderTest {
         Map.of("teapot", "coffee"),
         "bar",
         true);
-    MapBuilder mb = new MapBuilder(source);
+    JSONObject mb = JSONObject.of(source);
     assertEquals(source, mb.build());
     mb.set("ping", 1).set("pong", false);
     Map<String, Object> expected = Map.of("foo",
@@ -476,7 +476,7 @@ public class MapBuilderTest {
   public void sourceMap01() {
     Map source = Map.of("", "bar");
     try {
-      MapBuilder mb = new MapBuilder(source);
+      JSONObject mb = JSONObject.of(source);
     } catch (IllegalArgumentException e) {
       System.out.println(e.getMessage());
       throw e;
@@ -487,13 +487,13 @@ public class MapBuilderTest {
   public void sourceMap02() {
     Map source = new HashMap();
     source.put("foo", null);
-    MapBuilder mb = new MapBuilder(source);
+    JSONObject mb = JSONObject.of(source);
     assertEquals(source, mb.build());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void badSegment00() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     try {
       mb.set("person.^0.street", "foo"); // ^0 is escape sequence for null
     } catch (IllegalArgumentException e) {
@@ -504,7 +504,7 @@ public class MapBuilderTest {
 
   @Test
   public void jump00() {
-    MapBuilder mb = new MapBuilder();
+    JSONObject mb = JSONObject.empty();
     mb
         .set("department.person.address.street", "Main St.")
         .set("department.person.address.state", "CA")
@@ -522,31 +522,31 @@ public class MapBuilderTest {
   }
 
   @Test
-  public void add00() {
-    MapBuilder mb = new MapBuilder();
-    mb.add("foo", 1);
-    mb.add("foo", 2);
-    mb.add("foo", 3);
+  public void append00() {
+    JSONObject mb = JSONObject.empty();
+    mb.append("foo", 1);
+    mb.append("foo", 2);
+    mb.append("foo", 3);
     List l = (List) mb.build().get("foo");
     assertEquals(List.of(1, 2, 3), l);
   }
 
   @Test
-  public void add01() {
-    MapBuilder mb = new MapBuilder();
+  public void append01() {
+    JSONObject mb = JSONObject.empty();
     mb.set("foo", new HashSet<>());
-    mb.add("foo", 1);
-    mb.add("foo", 2);
-    mb.add("foo", 3);
+    mb.append("foo", 1);
+    mb.append("foo", 2);
+    mb.append("foo", 3);
     Set s = (Set) mb.build().get("foo");
     assertEquals(Set.of(1, 2, 3), s);
   }
 
   @Test(expected = PathBlockedException.class)
-  public void add02() {
-    MapBuilder mb = new MapBuilder();
+  public void append02() {
+    JSONObject mb = JSONObject.empty();
     mb.set("foo", "hello world");
-    mb.add("foo", 1);
+    mb.append("foo", 1);
   }
 
 }

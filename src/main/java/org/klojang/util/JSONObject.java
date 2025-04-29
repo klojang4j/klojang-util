@@ -1,6 +1,7 @@
 package org.klojang.util;
 
 import org.klojang.check.Check;
+import org.klojang.check.CommonChecks;
 import org.klojang.check.Tag;
 import org.klojang.check.extra.Result;
 
@@ -11,55 +12,55 @@ import static org.klojang.check.CommonExceptions.STATE;
 import static org.klojang.check.CommonProperties.strlen;
 import static org.klojang.check.Tag.VALUE;
 import static org.klojang.util.ObjectMethods.ifNull;
-import static org.klojang.util.ObjectMethods.when;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
 /**
- * <p>An elaborate builder class for Map&lt;String, Object&gt; (map-in-map)
- * pseudo-objects. A {@code MapBuilder} lets you write deeply nested values without having to create the
+ * <p>An elaborate reader/writer class for Map&lt;String, Object&gt; (map-in-map) pseudo-objects. A
+ * {@code JSONObject} lets you read deeply nested values using path strings (e.g.
+ * {@code person.address.street}). It also lets you write deeply nested values without having to create the
  * intermediate maps first. If they are missing, they will tacitly be created. Map keys must not be
  * {@code null} and they must not be empty strings. Map values can be anything, including {@code null}.
+ * Internally, a {@code JSONObject} works with {@link Path} objects. See the documentation for the
+ * {@code Path} class for how to specify path strings.
  *
- * <p>Internally, a {@code MapBuilder} works with {@link Path} objects. See the
- * documentation for the {@code Path} class for how to specify path strings.
+ * <p>Note that, notwithstanding its name, this class does not require that you use it within the context of
+ * JSON serialization or deserialization. It is more akin to a {@code MapDecorator}.
  *
- * <p><b>Example 1:</b>
+ * <p><b>Example 1 (writing):</b>
  *
  * <blockquote><pre>{@code
- * MapBuilder mb = new MapBuilder();
- * mb.set("person.address.street", "12 Revolutionary Rd.")
- *  .set("person.address.state", "CA")
- *  .set("person.firstName", "John")
- *  .set("person.lastName", "Smith")
- *  .set("person.dateOfBirth", LocalDate.of(1967, 4, 4));
- * Map<String, Object> map = mb.build();
+ * Map<String, Object> map = JSONObject.empty()
+ *     .set("person.address.street", "12 Revolutionary Rd.")
+ *     .set("person.address.state", "CA")
+ *     .set("person.firstName", "John")
+ *     .set("person.lastName", "Smith")
+ *     .set("person.dateOfBirth", LocalDate.of(1967, 4, 4));
+ *     .build();
  * }</pre></blockquote>
  *
- * <p><b>Example 2:</b>
+ * <p><b>Example 2 (writing):</b>
  *
  * <blockquote><pre>{@code
- * Map<String, Object> map = new MapBuilder()
- *  .in("person")
- *    .set("firstName", "John")
- *    .set("lastName", "Smith")
- *    .set("dateOfBirth", LocalDate.of(1967, 4, 4))
- *    .in("address")
- *      .set("street", "12 Revolutionary Rd.")
- *      .set("state", "CA")
- *      .up("person")
- *    .in("medical_status")
- *      .set("allergies", false)
- *      .set("smoker", true)
- *      .set("prescriptions", null)
- *  .build();
+ * Map<String, Object> map = JSONObject.empty()
+ *     .in("person")
+ *         .set("firstName", "John")
+ *         .set("lastName", "Smith")
+ *         .set("dateOfBirth", LocalDate.of(1967, 4, 4))
+ *         .in("address")
+ *             .set("street", "12 Revolutionary Rd.")
+ *             .set("state", "CA")
+ *             .up("person")
+ *         .in("medicalStatus")
+ *             .set("allergies", List.of("peanuts"))
+ *             .set("smoker", true)
+ *             .set("prescriptions", null)
+ *     .build();
  * }</pre></blockquote>
  *
- * <p>Although the {@code MapBuilder} class is primarily aimed at buildings maps, you can
- * also use it to read maps:
+ * <p><b>Example 3 (reading):</b>
  *
  * <blockquote><pre>{@code
- * MapBuilder mb = new MapBuilder(someMap);
- * String street = mb.get("person.address.street");
+ * String street = JSONObject.of(someMap).get("person.address.street");
  * }</pre></blockquote>
  *
  * <p>For more flexibility, use the {@code org.klojang.path.PathWalker PathWalker} class of the
@@ -67,7 +68,7 @@ import static org.klojang.util.StringMethods.EMPTY_STRING;
  *
  * @author Ayco Holleman
  */
-public final class MapBuilder {
+public final class JSONObject {
 
   private static final String ERR_HOME_ALREADY = "already in root map";
   private static final String NO_SUCH_PARENT = "Parent of \"${0}\" is not \"${arg}\". Expected: \"${obj}\".";
@@ -109,43 +110,40 @@ public final class MapBuilder {
 
 
   /**
-   * Creates a new {@code MapBuilder}.
+   * Creates a new {@code JSONObject}.
    *
-   * @return a new {@code MapBuilder}
+   * @return a new {@code JSONObject}
    */
-  public static MapBuilder begin() {
-    return new MapBuilder();
+  public static JSONObject empty() {
+    return new JSONObject();
   }
 
   /**
-   * Creates a {@code MapBuilder} that starts out with the entries in the specified map. The map is read, but
-   * not modified.
+   * Creates a {@code JSONObject} that starts out with the entries in the specified map. The provided map is
+   * read, but not modified.
    *
-   * @param map The initial {@code Map}
-   * @return a {@code MapBuilder} that starts out with the entries in the specified map
+   * @param map the initial {@code Map}
+   * @return a {@code JSONObject} that starts out with the entries in the specified map
    */
-  public static MapBuilder begin(Map<String, Object> map) {
-    return new MapBuilder(map);
+  public static JSONObject of(Map<String, Object> map) {
+    return new JSONObject(map);
   }
 
   private final Map<String, Object> map;
   private final Path root;
-  private final MapBuilder parent;
+  private final JSONObject parent;
 
-  /**
-   * Creates a new {@code MapBuilder}.
-   */
-  public MapBuilder() {
+  private JSONObject() {
     this(new LinkedHashMap<>());
   }
 
   /**
-   * Creates a {@code MapBuilder} that starts out with the entries in the specified map. The map is read, but
+   * Creates a {@code JSONObject} that starts out with the entries in the specified map. The map is read, but
    * not modified.
    *
-   * @param map The initial {@code Map}
+   * @param map the initial {@code Map}
    */
-  public MapBuilder(Map<String, Object> map) {
+  private JSONObject(Map<String, Object> map) {
     Check.notNull(map, Tag.MAP);
     this.map = LinkedHashMap.newLinkedHashMap(map.size() + 10);
     this.root = Path.empty();
@@ -153,7 +151,7 @@ public final class MapBuilder {
     init(this, map);
   }
 
-  private MapBuilder(Path root, MapBuilder parent) {
+  private JSONObject(Path root, JSONObject parent) {
     this.root = root;
     this.map = new LinkedHashMap<>();
     this.parent = parent;
@@ -164,15 +162,15 @@ public final class MapBuilder {
    * overwrite the value of a path that has already been set, even if set to {@code null}. If necessary, use
    * {@link #unset(String)} to unset the path's value first.
    *
-   * <p>The value can be anything except a {@code Map} or {@code MapBuilder}. Use the
+   * <p>The value can be anything except a {@code Map} or {@code JSONObject}. Use the
    * {@link #in(String) in()} method to create a new map at the specified path. It is allowed to set a path's
    * value to {@code null}.
    *
    * @param path the path at which to write the value
    * @param value the value
-   * @return this {@code MapBuilder}
+   * @return this {@code JSONObject}
    */
-  public MapBuilder set(String path, Object value) {
+  public JSONObject set(String path, Object value) {
     Check.notNull(path, Tag.PATH);
     set(this, Path.from(path), value);
     return this;
@@ -186,10 +184,10 @@ public final class MapBuilder {
    *
    * @param path the path
    * @param element the element to add to the collection found or created at the specified path
-   * @return this {@code MapBuilder}
+   * @return this {@code JSONObject}
    */
   @SuppressWarnings({"unchecked", "rawtypes"})
-  public MapBuilder add(String path, Object element) {
+  public JSONObject append(String path, Object element) {
     Check.notNull(path, Tag.PATH);
     Result<Object> result = poll(path);
     if (result.isAvailable()) {
@@ -236,7 +234,7 @@ public final class MapBuilder {
   }
 
   /**
-   * Returns a {@code MapBuilder} for the map at the specified path. Once this method has been called, <i>all
+   * Returns a {@code JSONObject} for the map at the specified path. Once this method has been called, <i>all
    * subsequently specified paths</i> (including for subsequent calls to {@code in()}) are taken relative to
    * the specified path. If there is no map yet at the specified path, it will be created. Ancestral maps will
    * be created as and when needed. If any of the segments in the path (including the last segment) has
@@ -244,9 +242,9 @@ public final class MapBuilder {
    *
    * @param path the path to be used as the base path. The path will itself be interpreted as relative to
    *     the <i>current</i> base path
-   * @return a {@code MapBuilder} for the map found or created at the specified path
+   * @return a {@code JSONObject} for the map found or created at the specified path
    */
-  public MapBuilder in(String path) {
+  public JSONObject in(String path) {
     Check.notNull(path, Tag.PATH);
     return in(this, Path.from(path));
   }
@@ -258,15 +256,15 @@ public final class MapBuilder {
    * previous calls to {@code in} and {@code jump}.
    *
    * @param path the absolute path to be used as the base path
-   * @return a {@code MapBuilder} for the map found or created at the specified path
+   * @return a {@code JSONObject} for the map found or created at the specified path
    * @see #in(String)
    */
-  public MapBuilder jump(String path) {
+  public JSONObject jump(String path) {
     return parent == null ? in(path) : root().in(path);
   }
 
   /**
-   * <p>Returns a {@code MapBuilder} for the parent map of the map currently being edited. All subsequently
+   * <p>Returns a {@code JSONObject} for the parent map of the map currently being edited. All subsequently
    * specified paths will be taken relative to the parent map's path. An {@link IllegalStateException} is
    * thrown when trying to exit out of the root map. You must pass the name of the parent map (the last path
    * segment of the parent map's path). An {@link IllegalArgumentException} is thrown if the argument does not
@@ -300,14 +298,14 @@ public final class MapBuilder {
    * }</pre></blockquote>
    *
    * @param parent the name of the parent map
-   * @return a {@code MapBuilder} for the parent map of the map currently being written to
+   * @return a {@code JSONObject} for the parent map of the map currently being written to
    */
-  public MapBuilder up(String parent) {
+  public JSONObject up(String parent) {
     Check.notNull(parent);
-    MapBuilder mother = this.parent;
+    JSONObject mother = this.parent;
     Check.on(STATE, mother).is(notNull(), ERR_HOME_ALREADY);
     if (root.size() == 1) {
-      Check.that(parent).is(empty(), "specify \"\" to go up to root map");
+      Check.that(parent).is(CommonChecks.empty(), "specify \"\" to go up to root map");
     } else {
       Check.that(parent).is(equalTo(), mother.name(), NO_SUCH_PARENT, name());
     }
@@ -317,13 +315,13 @@ public final class MapBuilder {
   /**
    * Takes you back to the root map. All paths you specify will be interpreted as absolute paths again.
    *
-   * @return a {@code MapBuilder} for the root map
+   * @return a {@code JSONObject} for the root map
    */
-  public MapBuilder root() {
+  public JSONObject root() {
     if (parent == null) {
       return this;
     }
-    MapBuilder mb = parent;
+    JSONObject mb = parent;
     while (mb.parent != null) {
       mb = mb.parent;
     }
@@ -368,9 +366,9 @@ public final class MapBuilder {
    * Unsets the value of the specified path. This method returns quietly for non-existent paths.
    *
    * @param path the path to unset.
-   * @return this {@code MapBuilder}
+   * @return this {@code JSONObject}
    */
-  public MapBuilder unset(String path) {
+  public JSONObject unset(String path) {
     Check.notNull(path);
     unset(this, Path.from(path));
     return this;
@@ -378,13 +376,13 @@ public final class MapBuilder {
 
   /**
    * Returns the {@code Map} resulting from the write actions. The returned map is modifiable and retains the
-   * order in which the paths (now keys) were written. You can continue to use the {@code MapBuilder} after a
+   * order in which the paths (now keys) were written. You can continue to use the {@code JSONObject} after a
    * call to this method.
    *
    * @return the {@code Map} resulting from the write actions
    */
   public Map<String, Object> build() {
-    MapBuilder mb = this;
+    JSONObject mb = this;
     for (; mb.parent != null; mb = mb.parent)
       ;
     return createMap(mb);
@@ -401,12 +399,12 @@ public final class MapBuilder {
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  private static void init(MapBuilder writer, Map map) {
+  private static void init(JSONObject writer, Map map) {
     map.forEach((key, val) -> processEntry(writer, key, val));
   }
 
   @SuppressWarnings("rawtypes")
-  private static void processEntry(MapBuilder writer, Object key, Object val) {
+  private static void processEntry(JSONObject writer, Object key, Object val) {
     Check.that(key)
         .is(notNull(), "illegal null key in source map")
         .is(notEmpty(), "illegal empty key in source map")
@@ -414,16 +412,16 @@ public final class MapBuilder {
     String k = key.toString();
     if (val instanceof Map nested) {
       Path path = writer.root.append(k);
-      MapBuilder mb = new MapBuilder(path, writer);
+      JSONObject mb = new JSONObject(path, writer);
       writer.map.put(k, mb);
       init(mb, nested);
     } else {
-      Check.that(val, VALUE).isNot(instanceOf(), MapBuilder.class); // stifle nasty usage
+      Check.that(val, VALUE).isNot(instanceOf(), JSONObject.class); // stifle nasty usage
       writer.map.put(k, ifNull(val, _NULL_));
     }
   }
 
-  private static void set(MapBuilder writer, Path path, Object val) {
+  private static void set(JSONObject writer, Path path, Object val) {
     String key = firstSegment(path);
     if (path.size() == 1) {
       if (writer.map.containsKey(key)) {
@@ -431,17 +429,17 @@ public final class MapBuilder {
       }
       Check.that(val, VALUE)
           .isNot(instanceOf(), Map.class)
-          .isNot(instanceOf(), MapBuilder.class); // stifle nasty usage
+          .isNot(instanceOf(), JSONObject.class); // stifle nasty usage
       writer.map.put(key, ifNull(val, _NULL_));
     } else {
       set(getNestedWriter(writer, key), path.shift(), val);
     }
   }
 
-  private static Result<Object> poll(MapBuilder writer, Path path) {
+  private static Result<Object> poll(JSONObject writer, Path path) {
     String key = path.segment(0);
     Object val = writer.map.get(key);
-    if (val instanceof MapBuilder nested) {
+    if (val instanceof JSONObject nested) {
       if (path.size() == 1) {
         return Result.of(createMap(nested));
       }
@@ -452,7 +450,7 @@ public final class MapBuilder {
     return Result.notAvailable();
   }
 
-  private static MapBuilder in(MapBuilder writer, Path path) {
+  private static JSONObject in(JSONObject writer, Path path) {
     if (path.isEmpty()) {
       return writer;
     }
@@ -460,18 +458,18 @@ public final class MapBuilder {
     return in(getNestedWriter(writer, key), path.shift());
   }
 
-  private static boolean isSet(MapBuilder writer, Path path) {
+  private static boolean isSet(JSONObject writer, Path path) {
     String key = firstSegment(path);
     Object val = writer.map.get(key);
     if (val == null) {
       return false;
-    } else if (path.size() == 1 || !(val instanceof MapBuilder)) {
+    } else if (path.size() == 1 || !(val instanceof JSONObject)) {
       return true;
     }
-    return isSet((MapBuilder) val, path.shift());
+    return isSet((JSONObject) val, path.shift());
   }
 
-  private static void unset(MapBuilder writer, Path path) {
+  private static void unset(JSONObject writer, Path path) {
     String key = firstSegment(path);
     if (path.size() == 1) {
       writer.map.remove(key);
@@ -480,10 +478,10 @@ public final class MapBuilder {
     }
   }
 
-  private static Map<String, Object> createMap(MapBuilder writer) {
+  private static Map<String, Object> createMap(JSONObject writer) {
     Map<String, Object> m = LinkedHashMap.newLinkedHashMap(writer.map.size());
     writer.map.forEach((key, val) -> {
-      if (val instanceof MapBuilder mb) {
+      if (val instanceof JSONObject mb) {
         m.put(key, createMap(mb));
       } else {
         m.put(key, ObjectMethods.when(val, sameAs(), _NULL_, null));
@@ -492,16 +490,16 @@ public final class MapBuilder {
     return m;
   }
 
-  private static MapBuilder getNestedWriter(MapBuilder writer, String key) {
+  private static JSONObject getNestedWriter(JSONObject writer, String key) {
     Path root = writer.root.append(key);
-    Object val = writer.map.computeIfAbsent(key, k -> new MapBuilder(root, writer));
-    if (val instanceof MapBuilder mb) {
+    Object val = writer.map.computeIfAbsent(key, k -> new JSONObject(root, writer));
+    if (val instanceof JSONObject mb) {
       return mb;
     }
     throw new PathBlockedException(root, val);
   }
 
-  private static PathBlockedException alreadySet(MapBuilder writer, String key) {
+  private static PathBlockedException alreadySet(JSONObject writer, String key) {
     Path absPath = writer.root.append(key);
     Object curVal = writer.map.get(key);
     return new PathBlockedException(absPath, curVal);
