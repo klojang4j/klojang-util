@@ -119,9 +119,19 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void setContents(String path, String contents) {
+    setContents(Path.of(path), contents);
+  }
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
+   *
+   * @param path the path to the file
+   * @param contents The contents to be written
+   */
+  public static void setContents(Path path, String contents) {
     Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());
     try {
-      Files.writeString(Path.of(path), contents, UTF_8, CREATE, TRUNCATE_EXISTING);
+      Files.writeString(path, contents, UTF_8, CREATE, TRUNCATE_EXISTING);
     } catch (IOException e) {
       throw ExceptionMethods.uncheck(e);
     }
@@ -134,7 +144,7 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void setContents(File file, String contents) {
-    setContents(file.getAbsolutePath(), contents);
+    setContents(file.toPath(), contents);
   }
 
   /**
@@ -144,9 +154,19 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void setContents(String path, byte[] contents) {
+    setContents(Path.of(path), contents);
+  }
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
+   *
+   * @param path the path to the file
+   * @param contents The contents to be written
+   */
+  public static void setContents(Path path, byte[] contents) {
     Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());
     try {
-      Files.write(Path.of(path), contents, CREATE, TRUNCATE_EXISTING);
+      Files.write(path, contents, CREATE, TRUNCATE_EXISTING);
     } catch (IOException e) {
       throw ExceptionMethods.uncheck(e);
     }
@@ -159,9 +179,8 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void setContents(File file, byte[] contents) {
-    setContents(file.getAbsolutePath(), contents);
+    setContents(file.toPath(), contents);
   }
-
 
   /**
    * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
@@ -171,9 +190,20 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void appendContents(String path, String contents) {
+    appendContents(Path.of(path), contents);
+  }
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
+   * the specified file.
+   *
+   * @param path the path to the file
+   * @param contents The contents to be written
+   */
+  public static void appendContents(Path path, String contents) {
     Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());
     try {
-      Files.writeString(Path.of(path), contents, UTF_8, CREATE, APPEND);
+      Files.writeString(path, contents, UTF_8, CREATE, APPEND);
     } catch (IOException e) {
       throw ExceptionMethods.uncheck(e);
     }
@@ -187,7 +217,7 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void appendContents(File file, String contents) {
-    appendContents(file.getAbsolutePath(), contents);
+    appendContents(file.toPath(), contents);
   }
 
   /**
@@ -198,9 +228,20 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void appendContents(String path, byte[] contents) {
+    appendContents(Path.of(path), contents);
+  }
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
+   * the specified file.
+   *
+   * @param path the path to the file
+   * @param contents The contents to be written
+   */
+  public static void appendContents(Path path, byte[] contents) {
     Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());
     try {
-      Files.write(Path.of(path), contents, CREATE, APPEND);
+      Files.write(path, contents, CREATE, APPEND);
     } catch (IOException e) {
       throw ExceptionMethods.uncheck(e);
     }
@@ -214,7 +255,7 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void appendContents(File file, byte[] contents) {
-    appendContents(file.getAbsolutePath(), contents);
+    appendContents(file.toPath(), contents);
   }
 
   /**

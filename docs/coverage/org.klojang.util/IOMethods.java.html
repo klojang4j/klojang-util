@@ -119,13 +119,23 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void setContents(String path, String contents) {
-<span class="fc" id="L122">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
+<span class="fc" id="L122">    setContents(Path.of(path), contents);</span>
+<span class="fc" id="L123">  }</span>
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
+   *
+   * @param path the path to the file
+   * @param contents The contents to be written
+   */
+  public static void setContents(Path path, String contents) {
+<span class="fc" id="L132">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
     try {
-<span class="fc" id="L124">      Files.writeString(Path.of(path), contents, UTF_8, CREATE, TRUNCATE_EXISTING);</span>
-<span class="nc" id="L125">    } catch (IOException e) {</span>
-<span class="nc" id="L126">      throw ExceptionMethods.uncheck(e);</span>
-<span class="fc" id="L127">    }</span>
-<span class="fc" id="L128">  }</span>
+<span class="fc" id="L134">      Files.writeString(path, contents, UTF_8, CREATE, TRUNCATE_EXISTING);</span>
+<span class="nc" id="L135">    } catch (IOException e) {</span>
+<span class="nc" id="L136">      throw ExceptionMethods.uncheck(e);</span>
+<span class="fc" id="L137">    }</span>
+<span class="fc" id="L138">  }</span>
 
   /**
    * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
@@ -134,8 +144,8 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void setContents(File file, String contents) {
-<span class="nc" id="L137">    setContents(file.getAbsolutePath(), contents);</span>
-<span class="nc" id="L138">  }</span>
+<span class="nc" id="L147">    setContents(file.toPath(), contents);</span>
+<span class="nc" id="L148">  }</span>
 
   /**
    * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
@@ -144,13 +154,23 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void setContents(String path, byte[] contents) {
-<span class="nc" id="L147">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
+<span class="nc" id="L157">    setContents(Path.of(path), contents);</span>
+<span class="nc" id="L158">  }</span>
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
+   *
+   * @param path the path to the file
+   * @param contents The contents to be written
+   */
+  public static void setContents(Path path, byte[] contents) {
+<span class="nc" id="L167">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
     try {
-<span class="nc" id="L149">      Files.write(Path.of(path), contents, CREATE, TRUNCATE_EXISTING);</span>
-<span class="nc" id="L150">    } catch (IOException e) {</span>
-<span class="nc" id="L151">      throw ExceptionMethods.uncheck(e);</span>
-<span class="nc" id="L152">    }</span>
-<span class="nc" id="L153">  }</span>
+<span class="nc" id="L169">      Files.write(path, contents, CREATE, TRUNCATE_EXISTING);</span>
+<span class="nc" id="L170">    } catch (IOException e) {</span>
+<span class="nc" id="L171">      throw ExceptionMethods.uncheck(e);</span>
+<span class="nc" id="L172">    }</span>
+<span class="nc" id="L173">  }</span>
 
   /**
    * Simple file-write method. Not efficient, but easy to use. Overwrites pre-existing contents.
@@ -159,9 +179,8 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void setContents(File file, byte[] contents) {
-<span class="nc" id="L162">    setContents(file.getAbsolutePath(), contents);</span>
-<span class="nc" id="L163">  }</span>
-
+<span class="nc" id="L182">    setContents(file.toPath(), contents);</span>
+<span class="nc" id="L183">  }</span>
 
   /**
    * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
@@ -171,13 +190,24 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void appendContents(String path, String contents) {
-<span class="fc" id="L174">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
+<span class="fc" id="L193">    appendContents(Path.of(path), contents);</span>
+<span class="fc" id="L194">  }</span>
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
+   * the specified file.
+   *
+   * @param path the path to the file
+   * @param contents The contents to be written
+   */
+  public static void appendContents(Path path, String contents) {
+<span class="fc" id="L204">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
     try {
-<span class="fc" id="L176">      Files.writeString(Path.of(path), contents, UTF_8, CREATE, APPEND);</span>
-<span class="nc" id="L177">    } catch (IOException e) {</span>
-<span class="nc" id="L178">      throw ExceptionMethods.uncheck(e);</span>
-<span class="fc" id="L179">    }</span>
-<span class="fc" id="L180">  }</span>
+<span class="fc" id="L206">      Files.writeString(path, contents, UTF_8, CREATE, APPEND);</span>
+<span class="nc" id="L207">    } catch (IOException e) {</span>
+<span class="nc" id="L208">      throw ExceptionMethods.uncheck(e);</span>
+<span class="fc" id="L209">    }</span>
+<span class="fc" id="L210">  }</span>
 
   /**
    * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
@@ -187,8 +217,8 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void appendContents(File file, String contents) {
-<span class="nc" id="L190">    appendContents(file.getAbsolutePath(), contents);</span>
-<span class="nc" id="L191">  }</span>
+<span class="nc" id="L220">    appendContents(file.toPath(), contents);</span>
+<span class="nc" id="L221">  }</span>
 
   /**
    * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
@@ -198,13 +228,24 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void appendContents(String path, byte[] contents) {
-<span class="nc" id="L201">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
+<span class="nc" id="L231">    appendContents(Path.of(path), contents);</span>
+<span class="nc" id="L232">  }</span>
+
+  /**
+   * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
+   * the specified file.
+   *
+   * @param path the path to the file
+   * @param contents The contents to be written
+   */
+  public static void appendContents(Path path, byte[] contents) {
+<span class="nc" id="L242">    Check.that(path, PATH).is(notNull()).and(contents, CONTENTS).is(notNull());</span>
     try {
-<span class="nc" id="L203">      Files.write(Path.of(path), contents, CREATE, APPEND);</span>
-<span class="nc" id="L204">    } catch (IOException e) {</span>
-<span class="nc" id="L205">      throw ExceptionMethods.uncheck(e);</span>
-<span class="nc" id="L206">    }</span>
-<span class="nc" id="L207">  }</span>
+<span class="nc" id="L244">      Files.write(path, contents, CREATE, APPEND);</span>
+<span class="nc" id="L245">    } catch (IOException e) {</span>
+<span class="nc" id="L246">      throw ExceptionMethods.uncheck(e);</span>
+<span class="nc" id="L247">    }</span>
+<span class="nc" id="L248">  }</span>
 
   /**
    * Simple file-write method. Not efficient, but easy to use. Appends the specified string to the contents of
@@ -214,8 +255,8 @@ public class IOMethods {
    * @param contents The contents to be written
    */
   public static void appendContents(File file, byte[] contents) {
-<span class="nc" id="L217">    appendContents(file.getAbsolutePath(), contents);</span>
-<span class="nc" id="L218">  }</span>
+<span class="nc" id="L258">    appendContents(file.toPath(), contents);</span>
+<span class="nc" id="L259">  }</span>
 
   /**
    * Returns the contents of the specified resource as a byte array. Bytes are read in chunks of 512 bytes.
@@ -226,7 +267,7 @@ public class IOMethods {
    * @return the bytes contained in the specified resource
    */
   public static byte[] readBytes(Class&lt;?&gt; clazz, String path) {
-<span class="fc" id="L229">    return readBytes(clazz, path, 512);</span>
+<span class="fc" id="L270">    return readBytes(clazz, path, 512);</span>
   }
 
   /**
@@ -239,12 +280,12 @@ public class IOMethods {
    * @return the contents of the specified resource
    */
   public static byte[] readBytes(Class&lt;?&gt; clazz, String path, int chunkSize) {
-<span class="fc" id="L242">    Check.that(clazz, CLASS).is(notNull()).and(path, PATH).is(notNull());</span>
-<span class="fc" id="L243">    try (InputStream in = clazz.getResourceAsStream(path)) {</span>
-<span class="fc" id="L244">      Check.that(in).is(notNull(), INVALID_PATH, path);</span>
-<span class="fc" id="L245">      return readBytes(in, chunkSize);</span>
-<span class="nc" id="L246">    } catch (IOException e) {</span>
-<span class="nc" id="L247">      throw ExceptionMethods.uncheck(e);</span>
+<span class="fc" id="L283">    Check.that(clazz, CLASS).is(notNull()).and(path, PATH).is(notNull());</span>
+<span class="fc" id="L284">    try (InputStream in = clazz.getResourceAsStream(path)) {</span>
+<span class="fc" id="L285">      Check.that(in).is(notNull(), INVALID_PATH, path);</span>
+<span class="fc" id="L286">      return readBytes(in, chunkSize);</span>
+<span class="nc" id="L287">    } catch (IOException e) {</span>
+<span class="nc" id="L288">      throw ExceptionMethods.uncheck(e);</span>
     }
   }
 
@@ -256,7 +297,7 @@ public class IOMethods {
    * @return a {@code byte[]} array containing the bytes read from the specified input stream
    */
   public static byte[] readBytes(InputStream in) {
-<span class="fc" id="L259">    return readBytes(in, 512);</span>
+<span class="fc" id="L300">    return readBytes(in, 512);</span>
   }
 
   /**
@@ -268,9 +309,9 @@ public class IOMethods {
    * @return a {@code byte[]} array containing the bytes read from the specified input stream
    */
   public static byte[] readBytes(InputStream in, int chunkSize) {
-<span class="fc" id="L271">    ByteArrayOutputStream out = new ByteArrayOutputStream(chunkSize);</span>
-<span class="fc" id="L272">    pipe(in, out, chunkSize);</span>
-<span class="fc" id="L273">    return out.toByteArray();</span>
+<span class="fc" id="L312">    ByteArrayOutputStream out = new ByteArrayOutputStream(chunkSize);</span>
+<span class="fc" id="L313">    pipe(in, out, chunkSize);</span>
+<span class="fc" id="L314">    return out.toByteArray();</span>
   }
 
   /**
@@ -282,8 +323,8 @@ public class IOMethods {
    * @param out the output stream
    */
   public static void pipe(InputStream in, OutputStream out) {
-<span class="fc" id="L285">    pipe(in, out, 512);</span>
-<span class="fc" id="L286">  }</span>
+<span class="fc" id="L326">    pipe(in, out, 512);</span>
+<span class="fc" id="L327">  }</span>
 
   /**
    * Reads all bytes from the specified input stream and writes them to the specified output stream. Bytes are
@@ -295,21 +336,21 @@ public class IOMethods {
    * @param chunkSize the number of bytes read/written at a time
    */
   public static void pipe(InputStream in, OutputStream out, int chunkSize) {
-<span class="fc" id="L298">    Check.that(in, IN).is(notNull())</span>
-<span class="fc" id="L299">        .and(out, OUT).is(notNull())</span>
-<span class="fc" id="L300">        .and(chunkSize, CHUNK_SIZE).is(gt(), 0);</span>
-<span class="fc" id="L301">    byte[] data = new byte[chunkSize];</span>
+<span class="fc" id="L339">    Check.that(in, IN).is(notNull())</span>
+<span class="fc" id="L340">        .and(out, OUT).is(notNull())</span>
+<span class="fc" id="L341">        .and(chunkSize, CHUNK_SIZE).is(gt(), 0);</span>
+<span class="fc" id="L342">    byte[] data = new byte[chunkSize];</span>
     try {
-<span class="fc" id="L303">      int n = in.read(data, 0, data.length);</span>
-<span class="fc bfc" id="L304" title="All 2 branches covered.">      while (n != -1) {</span>
-<span class="fc" id="L305">        out.write(data, 0, n);</span>
-<span class="fc" id="L306">        out.flush();</span>
-<span class="fc" id="L307">        n = in.read(data, 0, data.length);</span>
+<span class="fc" id="L344">      int n = in.read(data, 0, data.length);</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">      while (n != -1) {</span>
+<span class="fc" id="L346">        out.write(data, 0, n);</span>
+<span class="fc" id="L347">        out.flush();</span>
+<span class="fc" id="L348">        n = in.read(data, 0, data.length);</span>
       }
-<span class="nc" id="L309">    } catch (IOException e) {</span>
-<span class="nc" id="L310">      throw ExceptionMethods.uncheck(e);</span>
-<span class="fc" id="L311">    }</span>
-<span class="fc" id="L312">  }</span>
+<span class="nc" id="L350">    } catch (IOException e) {</span>
+<span class="nc" id="L351">      throw ExceptionMethods.uncheck(e);</span>
+<span class="fc" id="L352">    }</span>
+<span class="fc" id="L353">  }</span>
 
   /**
    * Creates a new, empty file in the file system's temp directory. Equivalent to:
@@ -322,7 +363,7 @@ public class IOMethods {
    * @throws IOException if an I/O error occurs
    */
   public static File createTempFile() throws IOException {
-<span class="fc" id="L325">    return createTempFile(IOMethods.class);</span>
+<span class="fc" id="L366">    return createTempFile(IOMethods.class);</span>
   }
 
   /**
@@ -338,7 +379,7 @@ public class IOMethods {
    * @throws IOException if an I/O error occurs
    */
   public static File createTempFile(Class&lt;?&gt; requester) throws IOException {
-<span class="fc" id="L341">    return createTempFile(requester, true);</span>
+<span class="fc" id="L382">    return createTempFile(requester, true);</span>
   }
 
   /**
@@ -357,7 +398,7 @@ public class IOMethods {
    */
   public static File createTempFile(Class&lt;?&gt; requester, boolean touch)
       throws IOException {
-<span class="fc" id="L360">    return createTempFile(requester, &quot;.tmp&quot;, touch);</span>
+<span class="fc" id="L401">    return createTempFile(requester, &quot;.tmp&quot;, touch);</span>
   }
 
   /**
@@ -376,8 +417,8 @@ public class IOMethods {
       String extension,
       boolean touch)
       throws IOException {
-<span class="fc" id="L379">    Check.notNull(requester, REQUESTER);</span>
-<span class="fc" id="L380">    return doCreateTempFile(requester, File.separator, extension, touch);</span>
+<span class="fc" id="L420">    Check.notNull(requester, REQUESTER);</span>
+<span class="fc" id="L421">    return doCreateTempFile(requester, File.separator, extension, touch);</span>
   }
 
   /**
@@ -399,9 +440,9 @@ public class IOMethods {
   public static File createTempFile(
       Class&lt;?&gt; requester, String relativePath, String extension, boolean touch)
       throws IOException {
-<span class="fc" id="L402">    Check.notNull(requester, REQUESTER);</span>
-<span class="fc" id="L403">    Check.notNull(relativePath, REL_PATH);</span>
-<span class="fc" id="L404">    return doCreateTempFile(requester, relativePath, extension, touch);</span>
+<span class="fc" id="L443">    Check.notNull(requester, REQUESTER);</span>
+<span class="fc" id="L444">    Check.notNull(relativePath, REL_PATH);</span>
+<span class="fc" id="L445">    return doCreateTempFile(requester, relativePath, extension, touch);</span>
   }
 
   /**
@@ -415,7 +456,7 @@ public class IOMethods {
    * @throws IOException if an I/O error occurs
    */
   public static File createTempDir() throws IOException {
-<span class="nc" id="L418">    return createTempDir(IOMethods.class);</span>
+<span class="nc" id="L459">    return createTempDir(IOMethods.class);</span>
   }
 
   /**
@@ -431,7 +472,7 @@ public class IOMethods {
    * @throws IOException if an I/O error occurs
    */
   public static File createTempDir(Class&lt;?&gt; requester) throws IOException {
-<span class="nc" id="L434">    return createTempDir(requester, true);</span>
+<span class="nc" id="L475">    return createTempDir(requester, true);</span>
   }
 
   /**
@@ -450,8 +491,8 @@ public class IOMethods {
    */
   public static File createTempDir(Class&lt;?&gt; requester, boolean touch)
       throws IOException {
-<span class="nc" id="L453">    Check.notNull(requester, REQUESTER);</span>
-<span class="nc" id="L454">    return doCreateTempDir(requester, File.separator, &quot;.d&quot;, touch);</span>
+<span class="nc" id="L494">    Check.notNull(requester, REQUESTER);</span>
+<span class="nc" id="L495">    return doCreateTempDir(requester, File.separator, &quot;.d&quot;, touch);</span>
   }
 
   /**
@@ -472,8 +513,8 @@ public class IOMethods {
       String extension,
       boolean touch)
       throws IOException {
-<span class="fc" id="L475">    Check.notNull(requester, REQUESTER);</span>
-<span class="fc" id="L476">    return doCreateTempDir(requester, File.separator, extension, touch);</span>
+<span class="fc" id="L516">    Check.notNull(requester, REQUESTER);</span>
+<span class="fc" id="L517">    return doCreateTempDir(requester, File.separator, extension, touch);</span>
   }
 
   /**
@@ -497,9 +538,9 @@ public class IOMethods {
   public static File createTempDir(
       Class&lt;?&gt; requester, String relativePath, String extension, boolean touch)
       throws IOException {
-<span class="fc" id="L500">    Check.notNull(requester, REQUESTER);</span>
-<span class="fc" id="L501">    Check.notNull(relativePath, REL_PATH);</span>
-<span class="fc" id="L502">    return doCreateTempDir(requester, relativePath, extension, touch);</span>
+<span class="fc" id="L541">    Check.notNull(requester, REQUESTER);</span>
+<span class="fc" id="L542">    Check.notNull(relativePath, REL_PATH);</span>
+<span class="fc" id="L543">    return doCreateTempDir(requester, relativePath, extension, touch);</span>
   }
 
   /**
@@ -509,15 +550,15 @@ public class IOMethods {
    * @param path the path of the file/directory to be deleted
    */
   public static void rm(String path) {
-<span class="fc" id="L512">    Path p = Check.notNull(path).ok(Path::of);</span>
-<span class="fc bfc" id="L513" title="All 2 branches covered.">    if (Files.exists(p)) {</span>
+<span class="fc" id="L553">    Path p = Check.notNull(path).ok(Path::of);</span>
+<span class="fc bfc" id="L554" title="All 2 branches covered.">    if (Files.exists(p)) {</span>
       try {
-<span class="fc" id="L515">        rm(p);</span>
-<span class="nc" id="L516">      } catch (IOException e) {</span>
-<span class="nc" id="L517">        throw ExceptionMethods.uncheck(e);</span>
-<span class="fc" id="L518">      }</span>
+<span class="fc" id="L556">        rm(p);</span>
+<span class="nc" id="L557">      } catch (IOException e) {</span>
+<span class="nc" id="L558">        throw ExceptionMethods.uncheck(e);</span>
+<span class="fc" id="L559">      }</span>
     }
-<span class="fc" id="L520">  }</span>
+<span class="fc" id="L561">  }</span>
 
   /**
    * Deletes a file or directory. Directories need not be empty. If the file or directory does not exist, this
@@ -526,89 +567,89 @@ public class IOMethods {
    * @param file The file or directory to delete.
    */
   public static void rm(File file) {
-<span class="fc" id="L529">    Path p = Check.notNull(file).ok(File::toPath);</span>
-<span class="fc bfc" id="L530" title="All 2 branches covered.">    if (Files.exists(p)) {</span>
+<span class="fc" id="L570">    Path p = Check.notNull(file).ok(File::toPath);</span>
+<span class="fc bfc" id="L571" title="All 2 branches covered.">    if (Files.exists(p)) {</span>
       try {
-<span class="fc" id="L532">        rm(p);</span>
-<span class="nc" id="L533">      } catch (IOException e) {</span>
-<span class="nc" id="L534">        throw ExceptionMethods.uncheck(e);</span>
-<span class="fc" id="L535">      }</span>
+<span class="fc" id="L573">        rm(p);</span>
+<span class="nc" id="L574">      } catch (IOException e) {</span>
+<span class="nc" id="L575">        throw ExceptionMethods.uncheck(e);</span>
+<span class="fc" id="L576">      }</span>
     }
-<span class="fc" id="L537">  }</span>
+<span class="fc" id="L578">  }</span>
 
   private static void rm(Path p) throws IOException {
-<span class="fc" id="L540">    Files.walkFileTree(</span>
+<span class="fc" id="L581">    Files.walkFileTree(</span>
         p,
-<span class="fc" id="L542">        new SimpleFileVisitor&lt;&gt;() {</span>
+<span class="fc" id="L583">        new SimpleFileVisitor&lt;&gt;() {</span>
           @Override
           public FileVisitResult postVisitDirectory(Path dir, IOException exc)
               throws IOException {
-<span class="fc" id="L546">            Files.delete(dir);</span>
-<span class="fc" id="L547">            return FileVisitResult.CONTINUE;</span>
+<span class="fc" id="L587">            Files.delete(dir);</span>
+<span class="fc" id="L588">            return FileVisitResult.CONTINUE;</span>
           }
 
           @Override
           public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
               throws IOException {
-<span class="fc" id="L553">            Files.delete(file);</span>
-<span class="fc" id="L554">            return FileVisitResult.CONTINUE;</span>
+<span class="fc" id="L594">            Files.delete(file);</span>
+<span class="fc" id="L595">            return FileVisitResult.CONTINUE;</span>
           }
         });
-<span class="fc" id="L557">  }</span>
+<span class="fc" id="L598">  }</span>
 
   private static synchronized File doCreateTempFile(
       Class&lt;?&gt; requester, String relPath, String ext, boolean touch)
       throws IOException {
-<span class="fc" id="L562">    String path = uniquePath(requester, relPath, ext);</span>
-<span class="fc" id="L563">    File file = new File(path);</span>
-<span class="fc bfc" id="L564" title="All 2 branches covered.">    if (touch) {</span>
-<span class="pc bpc" id="L565" title="1 of 4 branches missed.">      if (!relPath.isEmpty() &amp;&amp; !relPath.equals(File.separator)) {</span>
-<span class="fc" id="L566">        File dir = Path.of(tmpDir(), relPath).toFile();</span>
-<span class="fc" id="L567">        dir.mkdirs();</span>
+<span class="fc" id="L603">    String path = uniquePath(requester, relPath, ext);</span>
+<span class="fc" id="L604">    File file = new File(path);</span>
+<span class="fc bfc" id="L605" title="All 2 branches covered.">    if (touch) {</span>
+<span class="pc bpc" id="L606" title="1 of 4 branches missed.">      if (!relPath.isEmpty() &amp;&amp; !relPath.equals(File.separator)) {</span>
+<span class="fc" id="L607">        File dir = Path.of(tmpDir(), relPath).toFile();</span>
+<span class="fc" id="L608">        dir.mkdirs();</span>
       }
-<span class="fc" id="L569">      Check.on(IO, file.createNewFile()).is(yes(),</span>
+<span class="fc" id="L610">      Check.on(IO, file.createNewFile()).is(yes(),</span>
           &quot;Unable to create temp file \&quot;{arg}\&quot;&quot;);
     }
-<span class="fc" id="L572">    return file;</span>
+<span class="fc" id="L613">    return file;</span>
   }
 
   private static synchronized File doCreateTempDir(
       Class&lt;?&gt; requester, String relPath, String ext, boolean touch)
       throws IOException {
-<span class="fc" id="L578">    String path = uniquePath(requester, relPath, ext);</span>
-<span class="fc" id="L579">    File dir = new File(path);</span>
-<span class="fc bfc" id="L580" title="All 2 branches covered.">    if (touch) {</span>
-<span class="fc" id="L581">      Check.on(IO, dir.mkdirs()).is(yes(), &quot;Unable to create temp dir \&quot;{arg}\&quot;&quot;);</span>
+<span class="fc" id="L619">    String path = uniquePath(requester, relPath, ext);</span>
+<span class="fc" id="L620">    File dir = new File(path);</span>
+<span class="fc bfc" id="L621" title="All 2 branches covered.">    if (touch) {</span>
+<span class="fc" id="L622">      Check.on(IO, dir.mkdirs()).is(yes(), &quot;Unable to create temp dir \&quot;{arg}\&quot;&quot;);</span>
     }
-<span class="fc" id="L583">    return dir;</span>
+<span class="fc" id="L624">    return dir;</span>
   }
 
-<span class="fc" id="L586">  private static final AtomicLong counter = new AtomicLong();</span>
+<span class="fc" id="L627">  private static final AtomicLong counter = new AtomicLong();</span>
 
   private static String uniquePath(Class&lt;?&gt; requester,
       String relativePath,
       String extension) {
-<span class="fc" id="L591">    String sep = File.separator;</span>
-<span class="fc" id="L592">    relativePath = ensureSuffix(ensurePrefix(relativePath, sep), sep);</span>
-<span class="fc bfc" id="L593" title="All 2 branches covered.">    if (isEmpty(extension)) {</span>
-<span class="fc" id="L594">      extension = EMPTY_STRING;</span>
+<span class="fc" id="L632">    String sep = File.separator;</span>
+<span class="fc" id="L633">    relativePath = ensureSuffix(ensurePrefix(relativePath, sep), sep);</span>
+<span class="fc bfc" id="L634" title="All 2 branches covered.">    if (isEmpty(extension)) {</span>
+<span class="fc" id="L635">      extension = EMPTY_STRING;</span>
     } else {
-<span class="fc" id="L596">      extension = ensurePrefix(extension, DOT);</span>
+<span class="fc" id="L637">      extension = ensurePrefix(extension, DOT);</span>
     }
-<span class="fc" id="L598">    return tmpDir()</span>
+<span class="fc" id="L639">    return tmpDir()</span>
         + relativePath
-<span class="fc" id="L600">        + requester.getSimpleName()</span>
+<span class="fc" id="L641">        + requester.getSimpleName()</span>
         + DOT
-<span class="fc" id="L602">        + Thread.currentThread().getName()</span>
+<span class="fc" id="L643">        + Thread.currentThread().getName()</span>
         + DOT
-<span class="fc" id="L604">        + System.currentTimeMillis()</span>
+<span class="fc" id="L645">        + System.currentTimeMillis()</span>
         + DOT
-<span class="fc" id="L606">        + lpad(counter.incrementAndGet(), 8, '0')</span>
+<span class="fc" id="L647">        + lpad(counter.incrementAndGet(), 8, '0')</span>
         + extension;
   }
 
   private static String tmpDir() {
-<span class="fc" id="L611">    return System.getProperty(&quot;java.io.tmpdir&quot;);</span>
+<span class="fc" id="L652">    return System.getProperty(&quot;java.io.tmpdir&quot;);</span>
   }
 
 }
