@@ -177,6 +177,20 @@ public final class JSONObject {
   }
 
   /**
+   * Sets the specified key to the specified value. The provided key will not be interpreted as a path. This
+   * is useful if the key contains one or more dot characters.
+   *
+   * @param key the key
+   * @param value the value
+   * @return this {@code JSONObject}
+   */
+  public JSONObject setPlain(String key, Object value) {
+    Check.notNull(key, Tag.PATH);
+    set(this, Path.of(key), value);
+    return this;
+  }
+
+  /**
    * <p>Appends the specified element to the {@code Collection} found at the
    * specified path. If the path has not been set yet, it will first be set to an empty {@link ArrayList}, to
    * which the element will then be added. If the path is already set to a non-{@code Collection} type, a
