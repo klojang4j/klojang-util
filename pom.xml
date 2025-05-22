@@ -7,7 +7,7 @@
 
     <groupId>org.klojang</groupId>
     <artifactId>klojang-util</artifactId>
-    <version>21.13.0</version>
+    <version>24.0.0</version>
     <packaging>jar</packaging>
 
     <name>Klojang Util</name>
@@ -55,8 +55,8 @@
         <!-- ==================================================================== -->
         <!-- *** Build settings                                               *** -->
         <!-- ==================================================================== -->
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>24</maven.compiler.source>
+        <maven.compiler.target>24</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- ==================================================================== -->
@@ -73,7 +73,7 @@
         <maven-surefire-plugin.version>3.2.2</maven-surefire-plugin.version>
         <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
         <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
-        <jacoco-plugin.version>0.8.11</jacoco-plugin.version>
+        <jacoco-plugin.version>0.8.13</jacoco-plugin.version>
         <nexus-plugin.version>1.6.13</nexus-plugin.version>
 
 
@@ -82,7 +82,7 @@
         <!-- *** Check for updates: mvn versions:display-dependency-updates   *** -->
         <!-- *** Check dependencies: mvn dependency:analyze                   *** -->
         <!-- ==================================================================== -->
-        <klojang-check.version>21.4.0</klojang-check.version>
+        <klojang-check.version>24.0.0</klojang-check.version>
         <junit.version>4.13.2</junit.version>
     </properties>
 
@@ -188,13 +188,13 @@
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>docs/api</directory>
+                            <directory>docs/24/api</directory>
                             <includes>
                                 <include>**/*</include>
                             </includes>
                         </fileset>
                         <fileset>
-                            <directory>docs/coverage</directory>
+                            <directory>docs/24/coverage</directory>
                             <includes>
                                 <include>**/*</include>
                             </includes>
@@ -274,7 +274,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>docs/api</outputDirectory>
+                            <outputDirectory>docs/24/api</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target/apidocs</directory>
@@ -289,7 +289,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>docs/coverage</outputDirectory>
+                            <outputDirectory>docs/24/coverage</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target/site/jacoco</directory>

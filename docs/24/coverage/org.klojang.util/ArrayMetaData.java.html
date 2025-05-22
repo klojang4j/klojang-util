@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArrayMetaData.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Util</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util</a> &gt; <span class="el_source">ArrayMetaData.java</span></div><h1>ArrayMetaData.java</h1><pre class="source lang-java linenums">package org.klojang.util;
+
+import org.klojang.check.Check;
+
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
+import static org.klojang.check.CommonChecks.*;
+import static org.klojang.check.Tag.VARARGS;
+import static org.klojang.util.ArrayMethods.prefix;
+import static org.klojang.util.ArrayMethods.repeat;
+import static org.klojang.util.InvokeMethods.getArrayLength;
+
+/**
+ * &lt;p&gt;Provides metadata about an array or array type and allows you to generate arrays with a different base
+ * type or dimensionality. The base type is the {@linkplain Class#getComponentType() component type} of the
+ * innermost array of an n-dimensional array. So for {@code int[][][]} that would be {@code int}.
+ * {@code int[][]} is the component type of {@code int[][][]}; {@code int} is its base type. In other words:
+ * &lt;i&gt;the base type of an array always is a non-array type&lt;/i&gt;. (NB while &lt;i&gt;component type&lt;/i&gt; is standard
+ * terminology, there is no commonly accepted term for the type of objects that ultimately occupy the slots in
+ * the array &amp;#8212; in any dimension. Here we use the term &lt;i&gt;base type&lt;/i&gt;. &lt;i&gt;Element type&lt;/i&gt; would
+ * another reasonable option.)
+ *
+ * &lt;p&gt;Example usage:
+ *
+ * &lt;blockquote&gt;&lt;pre&gt;{@code
+ * ArrayMetaData metadata = ArrayMetaData.of(int[][].class);
+ * Integer[][][] cube = metadata.box().addDimension().newHyperCube(10);
+ * }&lt;/pre&gt;&lt;/blockquote&gt;
+ *
+ * @author Ayco Holleman
+ */
+public final class ArrayMetaData {
+
+  /**
+   * Returns a description of the provided array. It contains the base type's simple class name and the length
+   * of the outermost array. For example, for an array defined as {@code new Double[4][12]}, this method would
+   * return &quot;Double[4][]&quot;.
+   *
+   * @param array the array to describe
+   * @return a description of the array
+   */
+  public static String describe(Object array) {
+<span class="fc" id="L44">    ArrayMetaData metadata = forArray(array);</span>
+<span class="fc" id="L45">    int len = getArrayLength(array);</span>
+<span class="fc" id="L46">    StringBuilder sb = new StringBuilder(metadata.baseType.getSimpleName())</span>
+<span class="fc" id="L47">        .append('[')</span>
+<span class="fc" id="L48">        .append(len)</span>
+<span class="fc" id="L49">        .append(']');</span>
+<span class="fc" id="L50">    sb.append(&quot;[]&quot;.repeat(Math.max(0, metadata.dimensions - 1)));</span>
+<span class="fc" id="L51">    return sb.toString();</span>
+  }
+
+  /**
+   * Returns the base type of the specified array type. An {@link IllegalArgumentException} is thrown if the
+   * provided class is not an array type.
+   *
+   * @param arrayType the array type to inspect
+   * @return the base type of the specified array type
+   */
+  public static Class&lt;?&gt; getBaseType(Class&lt;?&gt; arrayType) {
+<span class="nc" id="L62">    Check.notNull(arrayType).is(array());</span>
+<span class="nc" id="L63">    return baseType(arrayType);</span>
+  }
+
+  /**
+   * Returns the base type of the specified array. An {@link IllegalArgumentException} is thrown if the
+   * provided object is not an array.
+   *
+   * @param array the array to inspect
+   * @return the base type of the specified array
+   */
+  public static Class&lt;?&gt; getBaseType(Object array) {
+<span class="nc" id="L74">    Check.notNull(array);</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">    if (array.getClass() == Class.class) {</span>
+      // JVM might end up here with dynamically invoked code (method handles / reflection)
+<span class="nc" id="L77">      return baseType((Class&lt;?&gt;) array);</span>
+    }
+<span class="nc" id="L79">    return baseType(array.getClass());</span>
+  }
+
+  /**
+   * Returns zero for non-array types, and the number of dimensions for array types.
+   *
+   * @param clazz the type for which to get the number of dimensions
+   * @return the dimensionality of the type.
+   */
+  public static int countDimensions(Class&lt;?&gt; clazz) {
+<span class="fc" id="L89">    Check.notNull(clazz);</span>
+<span class="fc" id="L90">    return dimensions(clazz);</span>
+  }
+
+  /**
+   * Returns zero for non-array objects, and the number of dimensions for arrays.
+   *
+   * @param obj the object for which to get the number of dimensions
+   * @return the dimensionality of the object.
+   */
+  public static int countDimensions(Object obj) {
+<span class="nc" id="L100">    Check.notNull(obj);</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">    if (obj.getClass() == Class.class) {</span>
+<span class="nc" id="L102">      return dimensions((Class&lt;?&gt;) obj);</span>
+    }
+<span class="nc" id="L104">    return dimensions(obj.getClass());</span>
+  }
+
+  /**
+   * Returns an {@code ArrayMetaData} instance corresponding to the specified array object. An
+   * {@link IllegalArgumentException} is thrown if the provided object is not an array.
+   *
+   * @param array the array
+   * @return the {@code ArrayMetaData} instance
+   */
+  public static ArrayMetaData forArray(Object array) {
+<span class="fc" id="L115">    Check.notNull(array).is(array());</span>
+<span class="fc" id="L116">    var c = array.getClass();</span>
+<span class="fc" id="L117">    return new ArrayMetaData(c, baseType(c), dimensions(c));</span>
+  }
+
+  /**
+   * Returns a {@code ArrayMetaData} instance corresponding to the specified array type. An
+   * {@link IllegalArgumentException} is thrown if the provided class object does not represent an array
+   * type.
+   *
+   * @param arrayType the array class
+   * @return the {@code ArrayMetaData} instance
+   */
+  public static ArrayMetaData of(Class&lt;?&gt; arrayType) {
+<span class="fc" id="L129">    Check.notNull(arrayType).is(array());</span>
+<span class="fc" id="L130">    return new ArrayMetaData(arrayType, baseType(arrayType), dimensions(arrayType));</span>
+  }
+
+
+  /**
+   * Creates a new {@code ArrayMetaData} instance. The provided type may or may not be an array type. If it is
+   * an array type, its base type will become the base type of the {@code ArrayMetaData} instance and its
+   * dimension count will be added to the provided number of dimensions. If the provided type is not an array
+   * type, the type itself will become the base type of the {@code ArrayMetaData} instance. The specified
+   * number of dimensions may be zero or negative, as long as the sum of the dimensions remains positive:
+   *
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * var twoDimensional = float[][].class; // base type: float
+   * var threeDimensional = ArrayMetaData.of(twoDimensional, 1); // represents float[][][].class
+   * var oneDimensional = ArrayMetaData.of(twoDimensional, -1);  // represents float[].class
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   *
+   * @param type the type to inspect
+   * @param dimensions the number of dimensions
+   */
+  public static ArrayMetaData of(Class&lt;?&gt; type, int dimensions) {
+<span class="fc" id="L151">    Check.notNull(type);</span>
+<span class="fc" id="L152">    return new ArrayMetaData(baseType(type), dimensions(type) + dimensions);</span>
+  }
+
+  private final Class&lt;?&gt; baseType;
+  private final int dimensions;
+
+  private Class&lt;?&gt; arrayClass;
+
+<span class="fc" id="L160">  private ArrayMetaData(Class&lt;?&gt; baseType, int dimensions) {</span>
+<span class="fc" id="L161">    Check.that(dimensions, &quot;number of dimensions&quot;).is(positive());</span>
+<span class="fc" id="L162">    this.baseType = baseType;</span>
+<span class="fc" id="L163">    this.dimensions = dimensions;</span>
+<span class="fc" id="L164">  }</span>
+
+<span class="fc" id="L166">  private ArrayMetaData(Class&lt;?&gt; arrayClass, Class&lt;?&gt; baseType, int dimensions) {</span>
+<span class="fc" id="L167">    Check.that(dimensions, &quot;number of dimensions&quot;).is(positive());</span>
+<span class="fc" id="L168">    this.arrayClass = arrayClass;</span>
+<span class="fc" id="L169">    this.baseType = baseType;</span>
+<span class="fc" id="L170">    this.dimensions = dimensions;</span>
+<span class="fc" id="L171">  }</span>
+
+  /**
+   * Returns the base type of the array represented by this instance.
+   *
+   * @return the base type of the array represented by this instance
+   */
+  public Class&lt;?&gt; getBaseType() {
+<span class="fc" id="L179">    return baseType;</span>
+  }
+
+  /**
+   * Returns the number of dimensions of the array represented by this instance.
+   *
+   * @return the number of dimensions of the array represented by this instance
+   */
+  public int getDimensions() {
+<span class="fc" id="L188">    return dimensions;</span>
+  }
+
+  /**
+   * Returns the {@code Class} object corresponding to this instance. For example, if the base type of this
+   * instance is {@code byte} and the number of dimensions recorded by this instance is three, then this
+   * method will return {@code byte[][][].class}.
+   *
+   * @return a {@code Class} object
+   */
+  public Class&lt;?&gt; getArrayClass() {
+<span class="fc bfc" id="L199" title="All 2 branches covered.">    if (arrayClass == null) {</span>
+<span class="fc" id="L200">      arrayClass = arrayClass(baseType, dimensions);</span>
+    }
+<span class="fc" id="L202">    return arrayClass;</span>
+  }
+
+  /**
+   * &lt;p&gt;Creates a new array with the specified length, using the base type and number of dimensions of
+   * this {@code ArrayMetaData} instance. For example, if the provided length is 10, the base type is
+   * {@code short.class}, and the number of dimensions is three, then calling this method amounts to calling
+   * {@code new short[10][][]}:
+   *
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * var expected = new short[10][][];
+   * ArrayMetaData metadata = ArrayMetaData.of(short.class, 3);
+   * var actual = metadata.newArray(10);
+   * assertArrayEquals(expected, actual);
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   *
+   * &lt;p&gt;If this {@code ArrayMetaData} instance represents a multidimensional array, you may optionally
+   * specify the lengths of the arrays in the other dimensions (akin to calling {@code new short[10][8][]} or
+   * {@code new short[10][8][15]}).
+   *
+   * @param length the length of the array
+   * @param lengths the lengths of the arrays in the other dimensions
+   * @param &lt;T&gt; the type of the array
+   * @return a new array
+   */
+  @SuppressWarnings(&quot;unchecked&quot;)
+  public &lt;T&gt; T newArray(int length, int... lengths) {
+<span class="fc" id="L229">    Check.that(length, &quot;array length&quot;).isNot(negative());</span>
+<span class="fc" id="L230">    Check.notNull(lengths, VARARGS);</span>
+<span class="fc" id="L231">    Check.that(lengths.length).is(lt(), dimensions, &quot;number of lengths exceeds number of dimensions&quot;);</span>
+<span class="fc" id="L232">    IntStream.of(lengths).forEach(x -&gt; Check.that(x, &quot;array length&quot;).is(gte(), 0));</span>
+<span class="fc" id="L233">    return (T) populate(this, prefix(lengths, length));</span>
+  }
+
+  /**
+   * Creates a &quot;hyper cube&quot; in which all arrays in all dimensions have the same length (as in
+   * {@code new int[10][10][10]}). Note that &quot;hyper cube&quot; is in fact a misnomer, because this method can also
+   * be used to create a two-dimensional array ({@code new int[10][10}), or even a one-dimensional array.
+   *
+   * @param length the array length in all dimensions
+   * @param &lt;T&gt; the type of the array
+   * @return a new array
+   */
+  @SuppressWarnings(&quot;unchecked&quot;)
+  public &lt;T&gt; T newHyperCube(int length) {
+<span class="fc" id="L247">    Check.that(length, &quot;array length&quot;).isNot(negative());</span>
+<span class="fc" id="L248">    return (T) populate(this, repeat(length, dimensions));</span>
+  }
+
+  private static Object populate(ArrayMetaData metadata, int[] lengths) {
+<span class="fc" id="L252">    int len = lengths[0];</span>
+<span class="fc" id="L253">    Object array = InvokeMethods.newArray(metadata.getArrayClass(), len);</span>
+<span class="fc bfc" id="L254" title="All 4 branches covered.">    if (metadata.dimensions &gt; 1 &amp;&amp; lengths.length &gt; 1) {</span>
+<span class="fc" id="L255">      metadata = metadata.removeDimension();</span>
+<span class="fc" id="L256">      lengths = Arrays.copyOfRange(lengths, 1, lengths.length);</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">      for (int i = 0; i &lt; len; ++i) {</span>
+<span class="fc" id="L258">        InvokeMethods.setArrayElement(array, i, populate(metadata, lengths));</span>
+      }
+    }
+<span class="fc" id="L261">    return array;</span>
+  }
+
+  /**
+   * Returns an {@code ArrayMetaData} instance with the same number of dimensions as this instance, and with
+   * the specified base type.
+   *
+   * @param elementType the base type of the returned {@code ArrayMetaData} instance
+   * @return an {@code ArrayMetaData} instance with the same number of dimensions as this instance, and with
+   *     the specified base type
+   */
+  public ArrayMetaData withBaseType(Class&lt;?&gt; elementType) {
+<span class="fc bfc" id="L273" title="All 2 branches covered.">    if (elementType != this.baseType) {</span>
+<span class="fc" id="L274">      Check.notNull(elementType);</span>
+<span class="fc" id="L275">      return new ArrayMetaData(elementType, dimensions);</span>
+    }
+<span class="fc" id="L277">    return this;</span>
+  }
+
+  /**
+   * Returns an {@code ArrayMetaData} instance with the same base type as this instance, and with the
+   * specified number of dimensions.
+   *
+   * @param dimensions the number of dimensions
+   * @return an {@code ArrayMetaData} instance with the same base type as this instance, and with the
+   *     specified number of dimensions
+   */
+  public ArrayMetaData withDimensions(int dimensions) {
+<span class="fc bfc" id="L289" title="All 2 branches covered.">    if (dimensions != this.dimensions) {</span>
+<span class="fc" id="L290">      Check.that(dimensions, &quot;number of dimensions&quot;).is(positive());</span>
+<span class="fc" id="L291">      return new ArrayMetaData(baseType, dimensions);</span>
+    }
+<span class="fc" id="L293">    return this;</span>
+  }
+
+  /**
+   * Returns an {@code ArrayMetaData} instance with one more dimension than this instance.
+   *
+   * @return an {@code ArrayMetaData} instance with one more dimension than this instance
+   */
+  public ArrayMetaData addDimension() {
+<span class="nc" id="L302">    return new ArrayMetaData(baseType, dimensions + 1);</span>
+  }
+
+  /**
+   * Returns an {@code ArrayMetaData} instance with one dimension less than this instance.
+   *
+   * @return an {@code ArrayMetaData} instance with one dimension less than this instance
+   */
+  public ArrayMetaData removeDimension() {
+<span class="fc" id="L311">    int x = Check.that(dimensions - 1).is(positive(), &quot;number of dimensions must remain positive&quot;).ok();</span>
+<span class="fc" id="L312">    return new ArrayMetaData(baseType, x);</span>
+  }
+
+  /**
+   * Returns an {@code ArrayMetaData} instance for the boxed version of the base type. If the base type of
+   * this instance is not a primitive type, the instance itself is returned.
+   *
+   * @return an {@code ArrayMetaData} for the boxed version of the base type
+   */
+  public ArrayMetaData box() {
+<span class="pc bpc" id="L322" title="1 of 2 branches missed.">    if (baseType.isPrimitive()) {</span>
+<span class="fc" id="L323">      return new ArrayMetaData(ClassMethods.box(baseType), dimensions);</span>
+    }
+<span class="nc" id="L325">    return this;</span>
+  }
+
+  /**
+   * Returns the {@code ArrayMetaData} for the unboxed version of the base type. If the base type of this
+   * instance is not a primitive wrapper type (like {@code Double}), the instance itself is returned.
+   *
+   * @return the {@code ArrayMetaData} for the unboxed version of the base type
+   */
+  public ArrayMetaData unbox() {
+<span class="pc bpc" id="L335" title="1 of 2 branches missed.">    if (ClassMethods.isWrapper(baseType)) {</span>
+<span class="fc" id="L336">      return new ArrayMetaData(ClassMethods.unbox(baseType), dimensions);</span>
+    }
+<span class="nc" id="L338">    return this;</span>
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+<span class="pc bpc" id="L343" title="1 of 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L344">      return true;</span>
+    }
+<span class="fc" id="L346">    return obj instanceof ArrayMetaData that</span>
+<span class="pc bpc" id="L347" title="2 of 4 branches missed.">        &amp;&amp; baseType.equals(that.baseType)</span>
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">        &amp;&amp; dimensions == that.dimensions;</span>
+  }
+
+  @Override
+  public int hashCode() {
+<span class="nc" id="L353">    return baseType.hashCode() ^ dimensions;</span>
+  }
+
+  /**
+   * Returns the simple class name of the array type represented by this instance. The returned string is
+   * easier to understand than what you get from {@link Class#getSimpleName()}. For example the return value
+   * for {@code int[][].class} would be &quot;int[][]&quot;.
+   *
+   * @return the simple class name of the array type represented by this {@code ArrayMetaData}
+   */
+  @Override
+  public String toString() {
+<span class="pc bpc" id="L365" title="1 of 2 branches missed.">    if (dimensions == 1) { // happy path for 99% of the cases</span>
+<span class="nc" id="L366">      return baseType.getSimpleName() + &quot;[]&quot;;</span>
+    }
+<span class="fc" id="L368">    String name = baseType.getSimpleName();</span>
+<span class="fc" id="L369">    StringBuilder sb = new StringBuilder(name.length() + dimensions * 2);</span>
+<span class="fc" id="L370">    sb.append(name);</span>
+<span class="fc" id="L371">    sb.append(&quot;[]&quot;.repeat(dimensions));</span>
+<span class="fc" id="L372">    return sb.toString();</span>
+  }
+
+  /**
+   * Returns the class name of the array type represented by this instance. The returned string is easier to
+   * understand than what you get from {@link Class#getName()}. For example, the return value for
+   * {@code String[][].class} would be &quot;String[][]&quot;. For types outside the {@code java.lang} package, the
+   * fully-qualified class name is used (e.g. &quot;java.io.File[][]&quot;).
+   *
+   * @return the class name of the array type represented by this {@code ArrayMetaData}
+   */
+  public String getArrayClassName() {
+<span class="fc" id="L384">    StringBuilder sb = new StringBuilder(baseTypeName());</span>
+<span class="fc" id="L385">    sb.append(&quot;[]&quot;.repeat(dimensions));</span>
+<span class="fc" id="L386">    return sb.toString();</span>
+  }
+
+  private String baseTypeName() {
+<span class="fc bfc" id="L390" title="All 2 branches covered.">    if (baseType.getPackageName().equals(Object.class.getPackageName())) {</span>
+<span class="fc" id="L391">      return baseType.getSimpleName();</span>
+    }
+<span class="fc" id="L393">    return baseType.getName();</span>
+  }
+
+  private static Class&lt;?&gt; arrayClass(Class&lt;?&gt; baseType, int dimensions) {
+<span class="fc" id="L397">    Class&lt;?&gt; c = baseType;</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">    for (int i = 0; i &lt; dimensions; ++i) {</span>
+<span class="fc" id="L399">      c = c.arrayType();</span>
+    }
+<span class="fc" id="L401">    return c;</span>
+  }
+
+  private static Class&lt;?&gt; baseType(Class&lt;?&gt; type) {
+<span class="fc bfc" id="L405" title="All 2 branches covered.">    while (type.isArray()) {</span>
+<span class="fc" id="L406">      type = type.getComponentType();</span>
+    }
+<span class="fc" id="L408">    return type;</span>
+  }
+
+  private static int dimensions(Class&lt;?&gt; clazz) {
+<span class="fc" id="L412">    int x = 0;</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">    for (var c = clazz; c.isArray(); c = c.getComponentType()) {</span>
+<span class="fc" id="L414">      ++x;</span>
+    }
+<span class="fc" id="L416">    return x;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

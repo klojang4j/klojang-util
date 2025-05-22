@@ -10,20 +10,20 @@ To use _Klojang Util_, add the following dependency to your Maven POM file:
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-util</artifactId>
-    <version>21.13.0</version>
+    <version>24.0.0</version>
 </dependency>
 ```
 
 or Gradle build script:
 
 ```
-implementation group: 'org.klojang', name: 'klojang-util', version: '21.13.0'
+implementation group: 'org.klojang', name: 'klojang-util', version: '24.0.0'
 ```
 
 ## Documentation
 
 The **Javadocs** for Klojang Check can be
-found **[here](https://klojang4j.github.io/klojang-util/api)**.
+found **[here](https://klojang4j.github.io/klojang-util/24/api)**.
 
 The latest **test coverage report** can be
-found **[here](https://klojang4j.github.io/klojang-util/coverage)**.
+found **[here](https://klojang4j.github.io/klojang-util/24/coverage)**.

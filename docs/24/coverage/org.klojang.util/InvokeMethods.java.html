@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InvokeMethods.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Util</a> &gt; <a href="index.source.html" class="el_package">org.klojang.util</a> &gt; <span class="el_source">InvokeMethods.java</span></div><h1>InvokeMethods.java</h1><pre class="source lang-java linenums">package org.klojang.util;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static java.lang.invoke.MethodHandles.publicLookup;
+import static java.lang.invoke.MethodType.methodType;
+
+/**
+ * Dynamic invocation utility methods. These methods are not meant to be used in application-level code. They
+ * very thinly wrap methods from the {@code java.lang.invoke} package and &lt;b&gt;they do not perform any null
+ * checks, type checks, range checks, etc.&lt;/b&gt; These checks are still necessary but are left to higher-level
+ * code.
+ */
+<span class="nc" id="L17">public final class InvokeMethods {</span>
+
+  //@formatter:off
+  private static final class Cache extends LinkedHashMap&lt;Class&lt;?&gt;, MethodHandle&gt; {
+    public Cache() {
+<span class="fc" id="L22">      super(16, 0.75f, true);</span>
+<span class="fc" id="L23">    }</span>
+    public boolean removeEldestEntry(Map.Entry&lt;Class&lt;?&gt;, MethodHandle&gt; eldest) {
+<span class="fc bfc" id="L25" title="All 2 branches covered.">      return size() &gt; 10;</span>
+    }
+  }
+  //@formatter:on
+
+<span class="fc" id="L30">  private static final Cache noArgConstructors = new Cache();</span>
+<span class="fc" id="L31">  private static final Cache intArgConstructors = new Cache();</span>
+<span class="fc" id="L32">  private static final Cache arrayConstructors = new Cache();</span>
+<span class="fc" id="L33">  private static final Cache arrayLengthGetters = new Cache();</span>
+<span class="fc" id="L34">  private static final Cache elementGetters = new Cache();</span>
+<span class="fc" id="L35">  private static final Cache elementSetters = new Cache();</span>
+
+  /**
+   * Returns a new instance of the specified class using its no-arg constructor. The
+   * {@link NoSuchMethodException}, thrown if there is no such constructor, is converted to an
+   * {@link InvokeException}.
+   *
+   * @param clazz the class to instantiate
+   * @param &lt;T&gt; the type of the returned instance
+   * @return the instance
+   * @throws InvokeException if the class does not have a no-arg constructor
+   */
+  @SuppressWarnings(&quot;unchecked&quot;)
+  public static &lt;T&gt; T newInstance(Class&lt;T&gt; clazz) throws InvokeException {
+    try {
+<span class="nc" id="L50">      return (T) getNoArgConstructor(clazz).invoke();</span>
+<span class="nc" id="L51">    } catch (NoSuchMethodException e) {</span>
+<span class="nc" id="L52">      throw InvokeException.missingNoArgConstructor(clazz);</span>
+<span class="nc" id="L53">    } catch (Throwable t) {</span>
+<span class="nc" id="L54">      throw ExceptionMethods.uncheck(t);</span>
+    }
+  }
+
+  /**
+   * Returns a new instance of the specified class using the constructor that takes a single {@code int}
+   * argument. The {@link NoSuchMethodException}, thrown if there is no such constructor, is converted to an
+   * {@link InvokeException}.
+   *
+   * @param clazz the class
+   * @param arg0 the constructor argument
+   * @param &lt;T&gt; the type of the returned instance
+   * @return the instance
+   * @throws InvokeException if the class does not have such a constructor
+   */
+  @SuppressWarnings({&quot;unchecked&quot;})
+  public static &lt;T&gt; T newInstance(Class&lt;T&gt; clazz, int arg0) throws InvokeException {
+    try {
+<span class="nc" id="L72">      return (T) getIntArgConstructor(clazz).invoke(arg0);</span>
+<span class="nc" id="L73">    } catch (NoSuchMethodException e) {</span>
+<span class="nc" id="L74">      throw InvokeException.noSuchConstructor(clazz, int.class);</span>
+<span class="nc" id="L75">    } catch (Throwable t) {</span>
+<span class="nc" id="L76">      throw ExceptionMethods.uncheck(t);</span>
+    }
+  }
+
+  /**
+   * Returns a new array with the specified length. Higher-level code must check that the provided class does
+   * in fact represent an array type and that the specified length is not negative
+   *
+   * @param arrayType the array class
+   * @param length the length of the outermost array
+   * @return the array
+   */
+  public static Object newArray(Class&lt;?&gt; arrayType, int length) {
+<span class="fc" id="L89">    MethodHandle mh = getArrayConstructor(arrayType);</span>
+    try {
+<span class="fc" id="L91">      return mh.invoke(length);</span>
+<span class="nc" id="L92">    } catch (Throwable t) {</span>
+<span class="nc" id="L93">      throw ExceptionMethods.uncheck(t);</span>
+    }
+  }
+
+  /**
+   * Returns a new array with the specified type of elements and with the specified length. The provided type
+   * may be an array type, but the returned array will then be an array of that array type. For example, if
+   * the provided type is {@code String[][].class}, and the provided length is 100, then this method will
+   * return {@code new String[100][][]}.
+   *
+   * @param elementType the type of the elements in the array.
+   * @param length the length of the array
+   * @return the array
+   */
+  public static Object arrayOf(Class&lt;?&gt; elementType, int length) {
+<span class="nc" id="L108">    ArrayMetaData metadata = ArrayMetaData.of(elementType, 1);</span>
+<span class="nc" id="L109">    return newArray(metadata.getArrayClass(), length);</span>
+  }
+
+  /**
+   * Returns the length of the provided array. Higher-level code must check that the provided object is in
+   * fact represent an array
+   *
+   * @param array the array
+   * @return its length
+   */
+  public static int getArrayLength(Object array) {
+    try {
+<span class="fc" id="L121">      return (int) getArrayLengthGetter(array.getClass()).invoke(array);</span>
+<span class="nc" id="L122">    } catch (Throwable t) {</span>
+<span class="nc" id="L123">      throw ExceptionMethods.uncheck(t);</span>
+    }
+  }
+
+  /**
+   * Returns the array element at the specified index.
+   *
+   * @param array the array
+   * @param index the array index
+   * @param &lt;T&gt; the type of the array elements
+   * @return the array element
+   */
+  @SuppressWarnings(&quot;unchecked&quot;)
+  public static &lt;T&gt; T getArrayElement(Object array, int index) {
+    try {
+<span class="fc" id="L138">      return (T) getElementGetter(array.getClass()).invoke(array, index);</span>
+<span class="fc" id="L139">    } catch (Throwable t) {</span>
+<span class="fc" id="L140">      throw ExceptionMethods.uncheck(t);</span>
+    }
+  }
+
+  /**
+   * Sets the element at the specified index.
+   *
+   * @param array the array
+   * @param idx the array index
+   * @param value the value
+   */
+  public static void setArrayElement(Object array, int idx, Object value) {
+    try {
+<span class="fc" id="L153">      getElementSetter(array.getClass()).invoke(array, idx, value);</span>
+<span class="fc" id="L154">    } catch (Throwable t) {</span>
+<span class="fc" id="L155">      throw ExceptionMethods.uncheck(t);</span>
+<span class="fc" id="L156">    }</span>
+<span class="fc" id="L157">  }</span>
+
+  private static &lt;T&gt; MethodHandle getNoArgConstructor(Class&lt;T&gt; clazz)
+      throws NoSuchMethodException, IllegalAccessException {
+<span class="nc" id="L161">    MethodHandle mh = noArgConstructors.get(clazz);</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">    if (mh == null) {</span>
+<span class="nc" id="L163">      mh = publicLookup().findConstructor(clazz, methodType(void.class));</span>
+<span class="nc" id="L164">      noArgConstructors.put(clazz, mh);</span>
+    }
+<span class="nc" id="L166">    return mh;</span>
+  }
+
+  private static &lt;T&gt; MethodHandle getIntArgConstructor(Class&lt;T&gt; clazz)
+      throws NoSuchMethodException, IllegalAccessException {
+<span class="nc" id="L171">    MethodHandle mh = intArgConstructors.get(clazz);</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">    if (mh == null) {</span>
+<span class="nc" id="L173">      mh = publicLookup().findConstructor(clazz, methodType(void.class, int.class));</span>
+<span class="nc" id="L174">      intArgConstructors.put(clazz, mh);</span>
+    }
+<span class="nc" id="L176">    return mh;</span>
+  }
+
+  private static MethodHandle getArrayConstructor(Class&lt;?&gt; clazz) {
+<span class="fc" id="L180">    return arrayConstructors.computeIfAbsent(clazz, MethodHandles::arrayConstructor);</span>
+  }
+
+  private static MethodHandle getArrayLengthGetter(Class&lt;?&gt; clazz) {
+<span class="fc" id="L184">    return arrayLengthGetters.computeIfAbsent(clazz, MethodHandles::arrayLength);</span>
+  }
+
+  private static MethodHandle getElementGetter(Class&lt;?&gt; clazz) {
+<span class="fc" id="L188">    return elementGetters.computeIfAbsent(clazz, MethodHandles::arrayElementGetter);</span>
+  }
+
+  private static MethodHandle getElementSetter(Class&lt;?&gt; clazz) {
+<span class="fc" id="L192">    return elementSetters.computeIfAbsent(clazz, MethodHandles::arrayElementSetter);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
