@@ -1,12 +1,11 @@
 # Klojang Util
 
-Basic Java language utilities.
+Welcome to _Klojang Util_.
 
-## Documentation
+The javadocs for version 24 can be found [here](24/api/index.html).
 
-The latest **Javadocs** can be
-found **[here](https://klojang4j.github.io/klojang-util/24/api)**.
+The javadocs for version 21 can be found [here](21/api/index.html).
 
-The latest **test coverage report** can be
-found **[here](https://klojang4j.github.io/klojang-util/24/coverage)**.
+The Github repository and documentation for _Klojang Util_ can be found
+[here](https://github.com/klojang4j/klojang-util).
 
