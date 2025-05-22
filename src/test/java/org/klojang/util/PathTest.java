@@ -217,6 +217,49 @@ public class PathTest {
     assertEquals("03", Path.from("fullScientificName"), (path = path.shift()));
     assertTrue("04", (path = path.shift()) == Path.empty());
   }
+  @Test(expected = IllegalArgumentException.class)
+  public void subpath01() {
+    Path p = Path.from("identifications.0.scientificName");
+    p.subPath(3);
+  }
+
+  @Test(expected = IndexOutOfBoundsException.class)
+  public void subpath02() {
+    Path p = Path.from("identifications.0.scientificName");
+    p.subPath(2, 4);
+  }
+
+  @Test(expected = IndexOutOfBoundsException.class)
+  public void subpath03() {
+    Path p = Path.from("identifications.0.scientificName");
+    p.subPath(-1, 5);
+  }
+
+  @Test(expected = IndexOutOfBoundsException.class)
+  public void subpath04() {
+    Path p = Path.from("identifications.0.scientificName");
+    p.subPath(3, 3);
+  }
+
+  @Test
+  public void subpath05() {
+    Path p = Path.from("identifications.0.scientificName");
+    assertEquals("01", Path.from("scientificName"), p.subPath(2, 1));
+    assertEquals("02", Path.from("0.scientificName"), p.subPath(1, 2));
+    assertEquals("03",
+        Path.from("identifications.0.scientificName"),
+        p.subPath(0, 3));
+    assertEquals("04", Path.from("0.scientificName"), p.subPath(1));
+  }
+
+  @Test
+  public void subpath06() {
+    Path p = Path.from("identifications.0.scientificName");
+    assertEquals("01", Path.from("0.scientificName"), p.subPath(-2));
+    assertEquals("02", Path.from("0"), p.subPath(-2, 1));
+    assertEquals("03", Path.empty(), p.subPath(-2, 0));
+  }
+
 
   @Test
   public void parent01() {

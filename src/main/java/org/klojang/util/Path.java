@@ -314,6 +314,39 @@ public final class Path implements Comparable<Path>, Iterable<String>, Emptyable
   }
 
   /**
+   * Returns a new {@code Path} starting with the segment at the specified array index.
+   * Specify a negative index to count back from the last segment of the {@code Path} (-1
+   * returns the last path segment).
+   *
+   * @param offset the index of the first segment of the new {@code Path}
+   * @return a new {@code Path} starting with the segment at the specified array index
+   */
+  public Path subPath(int offset) {
+    int from = offset < 0 ? elems.length + offset : offset;
+    Check.that(from).is(lt(), elems.length);
+    return new Path(copyOfRange(elems, from, elems.length));
+  }
+
+  /**
+   * Returns a new {@code Path} consisting of {@code length} segments starting with
+   * segment {@code offset}. The {@code offset} argument may be negative to specify a
+   * segment relative to the end of the {@code Path}. Thus, -1 specifies the last segment
+   * of the {@code Path}.
+   *
+   * @param offset the index of the first segment to extract
+   * @param length the number of segments to extract
+   * @return a new {@code Path} consisting of {@code len} segments starting with segment
+   * {@code from}.
+   */
+  public Path subPath(int offset, int length) {
+    if (offset < 0) {
+      offset = elems.length + offset;
+    }
+    Check.offsetLength(elems.length, offset, length);
+    return new Path(copyOfRange(elems, offset, offset + length));
+  }
+
+  /**
    * Returns a new {@code Path} containing only the segments of this {@code Path} that are not array indices.
    *
    * @return a new {@code Path} without any array indices
