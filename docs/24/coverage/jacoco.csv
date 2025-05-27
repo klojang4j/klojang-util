@@ -2,7 +2,7 @@ GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_
 Klojang Util,org.klojang.util.exception,RootException,53,27,0,0,17,5,12,4,12,4
 Klojang Util,org.klojang.util.exception,UncheckedException,59,40,2,2,17,10,13,4,11,4
 Klojang Util,org.klojang.util.exception,ExceptionOrigin,71,179,15,19,12,39,17,12,8,4
-Klojang Util,org.klojang.util,JSONObject.PathBlockedException,0,34,0,2,0,8,0,4,0,3
+Klojang Util,org.klojang.util,JSONObject.PathBlockedException,0,23,0,0,0,5,0,3,0,3
 Klojang Util,org.klojang.util,ClassMethods,173,288,21,27,35,58,23,29,11,17
 Klojang Util,org.klojang.util,ResizeType,21,153,0,23,3,29,0,16,0,4
 Klojang Util,org.klojang.util,ObjectMethods,76,1109,32,261,12,189,29,179,4,56
@@ -15,13 +15,13 @@ Klojang Util,org.klojang.util,IOMethods,151,476,1,15,46,98,13,38,12,31
 Klojang Util,org.klojang.util,IOMethods.new SimpleFileVisitor() {...},0,11,0,0,0,5,0,3,0,3
 Klojang Util,org.klojang.util,MutableInt,0,304,0,30,0,62,0,51,0,36
 Klojang Util,org.klojang.util,MathMethods,6,1218,0,96,2,194,1,86,1,38
-Klojang Util,org.klojang.util,Path,28,715,8,65,6,122,9,72,2,41
+Klojang Util,org.klojang.util,Path,48,695,9,64,7,121,11,70,3,40
 Klojang Util,org.klojang.util,InvokeMethods,92,86,4,0,27,21,8,9,6,9
 Klojang Util,org.klojang.util,ArrayMetaData,67,432,11,27,16,89,14,36,5,26
 Klojang Util,org.klojang.util,Path.new Iterator() {...},0,42,0,4,0,5,0,5,0,3
 Klojang Util,org.klojang.util,ExceptionMethods,134,308,17,25,26,57,13,25,3,14
 Klojang Util,org.klojang.util,InvokeException,0,35,0,0,0,7,0,3,0,3
-Klojang Util,org.klojang.util,JSONObject,23,602,2,42,5,135,4,54,2,34
+Klojang Util,org.klojang.util,JSONObject,50,569,2,40,8,132,5,58,3,39
 Klojang Util,org.klojang.util.collection,UnmodifiableIntList,2,290,1,19,1,62,1,46,0,37
 Klojang Util,org.klojang.util.collection,SaturatedEnumToIntMap,124,297,5,3,20,61,14,26,10,26
 Klojang Util,org.klojang.util.collection,EnumToIntMap,106,417,9,17,17,77,16,38,9,32

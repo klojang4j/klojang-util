@@ -1,27 +1,23 @@
 package org.klojang.util;
 
 import org.klojang.check.Check;
-import org.klojang.check.CommonChecks;
 import org.klojang.check.Tag;
 import org.klojang.check.extra.Result;
 
 import java.util.*;
 
 import static org.klojang.check.CommonChecks.*;
-import static org.klojang.check.CommonExceptions.STATE;
-import static org.klojang.check.CommonProperties.strlen;
+import static org.klojang.check.CommonExceptions.illegalState;
 import static org.klojang.check.Tag.VALUE;
 import static org.klojang.util.ObjectMethods.ifNull;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
 /**
  * <p>An elaborate reader/writer class for Map&lt;String, Object&gt; (map-in-map) pseudo-objects. A
- * {@code JSONObject} lets you read deeply nested values using path strings (e.g.
- * {@code person.address.street}). It also lets you write deeply nested values without having to create the
- * intermediate maps first. If they are missing, they will tacitly be created. Map keys must not be
- * {@code null} and they must not be empty strings. Map values can be anything, including {@code null}.
- * Internally, a {@code JSONObject} works with {@link Path} objects. See the documentation for the
- * {@code Path} class for how to specify path strings.
+ * {@code JSONObject} lets you read/write deeply nested values using JSON path strings (e.g.
+ * {@code person.address.street}). When writing deeply nested values, intermediate maps are created as and
+ * when necessary. Map keys must be non-null strings. Map values can be anything <i>except</i> {@code Map}
+ * objects. {@code null} values are allowed, however.
  *
  * <p>Note that, notwithstanding its name, this class does not require that you use it within the context of
  * JSON serialization or deserialization. It is more akin to a {@code MapDecorator}.
@@ -49,7 +45,7 @@ import static org.klojang.util.StringMethods.EMPTY_STRING;
  *         .in("address")
  *             .set("street", "12 Revolutionary Rd.")
  *             .set("state", "CA")
- *             .up("person")
+ *             .backTo("person")
  *         .in("medicalStatus")
  *             .set("allergies", List.of("peanuts"))
  *             .set("smoker", true)
@@ -63,14 +59,13 @@ import static org.klojang.util.StringMethods.EMPTY_STRING;
  * String street = JSONObject.of(someMap).get("person.address.street");
  * }</pre></blockquote>
  *
- * <p>For more flexibility, use the {@code org.klojang.path.PathWalker PathWalker} class of the
- * klojang-invoke library.
+ * <p>For more flexibility, use the
+ * <a href="https://klojang4j.github.io/klojang-invoke/24/api/org.klojang.invoke/org/klojang/path/PathWalker.html">PathWalker</a> class of the klojang-invoke library.
  *
  * @author Ayco Holleman
  */
 public final class JSONObject {
 
-  private static final String ERR_HOME_ALREADY = "already in root map";
   private static final String NO_SUCH_PARENT = "Parent of \"${0}\" is not \"${arg}\". Expected: \"${obj}\".";
 
   /**
@@ -90,23 +85,17 @@ public final class JSONObject {
     }
 
     private static String createMessage(Path path, Object value) {
-      String fmt = "path \"%s\" blocked by terminal value %s";
-      if (value instanceof String s) {
-        value = '"' + s + '"';
-      }
-      return String.format(fmt, path, value);
+      return "path \"%s\" blocked by terminal value [%s]".formatted(path, value);
     }
 
   }
 
   /*
-   * When setting a path, or when processing the source map passed to the
-   * constructor, we replace null with this value. This way, if Map.get(key) returns
-   * null, we know for sure that the map does not contain the key. No need to follow
-   * it up with a containsKey call. On its way out, _NULL_ is replaced again with
-   * null.
+   * When setting a path, or when processing the source map passed to the constructor, we replace null with
+   * this value. This way, if Map.get(key) returns null, we know for sure that the map does not contain the
+   * key. No need to follow it up with a containsKey call. On its way out, NULL is replaced again with null.
    */
-  private static final Object _NULL_ = new Object();
+  private static final Object NULL = new Object();
 
 
   /**
@@ -126,6 +115,7 @@ public final class JSONObject {
    * @return a {@code JSONObject} that starts out with the entries in the specified map
    */
   public static JSONObject of(Map<String, Object> map) {
+    Check.notNull(map);
     return new JSONObject(map);
   }
 
@@ -144,7 +134,6 @@ public final class JSONObject {
    * @param map the initial {@code Map}
    */
   private JSONObject(Map<String, Object> map) {
-    Check.notNull(map, Tag.MAP);
     this.map = LinkedHashMap.newLinkedHashMap(map.size() + 10);
     this.root = Path.empty();
     this.parent = null;
@@ -171,14 +160,13 @@ public final class JSONObject {
    * @return this {@code JSONObject}
    */
   public JSONObject set(String path, Object value) {
-    Check.notNull(path, Tag.PATH);
-    set(this, Path.from(path), value);
-    return this;
+    return set(Path.from(path), value);
   }
 
+
   /**
-   * Sets the specified key to the specified value. The provided key will not be interpreted as a path. This
-   * is useful if the key contains one or more dot characters.
+   * Sets the specified key to the specified value. The provided key will not be interpreted as a JSON path.
+   * This is useful if the key contains one or more dot characters.
    *
    * @param key the key
    * @param value the value
@@ -186,14 +174,46 @@ public final class JSONObject {
    */
   public JSONObject setPlain(String key, Object value) {
     Check.notNull(key, Tag.PATH);
-    set(this, Path.of(key), value);
+    return set(Path.of(key), value);
+  }
+
+  /**
+   * <p>Sets the specified path to the specified value. It is not allowed to
+   * overwrite the value of a path that has already been set, even if set to {@code null}. If necessary, use
+   * {@link #unset(String)} to unset the path's value first.
+   *
+   * <p>The value can be anything except a {@code Map} or {@code JSONObject}. Use the
+   * {@link #in(String) in()} method to create a new map at the specified path. It is allowed to set a path's
+   * value to {@code null}.
+   *
+   * @param path the path at which to write the value
+   * @param value the value
+   * @return this {@code JSONObject}
+   */
+  public JSONObject set(Path path, Object value) {
+    Check.notNull(path, Tag.PATH);
+    set(this, path, value);
     return this;
   }
 
   /**
    * <p>Appends the specified element to the {@code Collection} found at the
-   * specified path. If the path has not been set yet, it will first be set to an empty {@link ArrayList}, to
-   * which the element will then be added. If the path is already set to a non-{@code Collection} type, a
+   * specified path. If the path has not been set yet, it will first be set to an {@link ArrayList}, to which
+   * the element will then be added. If the path is already set to a non-{@code Collection} type, a
+   * {@link PathBlockedException} is thrown.
+   *
+   * @param path the path
+   * @param element the element to add to the collection found or created at the specified path
+   * @return this {@code JSONObject}
+   */
+  public JSONObject addElement(String path, Object element) {
+    return addElement(Path.from(path), element);
+  }
+
+  /**
+   * <p>Appends the specified element to the {@code Collection} found at the
+   * specified path. If the path has not been set yet, it will first be set to an {@link ArrayList}, to which
+   * the element will then be added. If the path is already set to a non-{@code Collection} type, a
    * {@link PathBlockedException} is thrown.
    *
    * @param path the path
@@ -201,9 +221,9 @@ public final class JSONObject {
    * @return this {@code JSONObject}
    */
   @SuppressWarnings({"unchecked", "rawtypes"})
-  public JSONObject append(String path, Object element) {
+  public JSONObject addElement(Path path, Object element) {
     Check.notNull(path, Tag.PATH);
-    Result<Object> result = poll(path);
+    Result<Object> result = get(path);
     if (result.isAvailable()) {
       Object obj = result.get();
       if (obj instanceof Collection c) {
@@ -230,21 +250,38 @@ public final class JSONObject {
    *     {@link Result#notAvailable} if the path is not set
    * @see #isSet(String)
    */
-  public Result<Object> poll(String path) {
-    Check.notNull(path, Tag.PATH);
-    return poll(this, Path.from(path));
+  public <T> Result<T> get(String path) {
+    return get(Path.from(path));
   }
 
   /**
-   * Returns the value of the specified path if set, else {@code null}.
+   * Returns a {@link Result} object containing the value of the specified path, or
+   * {@link Result#notAvailable} if the path is not set. The provided key will not be interpreted as a JSON
+   * path. This is useful if the key contains one or more dot characters.
+   *
+   * @param key the path
+   * @return a {@link Result} object containing the value of the specified path, or
+   *     {@link Result#notAvailable} if the path is not set
+   * @see #isSet(String)
+   */
+  public <T> Result<T> getPlain(String key) {
+    Check.notNull(key, Tag.PATH);
+    return get(Path.of(key));
+  }
+
+  /**
+   * Returns a {@link Result} object containing the value of the specified path, or
+   * {@link Result#notAvailable} if the path is not set.
    *
    * @param path the path
-   * @param <T> The type to cast the path's value to
-   * @return the value of the specified path if set, else {@code null}
+   * @return a {@link Result} object containing the value of the specified path, or
+   *     {@link Result#notAvailable} if the path is not set
+   * @see #isSet(String)
    */
   @SuppressWarnings("unchecked")
-  public <T> T get(String path) {
-    return (T) poll(path).orElse(null);
+  public <T> Result<T> get(Path path) {
+    Check.notNull(path, Tag.PATH);
+    return (Result<T>) poll(this, path);
   }
 
   /**
@@ -259,8 +296,23 @@ public final class JSONObject {
    * @return a {@code JSONObject} for the map found or created at the specified path
    */
   public JSONObject in(String path) {
+    return in(Path.from(path));
+  }
+
+  /**
+   * Returns a {@code JSONObject} for the map at the specified path. Once this method has been called, <i>all
+   * subsequently specified paths</i> (including for subsequent calls to {@code in()}) are taken relative to
+   * the specified path. If there is no map yet at the specified path, it will be created. Ancestral maps will
+   * be created as and when needed. If any of the segments in the path (including the last segment) has
+   * already been set, a {@link PathBlockedException} is thrown.
+   *
+   * @param path the path to be used as the base path. The path will itself be interpreted as relative to
+   *     the <i>current</i> base path
+   * @return a {@code JSONObject} for the map found or created at the specified path
+   */
+  public JSONObject in(Path path) {
     Check.notNull(path, Tag.PATH);
-    return in(this, Path.from(path));
+    return in(this, path);
   }
 
   /**
@@ -274,7 +326,21 @@ public final class JSONObject {
    * @see #in(String)
    */
   public JSONObject jump(String path) {
-    return parent == null ? in(path) : root().in(path);
+    return jump(Path.from(path));
+  }
+
+  /**
+   * Jumps to another branch in the tree of nested maps. The difference between {@code jump} and
+   * {@link #in(String) in} is that the path passed to {@code jump} is always taken as an absolute path (i.e.
+   * relative to the root map), while the path passed to {@code in} is taken relative to the path(s) passed to
+   * previous calls to {@code in} and {@code jump}.
+   *
+   * @param path the absolute path to be used as the base path
+   * @return a {@code JSONObject} for the map found or created at the specified path
+   * @see #in(String)
+   */
+  public JSONObject jump(Path path) {
+    return root().in(path);
   }
 
   /**
@@ -286,44 +352,42 @@ public final class JSONObject {
    * map, and it makes the map-building code more intelligible.
    *
    * <blockquote><pre>{@code
-   * Map<String, Object> map = new MapBuilder()
+   * Map<String, Object> map = JSONObject.empty()
    *  .in("person")
    *    .set("firstName", "John")
    *    .set("lastName", "Smith")
    *    .in("address")
    *      .set("street", "12 Revolutionary Rd.")
    *      .set("state", "CA")
-   *      .up("person")
+   *      .backTo("person")
    *    .set("dateOfBirth", LocalDate.of(1967, 4, 4))
    *  .build();
    * }</pre></blockquote>
    *
-   * <p>You can chain {@code up()} calls. To exit from a map directly under the root map, specify {@code ""}
-   * (an empty string):
+   * <p>You can chain {@code backTo()} calls. To exit from a map directly under the root map, specify
+   * {@code null}:
    *
    * <blockquote><pre>{@code
-   * MapBuilder mb = new MapBuilder();
+   * MapBuilder mb = JSONObject.empty();
    *  .in("department.manager.address")
    *    .set("street", "Sunset Blvd")
-   *    .up("manager")
-   *    .up("department")
-   *    .up("")
+   *    .backTo("manager")
+   *    .backTo("department")
+   *    .backTo(null)
    *  .set("foo", "bar");
    * }</pre></blockquote>
    *
-   * @param parent the name of the parent map
+   * @param parentName the name of the parent map
    * @return a {@code JSONObject} for the parent map of the map currently being written to
    */
-  public JSONObject up(String parent) {
-    Check.notNull(parent);
-    JSONObject mother = this.parent;
-    Check.on(STATE, mother).is(notNull(), ERR_HOME_ALREADY);
-    if (root.size() == 1) {
-      Check.that(parent).is(CommonChecks.empty(), "specify \"\" to go up to root map");
+  public JSONObject backTo(String parentName) {
+    Check.that(parent).is(notNull(), illegalState("already in root map"));
+    if (parentName == null) {
+      Check.that(root.size()).is(one(), "null can only be used to go back to root map");
     } else {
-      Check.that(parent).is(equalTo(), mother.name(), NO_SUCH_PARENT, name());
+      Check.that(parentName).is(equalTo(), parent.name(), NO_SUCH_PARENT, name());
     }
-    return this.parent;
+    return parent;
   }
 
   /**
@@ -335,11 +399,11 @@ public final class JSONObject {
     if (parent == null) {
       return this;
     }
-    JSONObject mb = parent;
-    while (mb.parent != null) {
-      mb = mb.parent;
+    JSONObject map = parent;
+    while (map.parent != null) {
+      map = map.parent;
     }
-    return mb;
+    return map;
   }
 
   /**
@@ -352,7 +416,7 @@ public final class JSONObject {
     if (parent == null) {
       return EMPTY_STRING;
     }
-    return name(root);
+    return root.lastSegment();
   }
 
   /**
@@ -372,8 +436,18 @@ public final class JSONObject {
    * @return whether it is set to a terminal value
    */
   public boolean isSet(String path) {
+    return isSet(Path.from(path));
+  }
+
+  /**
+   * Returns whether the specified path is set to a terminal value (and hence cannot be extended).
+   *
+   * @param path the path
+   * @return whether it is set to a terminal value
+   */
+  public boolean isSet(Path path) {
     Check.notNull(path);
-    return isSet(this, Path.from(path));
+    return isSet(this, path);
   }
 
   /**
@@ -383,23 +457,33 @@ public final class JSONObject {
    * @return this {@code JSONObject}
    */
   public JSONObject unset(String path) {
+    return unset(Path.from(path));
+  }
+
+  /**
+   * Unsets the value of the specified path. This method returns quietly for non-existent paths.
+   *
+   * @param path the path to unset.
+   * @return this {@code JSONObject}
+   */
+  public JSONObject unset(Path path) {
     Check.notNull(path);
-    unset(this, Path.from(path));
+    unset(this, path);
     return this;
   }
 
   /**
-   * Returns the {@code Map} resulting from the write actions. The returned map is modifiable and retains the
-   * order in which the paths (now keys) were written. You can continue to use the {@code JSONObject} after a
-   * call to this method.
+   * Returns the {@code Map} resulting all write actions thus far. The returned map is modifiable and retains
+   * the order in which the paths (now keys) were written. You can continue to use the {@code JSONObject}
+   * after a call to this method.
    *
    * @return the {@code Map} resulting from the write actions
    */
   public Map<String, Object> build() {
-    JSONObject mb = this;
-    for (; mb.parent != null; mb = mb.parent)
+    JSONObject map = this;
+    for (; map.parent != null; map = map.parent)
       ;
-    return createMap(mb);
+    return createMap(map);
   }
 
   /**
@@ -421,30 +505,26 @@ public final class JSONObject {
   private static void processEntry(JSONObject writer, Object key, Object val) {
     Check.that(key)
         .is(notNull(), "illegal null key in source map")
-        .is(notEmpty(), "illegal empty key in source map")
         .is(instanceOf(), String.class, "illegal key type in source map: ${type}");
     String k = key.toString();
     if (val instanceof Map nested) {
       Path path = writer.root.append(k);
-      JSONObject mb = new JSONObject(path, writer);
-      writer.map.put(k, mb);
-      init(mb, nested);
+      JSONObject jsonObject = new JSONObject(path, writer);
+      writer.map.put(k, jsonObject);
+      init(jsonObject, nested);
     } else {
       Check.that(val, VALUE).isNot(instanceOf(), JSONObject.class); // stifle nasty usage
-      writer.map.put(k, ifNull(val, _NULL_));
+      writer.map.put(k, ifNull(val, NULL));
     }
   }
 
   private static void set(JSONObject writer, Path path, Object val) {
     String key = firstSegment(path);
     if (path.size() == 1) {
-      if (writer.map.containsKey(key)) {
-        throw alreadySet(writer, key);
-      }
       Check.that(val, VALUE)
           .isNot(instanceOf(), Map.class)
           .isNot(instanceOf(), JSONObject.class); // stifle nasty usage
-      writer.map.put(key, ifNull(val, _NULL_));
+      writer.map.put(key, ifNull(val, NULL));
     } else {
       set(getNestedWriter(writer, key), path.shift(), val);
     }
@@ -459,7 +539,7 @@ public final class JSONObject {
       }
       return poll(nested, path.shift());
     } else if (path.size() == 1 && val != null) {
-      return Result.of(ObjectMethods.when(val, sameAs(), _NULL_, null));
+      return Result.of(ObjectMethods.when(val, sameAs(), NULL, null));
     }
     return Result.notAvailable();
   }
@@ -493,20 +573,22 @@ public final class JSONObject {
   }
 
   private static Map<String, Object> createMap(JSONObject writer) {
-    Map<String, Object> m = LinkedHashMap.newLinkedHashMap(writer.map.size());
+    Map<String, Object> map = LinkedHashMap.newLinkedHashMap(writer.map.size());
     writer.map.forEach((key, val) -> {
-      if (val instanceof JSONObject mb) {
-        m.put(key, createMap(mb));
+      if (val instanceof JSONObject jsonObject) {
+        map.put(key, createMap(jsonObject));
+      } else if (val == NULL) {
+        map.put(key, null);
       } else {
-        m.put(key, ObjectMethods.when(val, sameAs(), _NULL_, null));
+        map.put(key, val);
       }
     });
-    return m;
+    return map;
   }
 
   private static JSONObject getNestedWriter(JSONObject writer, String key) {
     Path root = writer.root.append(key);
-    Object val = writer.map.computeIfAbsent(key, k -> new JSONObject(root, writer));
+    Object val = writer.map.computeIfAbsent(key, _ -> new JSONObject(root, writer));
     if (val instanceof JSONObject mb) {
       return mb;
     }
@@ -519,15 +601,8 @@ public final class JSONObject {
     return new PathBlockedException(absPath, curVal);
   }
 
-  private static String name(Path path) {
-    return path.segment(-1);
-  }
-
   private static String firstSegment(Path path) {
-    return Check.that(path.segment(0))
-        .isNot(NULL(), "illegal null segment in path \"${0}\"", path)
-        .has(strlen(), gt(), 0, "illegal empty segment in path \"${0}\"", path)
-        .ok();
+    return Check.that(path.firstSegment()).is(notNull(), "Illegal null segment in path \"${0}\"", path).ok();
   }
 
 }

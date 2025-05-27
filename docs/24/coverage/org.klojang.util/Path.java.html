@@ -257,8 +257,8 @@ public final class Path implements Comparable&lt;Path&gt;, Iterable&lt;String&gt
    * @return the path segment at the specified index.
    */
   public String segment(int index) {
-<span class="fc bfc" id="L260" title="All 2 branches covered.">    if (index &lt; 0) {</span>
-<span class="fc" id="L261">      return Check.that(elems.length + index).is(indexOf(), elems).mapToObj(x -&gt; elems[x]);</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">    if (index &lt; 0) {</span>
+<span class="nc" id="L261">      return Check.that(elems.length + index).is(indexOf(), elems).mapToObj(x -&gt; elems[x]);</span>
     }
 <span class="fc" id="L263">    return Check.that(index).is(indexOf(), elems).mapToObj(x -&gt; elems[x]);</span>
   }
