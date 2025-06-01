@@ -464,16 +464,11 @@ public class JSONObjectTest {
     assertEquals(expected, mb.build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = NullPointerException.class)
   public void sourceMap01() {
     Map source = new HashMap();
     source.put(null, "foo");
-    try {
-      JSONObject mb = JSONObject.of(source);
-    } catch (IllegalArgumentException e) {
-      System.out.println(e.getMessage());
-      throw e;
-    }
+    JSONObject.of(source);
   }
 
   @Test // make null -> _NULL_ -> null round trip

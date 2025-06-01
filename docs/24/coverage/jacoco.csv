@@ -21,7 +21,7 @@ Klojang Util,org.klojang.util,ArrayMetaData,67,432,11,27,16,89,14,36,5,26
 Klojang Util,org.klojang.util,Path.new Iterator() {...},0,42,0,4,0,5,0,5,0,3
 Klojang Util,org.klojang.util,ExceptionMethods,134,308,17,25,26,57,13,25,3,14
 Klojang Util,org.klojang.util,InvokeException,0,35,0,0,0,7,0,3,0,3
-Klojang Util,org.klojang.util,JSONObject,50,569,2,40,8,132,5,58,3,39
+Klojang Util,org.klojang.util,JSONObject,15,565,2,42,1,132,2,59,0,39
 Klojang Util,org.klojang.util.collection,UnmodifiableIntList,2,290,1,19,1,62,1,46,0,37
 Klojang Util,org.klojang.util.collection,SaturatedEnumToIntMap,124,297,5,3,20,61,14,26,10,26
 Klojang Util,org.klojang.util.collection,EnumToIntMap,106,417,9,17,17,77,16,38,9,32

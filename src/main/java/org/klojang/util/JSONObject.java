@@ -13,14 +13,17 @@ import static org.klojang.util.ObjectMethods.ifNull;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
 /**
- * <p>An elaborate reader/writer class for Map&lt;String, Object&gt; (map-in-map) pseudo-objects. A
- * {@code JSONObject} lets you read/write deeply nested values using JSON path strings (e.g.
+ * <p>A {@code JSONObject} provides a convenient way of manipulating Map&lt;String, Object&gt; (map-in-map)
+ * pseudo-objects. It lets you read/write deeply nested values using {@linkplain Path JSON paths} (e.g.
  * {@code person.address.street}). When writing deeply nested values, intermediate maps are created as and
- * when necessary. Map keys must be non-null strings. Map values can be anything <i>except</i> {@code Map}
- * objects. {@code null} values are allowed, however.
+ * when necessary. So, for example, you can immediately assign a value to {@code person.address.street}, even
+ * if the {@code person} map and the {@code address} map have not been created yet. Map keys must be non-null
+ * strings. Map values can be anything <i>except</i> {@code Map} objects and {@code JSONObject} instances.
+ * {@code null} values are allowed, however.
  *
  * <p>Note that, notwithstanding its name, this class does not require that you use it within the context of
- * JSON serialization or deserialization. It is more akin to a {@code MapDecorator}.
+ * JSON serialization or deserialization. It can be used whenever you need a convenient way to manipulate
+ * map-in-map objects.
  *
  * <p><b>Example 1 (writing):</b>
  *
@@ -59,8 +62,8 @@ import static org.klojang.util.StringMethods.EMPTY_STRING;
  * String street = JSONObject.of(someMap).get("person.address.street");
  * }</pre></blockquote>
  *
- * <p>For more flexibility, use the
- * <a href="https://klojang4j.github.io/klojang-invoke/24/api/org.klojang.invoke/org/klojang/path/PathWalker.html">PathWalker</a> class of the klojang-invoke library.
+ * <p><i>NB For more flexibility, use the
+ * <a href="https://klojang4j.github.io/klojang-invoke/24/api/org.klojang.invoke/org/klojang/path/PathWalker.html">PathWalker</a> class of the klojang-invoke library.</i>
  *
  * @author Ayco Holleman
  */
@@ -99,7 +102,7 @@ public final class JSONObject {
 
 
   /**
-   * Creates a new {@code JSONObject}.
+   * Creates a new {@code JSONObject} without any entries yet.
    *
    * @return a new {@code JSONObject}
    */
@@ -108,11 +111,11 @@ public final class JSONObject {
   }
 
   /**
-   * Creates a {@code JSONObject} that starts out with the entries in the specified map. The provided map is
-   * read, but not modified.
+   * Creates a {@code JSONObject} with the entries in the specified map. The provided map is read, but not
+   * modified.
    *
    * @param map the initial {@code Map}
-   * @return a {@code JSONObject} that starts out with the entries in the specified map
+   * @return a {@code JSONObject} that with the entries in the specified map
    */
   public static JSONObject of(Map<String, Object> map) {
     Check.notNull(map);
@@ -147,6 +150,35 @@ public final class JSONObject {
   }
 
   /**
+   * Returns a {@link Result} object containing the value of the specified path, or
+   * {@link Result#notAvailable} if the path is not set.
+   *
+   * @param path the path
+   * @return a {@link Result} object containing the value of the specified path, or
+   *     {@link Result#notAvailable} if the path is not set
+   * @see #isSet(String)
+   */
+  public <T> Result<T> get(String path) {
+    return get(Path.from(path));
+  }
+
+  /**
+   * Returns a {@link Result} object containing the value of the specified path, or
+   * {@link Result#notAvailable} if the path is not set.
+   *
+   * @param path the path
+   * @return a {@link Result} object containing the value of the specified path, or
+   *     {@link Result#notAvailable} if the path is not set
+   * @see #isSet(String)
+   */
+  @SuppressWarnings("unchecked")
+  public <T> Result<T> get(Path path) {
+    Check.notNull(path, Tag.PATH);
+    return (Result<T>) poll(this, path);
+  }
+
+
+  /**
    * <p>Sets the specified path to the specified value. It is not allowed to
    * overwrite the value of a path that has already been set, even if set to {@code null}. If necessary, use
    * {@link #unset(String)} to unset the path's value first.
@@ -161,20 +193,6 @@ public final class JSONObject {
    */
   public JSONObject set(String path, Object value) {
     return set(Path.from(path), value);
-  }
-
-
-  /**
-   * Sets the specified key to the specified value. The provided key will not be interpreted as a JSON path.
-   * This is useful if the key contains one or more dot characters.
-   *
-   * @param key the key
-   * @param value the value
-   * @return this {@code JSONObject}
-   */
-  public JSONObject setPlain(String key, Object value) {
-    Check.notNull(key, Tag.PATH);
-    return set(Path.of(key), value);
   }
 
   /**
@@ -239,49 +257,6 @@ public final class JSONObject {
       set(path, list);
     }
     return this;
-  }
-
-  /**
-   * Returns a {@link Result} object containing the value of the specified path, or
-   * {@link Result#notAvailable} if the path is not set.
-   *
-   * @param path the path
-   * @return a {@link Result} object containing the value of the specified path, or
-   *     {@link Result#notAvailable} if the path is not set
-   * @see #isSet(String)
-   */
-  public <T> Result<T> get(String path) {
-    return get(Path.from(path));
-  }
-
-  /**
-   * Returns a {@link Result} object containing the value of the specified path, or
-   * {@link Result#notAvailable} if the path is not set. The provided key will not be interpreted as a JSON
-   * path. This is useful if the key contains one or more dot characters.
-   *
-   * @param key the path
-   * @return a {@link Result} object containing the value of the specified path, or
-   *     {@link Result#notAvailable} if the path is not set
-   * @see #isSet(String)
-   */
-  public <T> Result<T> getPlain(String key) {
-    Check.notNull(key, Tag.PATH);
-    return get(Path.of(key));
-  }
-
-  /**
-   * Returns a {@link Result} object containing the value of the specified path, or
-   * {@link Result#notAvailable} if the path is not set.
-   *
-   * @param path the path
-   * @return a {@link Result} object containing the value of the specified path, or
-   *     {@link Result#notAvailable} if the path is not set
-   * @see #isSet(String)
-   */
-  @SuppressWarnings("unchecked")
-  public <T> Result<T> get(Path path) {
-    Check.notNull(path, Tag.PATH);
-    return (Result<T>) poll(this, path);
   }
 
   /**
@@ -498,14 +473,12 @@ public final class JSONObject {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   private static void init(JSONObject writer, Map map) {
-    map.forEach((key, val) -> processEntry(writer, key, val));
+    map.forEach((k, v) -> processEntry(writer, k, v));
   }
 
   @SuppressWarnings("rawtypes")
   private static void processEntry(JSONObject writer, Object key, Object val) {
-    Check.that(key)
-        .is(notNull(), "illegal null key in source map")
-        .is(instanceOf(), String.class, "illegal key type in source map: ${type}");
+    Check.notNull(key, "key").is(instanceOf(), String.class);
     String k = key.toString();
     if (val instanceof Map nested) {
       Path path = writer.root.append(k);
@@ -513,7 +486,7 @@ public final class JSONObject {
       writer.map.put(k, jsonObject);
       init(jsonObject, nested);
     } else {
-      Check.that(val, VALUE).isNot(instanceOf(), JSONObject.class); // stifle nasty usage
+      Check.that(val, VALUE).isNot(instanceOf(), JSONObject.class);
       writer.map.put(k, ifNull(val, NULL));
     }
   }
@@ -523,7 +496,7 @@ public final class JSONObject {
     if (path.size() == 1) {
       Check.that(val, VALUE)
           .isNot(instanceOf(), Map.class)
-          .isNot(instanceOf(), JSONObject.class); // stifle nasty usage
+          .isNot(instanceOf(), JSONObject.class);
       writer.map.put(key, ifNull(val, NULL));
     } else {
       set(getNestedWriter(writer, key), path.shift(), val);
@@ -539,7 +512,10 @@ public final class JSONObject {
       }
       return poll(nested, path.shift());
     } else if (path.size() == 1 && val != null) {
-      return Result.of(ObjectMethods.when(val, sameAs(), NULL, null));
+      if (val == NULL) {
+        return Result.nullResult();
+      }
+      return Result.of(val);
     }
     return Result.notAvailable();
   }
@@ -573,14 +549,14 @@ public final class JSONObject {
   }
 
   private static Map<String, Object> createMap(JSONObject writer) {
-    Map<String, Object> map = LinkedHashMap.newLinkedHashMap(writer.map.size());
-    writer.map.forEach((key, val) -> {
-      if (val instanceof JSONObject jsonObject) {
-        map.put(key, createMap(jsonObject));
-      } else if (val == NULL) {
-        map.put(key, null);
+    Map<String, Object> map = LinkedHashMap.newLinkedHashMap(writer.map.size() + 5);
+    writer.map.forEach((k, v) -> {
+      if (v instanceof JSONObject jsonObject) {
+        map.put(k, createMap(jsonObject));
+      } else if (v == NULL) {
+        map.put(k, null);
       } else {
-        map.put(key, val);
+        map.put(k, v);
       }
     });
     return map;
@@ -589,16 +565,10 @@ public final class JSONObject {
   private static JSONObject getNestedWriter(JSONObject writer, String key) {
     Path root = writer.root.append(key);
     Object val = writer.map.computeIfAbsent(key, _ -> new JSONObject(root, writer));
-    if (val instanceof JSONObject mb) {
-      return mb;
+    if (val instanceof JSONObject jsonObject) {
+      return jsonObject;
     }
     throw new PathBlockedException(root, val);
-  }
-
-  private static PathBlockedException alreadySet(JSONObject writer, String key) {
-    Path absPath = writer.root.append(key);
-    Object curVal = writer.map.get(key);
-    return new PathBlockedException(absPath, curVal);
   }
 
   private static String firstSegment(Path path) {
